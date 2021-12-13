@@ -1763,7 +1763,7 @@
 			{
 				case "core":
 					$localfile = 'e107-master.zip';
-					$remotefile = 'https://codeload.github.com/e107inc/e107/zip/master';
+					$remotefile = 'https://codeload.github.com/JM-Support-sk/e107/zip/master';
 					$excludes = array(
 						'e107-master/.codeclimate.yml',
 						'e107-master/.editorconfig',
@@ -1776,6 +1776,7 @@
 						'e107-master/composer.lock',
 						'e107-master/install.php',
 						'e107-master/favicon.ico',
+                        'e107-master/e107_config.php',
 					);
 					$excludeMatch = array(
 						'/.github/',
@@ -1868,9 +1869,22 @@
 				}
 
 			}
-
+            
+            $this->logData();
+            
 			return array('success' => $success, 'error' => $error, 'skipped' => $skipped);
 		}
+        
+        function logData($label = '', $message = NULL)
+        {
+ 
+        	if($fp = @fopen(e_BASE."synced.txt","a+"))
+        	{	
+        		
+                $contents = @fwrite($fp, date('r'));
+        		@fclose($fp);
+        	}			
+        } 
 
 
 		private function matchFound($file, $array)
