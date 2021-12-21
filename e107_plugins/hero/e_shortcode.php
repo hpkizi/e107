@@ -34,7 +34,18 @@ class hero_shortcodes extends e_shortcode
 	 */
 	function sc_hero($parm = null)  // Naming:  "sc_" + [plugin-directory] + '_uniquename'
 	{
-		if(empty($this->active))
+		
+        $heroVisibility = e107::pref('hero', 'visibility', e_UC_NOBODY);
+        
+        if(USER_AREA && check_class($heroVisibility))
+        {
+        	e107::library('load', 'animate.css');
+        	e107::css('hero', 'css/hero.css');
+        }
+        
+        unset($heroVisibility);
+    
+        if(empty($this->active))
 		{
 			return null;
 		}
