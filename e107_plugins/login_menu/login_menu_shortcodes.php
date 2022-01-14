@@ -412,7 +412,7 @@ e107::getLanguage()->bcDefs($bcDefs);
 					$tmp['LM_STAT_LABEL'] = $data['new_news'] == 1 ? LAN_LOGINMENU_14 : LAN_LOGINMENU_15;
 					$tmp['LM_STAT_EMPTY'] = '';
 				} else {
-					$tmp['LM_STAT_NEW'] = '';
+					$tmp['LM_STAT_NEW'] = 0;
 					$tmp['LM_STAT_LABEL'] = '';
 					$tmp['LM_STAT_EMPTY'] = LAN_LOGINMENU_26." ".LAN_LOGINMENU_15;
 				}
@@ -425,15 +425,17 @@ e107::getLanguage()->bcDefs($bcDefs);
 				$data = e107::getRegistry('login_menu_data');
 				if(!isset($data['new_comments'])) return '';
 				$tmp = array();
+                 
 				if($data['new_comments']){
 					$tmp['LM_STAT_NEW']   = $data['new_comments'];
 					$tmp['LM_STAT_LABEL'] = $data['new_comments'] == 1 ? LAN_LOGINMENU_18 : LAN_LOGINMENU_19;
 					$tmp['LM_STAT_EMPTY'] = '';
 				} else {
-					$tmp['LM_STAT_NEW']   = '';
+					$tmp['LM_STAT_NEW']   = 0;
 					$tmp['LM_STAT_LABEL'] = '';
 					$tmp['LM_STAT_EMPTY'] = LAN_LOGINMENU_26." ".LAN_LOGINMENU_19;
 				}
+                print_a($tmp);
 				return $tp -> parseTemplate($LOGIN_MENU_STATITEM, false, $tmp);
 			}
 
@@ -442,13 +444,13 @@ e107::getLanguage()->bcDefs($bcDefs);
 				global $LOGIN_MENU_STATITEM, $tp;
 				$data = e107::getRegistry('login_menu_data');
 				if(!isset($data['new_users'])) return '';
-				$tmp = array();
+				$tmp = array();  
 				if($data['new_users']){
 					$tmp['LM_STAT_NEW']   = $data['new_users'];
 					$tmp['LM_STAT_LABEL'] = $data['new_users'] == 1 ? LAN_LOGINMENU_22 : LAN_LOGINMENU_23;
 					$tmp['LM_STAT_EMPTY'] = '';
 				} else {
-					$tmp['LM_STAT_NEW']   = '';
+					$tmp['LM_STAT_NEW']   = 0;
 					$tmp['LM_STAT_LABEL'] = '';
 					$tmp['LM_STAT_EMPTY'] = LAN_LOGINMENU_26." ".LAN_LOGINMENU_23;
 				}

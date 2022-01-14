@@ -39,7 +39,7 @@ define("LAN_LOGINMENU_22", "new site member");
 define("LAN_LOGINMENU_23", "new site members");
 define("LAN_LOGINMENU_24", "Click here to see list of new items");
 define("LAN_LOGINMENU_25", "Since your last visit there have been");
-define("LAN_LOGINMENU_26", "no");
+define("LAN_LOGINMENU_26", "");
 define("LAN_LOGINMENU_27", "and");
 //define("LAN_LOGINMENU_28", "Login");
 //define("LAN_LOGINMENU_29", "new article");

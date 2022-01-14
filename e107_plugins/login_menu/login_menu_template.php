@@ -178,7 +178,7 @@ if ( ! isset($LOGIN_MENU_LOGGED))
     $sc_style['LM_EXTERNAL_LINKS']['pre'] = '<li class="list-group-item login-menu-external">';
 	$sc_style['LM_EXTERNAL_LINKS']['post'] = '</li>';
 
-    $sc_style['LM_STATS']['pre'] = '<li class="list-group-item nav-header login-menu-stats smalltext">'.LAN_LOGINMENU_25.':</li><li>';
+    $sc_style['LM_STATS']['pre'] = '<li class="list-group-item nav-header login-menu-stats smalltext">'.LAN_LOGINMENU_25.': <br> ';
 	$sc_style['LM_STATS']['post'] = '</li>';
 
     $sc_style['LM_LISTNEW_LINK']['pre'] = '<li class="list-group-item login-menu-listnew">';
@@ -246,6 +246,6 @@ if (!isset($LOGIN_MENU_STATITEM))
 {
 
 	$LOGIN_MENU_STATITEM = '
-        {LM_STAT_NEW} {LM_STAT_LABEL}{LM_STAT_EMPTY}
+       - {LM_STAT_LABEL}{LM_STAT_EMPTY}: {LM_STAT_NEW} 
     ';
 }
