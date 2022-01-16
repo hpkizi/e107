@@ -435,7 +435,7 @@ e107::getLanguage()->bcDefs($bcDefs);
 					$tmp['LM_STAT_LABEL'] = '';
 					$tmp['LM_STAT_EMPTY'] = LAN_LOGINMENU_26." ".LAN_LOGINMENU_19;
 				}
-                print_a($tmp);
+       
 				return $tp -> parseTemplate($LOGIN_MENU_STATITEM, false, $tmp);
 			}
 
