@@ -37,6 +37,14 @@ define('IMAGE_noreplies_small', 	$tp->toGlyph('fa-comment-o'));
 define('IMAGE_track', 		        $tp->toGlyph('fa-bell'));
 define('IMAGE_untrack', 	        $tp->toGlyph('fa-bell-o'));
     
+define('IMAGE_forum_new', 			$tp->toGlyph('fa-star', 'size=2x'));
+define('IMAGE_forum_noreplies', 	$tp->toGlyph('fa-comment-o', 'size=2x'));
+define('IMAGE_forum_nonew', 	    $tp->toGlyph('fa-comment', 'size=2x'));
+
+define('IMAGE_forum_new_small', 		$tp->toGlyph('fa-star'));
+define('IMAGE_forum_noreplies_small', 	$tp->toGlyph('fa-comment-o'));
+define('IMAGE_forum_nonew_small', 	    $tp->toGlyph('fa-comment'));
+
 } else {
 
 // Thread info
