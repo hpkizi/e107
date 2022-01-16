@@ -735,10 +735,7 @@
 			{
 				return $this->keyIcon($parm);
 			}
-
-
-
-
+ 
 			global $forum;
 //	global $forum, $FORUM_VIEW_FORUM, $FORUM_VIEW_FORUM_STICKY, $FORUM_VIEW_FORUM_ANNOUNCE, $gen, $menu_pref, 
 //$threadsViewed = $forum->threadGetUserViewed();
@@ -758,15 +755,17 @@
 //-- CANDIDATE FOR TERNARY IF
 			if($this->var['thread_sticky'] == 1)
 			{
-				$ICON = ($this->var['thread_active'] ? IMAGE_sticky : IMAGE_stickyclosed);
+				$ICON = ($newflag ? IMAGE_new_sticky : IMAGE_sticky);
+                $ICON = ($this->var['thread_active'] ? $ICON : IMAGE_stickyclosed);
 			}
 			elseif($this->var['thread_sticky'] == 2)
 			{
-				$ICON = IMAGE_announce;
+ 
+                $ICON = ($newflag ? IMAGE_new_announce : IMAGE_announce);
 			}
 			elseif(!$this->var['thread_active'])
 			{
-				$ICON = IMAGE_closed;
+				 $ICON = ($newflag ? IMAGE_new_closed : IMAGE_closed);
 			}
 
 			return $ICON;

@@ -45,6 +45,14 @@ define('IMAGE_forum_new_small', 		$tp->toGlyph('fa-star'));
 define('IMAGE_forum_noreplies_small', 	$tp->toGlyph('fa-comment-o'));
 define('IMAGE_forum_nonew_small', 	    $tp->toGlyph('fa-comment'));
 
+define('IMAGE_new_sticky',  			$tp->toGlyph('fa-thumb-tack', 'size=2x'));
+define('IMAGE_new_announce',  			$tp->toGlyph('fa-bullhorn', 'size=2x'));
+define('IMAGE_new_closed', 				$tp->toGlyph('fa-lock', 'size=2x'));
+
+define('IMAGE_new_sticky_small',  		$tp->toGlyph('fa-thumb-tack'));
+define('IMAGE_new_announce_small',  	$tp->toGlyph('fa-bullhorn'));
+define('IMAGE_new_closed_small', 		$tp->toGlyph('fa-lock'));
+
 } else {
 
 // Thread info
