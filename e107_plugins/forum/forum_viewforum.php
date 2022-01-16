@@ -306,7 +306,7 @@ function init()
 	}
 
 //-- if($forum->checkPerm($forumId, 'thread')) //new thread access only.
-	if($forum->checkPerm($forumId, 'post')) //new thread access only.
+	if($forum->checkPerm($forumId, 'thread')) //new thread access only.  see #3974
 	{
 		$forumSCvars['ntUrl'] = e107::url('forum', 'post') . "?f=nt&amp;id=" . $forumId;
 	}
