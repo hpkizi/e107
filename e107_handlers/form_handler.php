@@ -4458,12 +4458,9 @@ var_dump($select_options);*/
 		$tp = e107::getParser();
         $text = '';
 
-        $querypattern = $tp->filter($querypattern, 'str');
-        if(!$requeststr)
-        {
-	        $requeststr = rawurldecode(e_QUERY);
-        }
-        $requeststr = $tp->filter($requeststr, 'str');
+        $querypattern = filter_var($querypattern, FILTER_SANITIZE_STRING);
+        if(!$requeststr) $requeststr = rawurldecode(e_QUERY);
+        $requeststr = filter_var($requeststr, FILTER_SANITIZE_STRING);
 
 		// Recommended pattern: mode=list&field=[FIELD]&asc=[ASC]&from=[FROM]
 		if(strpos($querypattern,'&')!==FALSE)
