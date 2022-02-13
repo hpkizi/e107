@@ -140,8 +140,9 @@ class e_date
 	 */
 	function convert_date($datestamp, $mask = '')
 	{
-		$datestamp = (int) $datestamp;
-
+ 	
+    	$datestamp = (int) $datestamp;
+        if($datestamp == 0) return "";
 		if(empty($mask))
 		{
 			$mask = 'long';
@@ -596,7 +597,7 @@ class e_date
 	function computeLapse($older_date, $newer_date = FALSE, $mode = FALSE, $show_secs = TRUE, $format = 'long') 
 	{
 		$older_date = (int) $older_date;
-
+        if($older_date == 0) return "";
 		if(empty($newer_date))
 		{
 			$newer_date = time();
