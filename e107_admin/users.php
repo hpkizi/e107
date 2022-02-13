@@ -253,7 +253,7 @@ class users_admin_ui extends e_admin_ui
 	protected $editQry = "SELECT u.*,ue.* FROM #user AS u left join #user_extended AS ue ON u.user_id = ue.user_extended_id  WHERE user_id = {ID}";
 	
 	protected $pid 			= "user_id";
-	protected $perPage 		= 10;
+	protected $perPage 		= 50;
 	protected $batchDelete 	= true;
 	protected $batchExport	= true; 
 	protected $listOrder 	= 'user_id DESC'; 
