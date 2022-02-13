@@ -18,7 +18,7 @@ class download_request
 		$sql = e107::getDb();
 		$tp = e107::getParser();
 		$pref = e107::pref();
-
+        //id=4
 		if(!is_numeric(e_QUERY) && empty($_GET['id']))
 		{
 			if($sql->select('download', 'download_id', "download_url='" . $tp->toDB(e_QUERY) . "'"))
@@ -92,6 +92,8 @@ class download_request
 		}
 
 		$tmp = explode(".", e_QUERY);
+
+        
 		if(empty($tmp[1]) || strpos(e_QUERY, "pub_") !== false)
 		{
 			$id = intval($tmp[0]);
@@ -107,6 +109,11 @@ class download_request
 		if(vartrue($_GET['id'])) // SEF URL
 		{
 			$id = intval($_GET['id']);
+            if (empty($_GET['sef'])) 
+            {
+                exit();
+            }
+            $mask = $tp->toDB($_GET['sef'], true) ;
 			$type = 'file';
 		}
 
@@ -138,8 +145,9 @@ class download_request
 
 		if($type == "file")
 		{
-			$qry = "SELECT d.*, dc.download_category_class FROM #download as d LEFT JOIN #download_category AS dc ON dc.download_category_id = d.download_category WHERE d.download_id = {$id}";
-			if($sql->gen($qry))
+			$qry = "SELECT d.*, dc.download_category_class FROM #download as d LEFT JOIN #download_category AS dc ON dc.download_category_id = d.download_category WHERE d.download_id = {$id} AND d.download_sef LIKE '{$mask}' ";
+ 
+            if($sql->gen($qry))
 			{
 				$row = $sql->fetch();
 

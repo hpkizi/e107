@@ -320,7 +320,7 @@ class download_main_admin_ui extends e_admin_ui
 		// default - true - TODO - move to displaySettings
 		protected $batchDelete = true;
 
-	
+	    protected $listOrder		= 'download_id DESC';
     	protected  $fields = array(
 			'checkboxes'				=> array('title'=> '', 					'type' => null,			'data' => null,			'width'=>'5%', 		'thclass' =>'center', 'forced'=> TRUE,  'class'=>'center', 'toggle' => 'e-multiselect'),
 			'download_id'				=> array('title'=> LAN_ID, 				'type' => 'text',		'data' => 'int',		'width'=>'5%',		'thclass' => '',	'forced'=> TRUE, 'readParms'=>'url=item&target=blank', 'primary'=>TRUE/*, 'noedit'=>TRUE*/), //Primary ID is not editable
@@ -1506,7 +1506,7 @@ $columnInfo = array(
 									 $text .= "     </select>";
 										   */
 		   
-		$text .= $frm->imagepicker('download_image', $download_image,'',array('media'=>'download_image', 'legacyPath'=>'{e_FILE}downloadimages'));
+		$text .= $frm->imagepicker('download_image', $download_image,'',array('media'=>'download_image^', 'legacyPath'=>'{e_FILE}downloadimages'));
 		  
 	      if ($subAction == "dlm" && $download_image)
 	      {
