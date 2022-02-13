@@ -358,8 +358,19 @@ function init()
 	{
 		$threadFilter = "t.thread_name LIKE '%" . $tp->filter($_GET['srch'], 'w') . "%'";
 	}
+ 
+    if($forumId == 67)  {
+    	$threadList = $forum->forumGetThreadsByAlphabet($forumId, $threadFrom, $view, $threadFilter);
+    }
+    elseif($forumId == 70) {
+    	$threadList = $forum->forumGetThreadsByAlphabet($forumId, $threadFrom, $view, $threadFilter);    
+    }
+    else {
+    	$threadList = $forum->forumGetThreads($forumId, $threadFrom, $view, $threadFilter);
+    }
+ 
+ 
 
-	$threadList = $forum->forumGetThreads($forumId, $threadFrom, $view, $threadFilter);
 	$forumSCvars['forum_parent'] = $forumInfo['forum_parent'];
 
 	$forum_view_forum = '';

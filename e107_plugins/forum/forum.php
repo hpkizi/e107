@@ -200,9 +200,12 @@ class forum_front
 			$forum_string .= $tp->parseTemplate($FORUM_MAIN_PARENT, true, $this->sc);
 
 			$fid = $parent['forum_id'];
+            
+           
+            
 			if(empty($forumList['forums'][$parent['forum_id']]))
-			{
-				$text .= "<td colspan='5' style='text-align:center' class='forumheader3'>" . LAN_FORUM_0068 . "</td>";
+			{    
+                $forum_string .= "<div style='text-align:center' class='forumheader3'>" . LAN_FORUM_0068 . "</div>";
 			}
 			else
 			{
@@ -230,12 +233,15 @@ class forum_front
 						$forum_string .= $this->parse_forum($f);
 					}
 				}
-				if(isset($FORUM_MAIN_PARENT_END))
-				{
+            }
+			if(isset($FORUM_MAIN_PARENT_END))
+			{
 //--			$forum_string .= $tp->simpleParse($FORUM_MAIN_PARENT_END, $pVars);
-					$forum_string .= $tp->parseTemplate($FORUM_MAIN_PARENT_END, true, $this->sc);
-				}
+				$forum_string .= $tp->parseTemplate($FORUM_MAIN_PARENT_END, true, $this->sc);
 			}
+              
+                
+			
 		}
 
 

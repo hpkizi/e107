@@ -1984,8 +1984,7 @@ class e107forum
 		}
 		return FALSE;
 	}
-
-
+ 
 	function forumGetAllowed($type='view')
 	{
 		if(empty($this->permList[$type]))
@@ -2030,7 +2029,7 @@ class e107forum
 		LEFT JOIN `#user` AS lpu ON t.thread_lastuser = lpu.user_id
 		WHERE t.thread_forum_id = {$forumId}
 		";
-
+ 
 		if(!empty($filter))
 		{
 			$qry .= " AND ".$filter;
@@ -2059,7 +2058,48 @@ class e107forum
 		return $ret;
 	}
 
+	function forumGetThreadsByAlphabet($forumId, $from, $view, $filter = null)
+	{
+		$e107 = e107::getInstance();
+		$sql = e107::getDb();
+		$forumId = (int)$forumId;
+		$qry = "
+		SELECT t.*, f.forum_id, f.forum_sef,f.forum_name, u.user_name, lpu.user_name AS lastpost_username, MAX(p.post_id) AS lastpost_id FROM `#forum_thread` as t
+		LEFT JOIN `#forum` AS f ON t.thread_forum_id = f.forum_id
+		LEFT JOIN `#forum_post` AS p ON t.thread_id = p.post_thread
+		LEFT JOIN `#user` AS u ON t.thread_user = u.user_id
+		LEFT JOIN `#user` AS lpu ON t.thread_lastuser = lpu.user_id
+		WHERE t.thread_forum_id = {$forumId}
+		";
 
+		if(!empty($filter))
+		{
+			$qry .= " AND ".$filter;
+		}
+
+		$qry .= "
+		GROUP BY thread_id
+		ORDER BY
+		t.thread_sticky DESC,
+		t.thread_name ASC
+		LIMIT ".(int)$from.','.(int)$view;
+
+		$ret = array();
+		if ($sql->gen($qry))
+		{
+			while ($row = $sql->fetch())
+			{
+				if(empty($row['forum_sef']))
+				{
+					e107::getDebug()->log("Forum ".$row['forum_name']." is missing a SEF URL. Please add one via the admin area. ");
+				}
+
+				$ret[] = $row;
+			}
+		}
+		return $ret;
+	}
+    
 	function threadGetLastpost($id)
 	{
 		$e107 = e107::getInstance();
@@ -2260,19 +2300,27 @@ class e107forum
 		$forumId = (int)$forumId;
 		$threads = $sql->count('forum_thread', '(*)', 'WHERE thread_forum_id='.$forumId);
 		$replies = $sql->count('forum_post', '(*)', 'WHERE post_forum='.$forumId);
+        $replies = $replies - $threads ; 
+        
+         //see issue 4570 
+ 
 		$sql->update('forum', "forum_threads={$threads}, forum_replies={$replies} WHERE forum_id={$forumId}");
+        
 		if($recalcThreads == true)
 		{
 			set_time_limit(60);
-			$sql->select('forum_post', 'post_thread, count(post_thread) AS replies', "post_forum={$forumId} GROUP BY post_thread");
+			$sql->select('forum_post', 'post_thread, count(post_thread) AS replies', "post_forum={$forumId} GROUP BY post_thread"  );
 			$tlist = $sql->db_getList();
-			foreach($tlist as $t)
+ 
+        	foreach($tlist as $t)
 			{
 				$tid = $t['post_thread'];
-				$replies = (int)$t['replies'];
+				$replies = (int)$t['replies'] - 1 ;
 				$sql->update('forum_thread', "thread_total_replies={$replies} WHERE thread_id={$tid}");
 			}
 		}
+        
+        
 	}
 
 
