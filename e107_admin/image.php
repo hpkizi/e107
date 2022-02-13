@@ -821,6 +821,7 @@ class media_admin_ui extends e_admin_ui
 		protected $pid = 'media_id';
 		protected $perPage = 10;
 		protected $batchDelete = true;
+        protected $batchExport = true;
 	//	protected $defaultOrder = 'desc';
 		protected $listOrder = 'm.media_id desc'; // show newest images first. 
 		public $deleteConfirmScreen = true;
