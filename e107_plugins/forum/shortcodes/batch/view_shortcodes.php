@@ -324,7 +324,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
 
 			if(empty($parm['dateformat']))
 			{
-				return LAN_FORUM_2031 . ': ' . $gen->convert_date($this->postInfo['user_join'], 'forum') . '<br />';
+				return LAN_FORUM_2031 . ': ' . $gen->convert_date($this->postInfo['user_join'], 'short') . '<br />';
 			}
 			else
 			{
@@ -574,13 +574,11 @@ class plugin_forum_view_shortcodes extends e_shortcode
 		}
 	}
 
+    /* in the forum topic header */
 	function sc_printitem()
 	{
-
-		if(!empty($this->postInfo['thread_start']))
-		{
-			return e107::getParser()->parseTemplate("{PRINT_ITEM=" . LAN_FORUM_2045 . "^plugin:forum.{$this->postInfo['post_thread']}}");
-		}
+      return "<a class='e-tip btn btn-default btn-info' href='" . e_HTTP . "print.php?plugin:forum." . $this->postInfo['thread_id'] . "'>".e107::getParser()->toGlyph('fas-print')."</a>";
+      //	return e107::getParser()->parseTemplate("{PRINT_ITEM=" . LAN_FORUM_2045 . "^plugin:forum.{$this->postInfo['post_thread']}}");	 
 	}
 
 	function sc_signature($parm = '')
@@ -694,7 +692,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
 	function sc_reportimg()
 	{
 
-		if(USER && !empty($this->postInfo['post_thread']))
+		if(USER)
 		{
 			$qry = array('f' => 'report', 'id' => $this->postInfo['post_thread'], 'post' => $this->postInfo['post_id']);
 			$reportURL = e107::url('forum', 'post', null, array('query' => $qry));
@@ -929,7 +927,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
     		<ul class="dropdown-menu pull-right dropdown-menu-end float-right text-right text-end">';
 
 
-		$text .= "<li class='text-right text-end float-right float-right'><a class='dropdown-item' href='" . e_HTTP . "email.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2044 . " " . $tp->toGlyph('fa-envelope') . "</a></li>";
+	//	$text .= "<li class='text-right text-end float-right float-right'><a class='dropdown-item' href='" . e_HTTP . "email.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2044 . " " . $tp->toGlyph('fa-envelope') . "</a></li>";
 		$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_HTTP . "print.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2045 . " " . $tp->toGlyph('fa-print') . "</a></li>"; // FIXME
 
 		if(USER) // Report
@@ -1054,7 +1052,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
 
 	function sc_track()
 	{
-
+ 
 		global $forum;
 		if(!empty($this->pref['track']) && USER)
 		{
