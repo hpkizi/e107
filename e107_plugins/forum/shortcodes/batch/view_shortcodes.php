@@ -567,10 +567,15 @@ class plugin_forum_view_shortcodes extends e_shortcode
 
 	function sc_emailitem()
 	{
-
-		if(!empty($this->postInfo['thread_start']))
+ 
+        if(is_null($this->postInfo['thread_start'])) {
+            return "<a class='e-tip btn btn-default btn-info' href='" . e_HTTP . "email.php?plugin:forum." . $this->var['thread_id'] . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>";
+        }
+        
+        if(!empty($this->postInfo['thread_start']))
 		{
-			return e107::getParser()->parseTemplate("{EMAIL_ITEM=" . LAN_FORUM_2044 . "^plugin:forum.{$this->postInfo['post_thread']}}");
+            return "<a class='e-tip btn btn-default btn-info' href='" . e_HTTP . "email.php?plugin:forum." . $this->var['thread_id'] . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>";
+            //return e107::getParser()->parseTemplate("{EMAIL_ITEM=" . LAN_FORUM_2044 . "^plugin:forum.{$this->postInfo['post_thread']}}");
 		}
 	}
 
