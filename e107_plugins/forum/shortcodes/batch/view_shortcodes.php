@@ -569,12 +569,12 @@ class plugin_forum_view_shortcodes extends e_shortcode
 	{
  
         if(is_null($this->postInfo['thread_start'])) {
-            return "<a class='e-tip btn btn-default btn-info' href='" . e_HTTP . "email.php?plugin:forum." . $this->var['thread_id'] . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>";
+            return "<a class='e-tip btn btn-default btn-info btn-thread-email' href='" . e_HTTP . "email.php?plugin:forum." . $this->var['thread_id'] . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>";
         }
         
         if(!empty($this->postInfo['thread_start']))
 		{
-            return "<a class='e-tip btn btn-default btn-info' href='" . e_HTTP . "email.php?plugin:forum." . $this->var['thread_id'] . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>";
+            return "<a class='e-tip btn btn-default btn-info btn-thread-email' href='" . e_HTTP . "email.php?plugin:forum." . $this->var['thread_id'] . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>";
             //return e107::getParser()->parseTemplate("{EMAIL_ITEM=" . LAN_FORUM_2044 . "^plugin:forum.{$this->postInfo['post_thread']}}");
 		}
 	}
@@ -582,8 +582,18 @@ class plugin_forum_view_shortcodes extends e_shortcode
     /* in the forum topic header */
 	function sc_printitem()
 	{
-      return "<a class='e-tip btn btn-default btn-info' href='" . e_HTTP . "print.php?plugin:forum." . $this->postInfo['thread_id'] . "'>".e107::getParser()->toGlyph('fas-print')."</a>";
-      //	return e107::getParser()->parseTemplate("{PRINT_ITEM=" . LAN_FORUM_2045 . "^plugin:forum.{$this->postInfo['post_thread']}}");	 
+    
+        if(is_null($this->postInfo['thread_start'])) {
+            return "<a class='e-tip btn btn-default btn-info btn-thread-print' href='" . e_HTTP . "print.php?plugin:forum." . $this->var['thread_id'] . "'>".e107::getParser()->toGlyph('fas-print')."</a>";
+        }
+        
+        if(!empty($this->postInfo['thread_start']))
+		{
+            return "<a class='e-tip btn btn-default btn-info btn-thread-print' href='" . e_HTTP . "print.php?plugin:forum." . $this->var['thread_id'] . "'>".e107::getParser()->toGlyph('fas-print')."</a>";
+            //return e107::getParser()->parseTemplate("{EMAIL_ITEM=" . LAN_FORUM_2044 . "^plugin:forum.{$this->postInfo['post_thread']}}");
+		}
+  
+        //	return e107::getParser()->parseTemplate("{PRINT_ITEM=" . LAN_FORUM_2045 . "^plugin:forum.{$this->postInfo['post_thread']}}");	 
 	}
 
 	function sc_signature($parm = '')
@@ -933,7 +943,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
 
 
 	//	$text .= "<li class='text-right text-end float-right float-right'><a class='dropdown-item' href='" . e_HTTP . "email.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2044 . " " . $tp->toGlyph('fa-envelope') . "</a></li>";
-		$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_HTTP . "print.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2045 . " " . $tp->toGlyph('fa-print') . "</a></li>"; // FIXME
+	//	$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_HTTP . "print.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2045 . " " . $tp->toGlyph('fa-print') . "</a></li>"; // FIXME
 
 		if(USER) // Report
 		{
