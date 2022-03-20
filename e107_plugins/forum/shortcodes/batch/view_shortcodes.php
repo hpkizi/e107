@@ -989,7 +989,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
             if ($type == 'thread') {
                 $url = e107::url('forum', 'move', array('thread_id' => $threadID));
                 $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_FORUM_2042 . " " . $tp->toGlyph('fa-arrows') . "</a></li>";
-            } elseif (e_DEVELOPER === true) { //TODO
+            } elseif (getperms('0')) { //TODO
                 $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e107::url('forum', 'split', array('thread_id' => $threadID, 'post_id' => $postID)) . "'>" . LAN_FORUM_2043 . " " . $tp->toGlyph('fa-cut') . "</a></li>";
             }
         }
