@@ -1010,7 +1010,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
       
             $text_options .= '
           		</button>
-    		<ul class="dropdown-menu pull-right dropdown-menu-end float-right text-right text-end">';
+    		<ul class="forum-view-options-menu dropdown-menu pull-right dropdown-menu-end float-right text-right text-end">';
             $text_options .= $text;
             $text_options .= '
       		</ul>
