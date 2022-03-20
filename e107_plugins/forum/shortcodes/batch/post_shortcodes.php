@@ -205,8 +205,15 @@ class plugin_forum_post_shortcodes extends e_shortcode
 		{
 			$post = preg_replace('#\[hide].*?\[/hide]#s', '', trim($this->var['post_entry']));
 			$quoteName = ($this->var['user_name'] ? $this->var['user_name'] : $this->var['post_user_anon']);
-			$text = $tp->toText("[quote={$quoteName}]\n".$post."\n[/quote]\n",true);
-			$text .= "\n\n";
+            
+            //$text = $tp->toText("[quote={$quoteName}]\n".$post."\n[/quote]\n",true);
+            
+            //return "<div class='indent {$class}'><em>$parm ".LAN_WROTE."</em> ...<br />$code_text</div>";
+            //return "<div class='indent bbcode-quote bbcode-quote-forum'><em>$parm ".LAN_WROTE."</em> ...<br />$code_text</div>";
+            
+            $text = "<div class='indent bbcode-quote bbcode-quote-forum'><span class='bbcode-quote-source'>$quoteName ".LAN_WROTE."</span> ...<br />$post</div>";
+			
+			$text .= "\n\n<br>";
 
 		//	$text = $tp->toForm($text);
 			$this->var['action'] = 'rp';
