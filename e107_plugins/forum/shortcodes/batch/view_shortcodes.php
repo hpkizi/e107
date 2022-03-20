@@ -919,115 +919,106 @@ class plugin_forum_view_shortcodes extends e_shortcode
 	}
 
 
-	function sc_postoptions()
-	{
+    public function sc_postoptions()
+    {
+        $tp = e107::getParser();
+        $threadID = !empty($this->postInfo['post_thread']) ? $this->postInfo['post_thread'] : 0;
+        $postID = !empty($this->postInfo['post_id']) ? $this->postInfo['post_id'] : 0;
+        // {EMAILITEM} {PRINTITEM} {REPORTIMG}{EDITIMG}{QUOTEIMG}
 
-		$tp = e107::getParser();
-		$threadID = !empty($this->postInfo['post_thread']) ? $this->postInfo['post_thread'] : 0;
-		$postID = !empty($this->postInfo['post_id']) ? $this->postInfo['post_id'] : 0;
-		// {EMAILITEM} {PRINTITEM} {REPORTIMG}{EDITIMG}{QUOTEIMG}
+        $link_count = 0;  // count if there is at least one link in dropdown, if not, disable button 
+        $text_options = 0;
+ 
+        //	$text .= "<li class='text-right text-end float-right float-right'><a class='dropdown-item' href='" . e_HTTP . "email.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2044 . " " . $tp->toGlyph('fa-envelope') . "</a></li>";
+        //	$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_HTTP . "print.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2045 . " " . $tp->toGlyph('fa-print') . "</a></li>"; // FIXME
 
-		$text = '<div class="btn-group pull-right float-right float-end">
+        if (USER) { // Report
+            $urlReport = e107::url('forum', 'post') . "?f=report&amp;id=" . $threadID . "&amp;post=" . $postID;
+            //	$urlReport = $this->e107->url->create('forum/thread/report', "id={$threadID}&post={$postID}");
+            $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $urlReport . "'>" . LAN_FORUM_2046 . " " . $tp->toGlyph('fa-flag') . "</a></li>";
+            ++$link_count;
+        }
+
+        // Edit
+        if ((USER && isset($this->postInfo['post_user']) && $this->postInfo['post_user'] == USERID && $this->var['thread_active'])) {
+            $url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID;
+            //$url = e107::getUrl()->create('forum/thread/edit', array('id' => $threadID, 'post'=>$postID));
+            $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
+            ++$link_count;
+        }
+
+        // Delete own post, if it is the last in the thread
+        if ($this->thisIsTheLastPost && USER && $this->thread->threadInfo['thread_lastuser'] == USERID) {
+            /* only show delete button when post is not the initial post of the topic
+             * AND if this post is the last post in the thread */
+            if ($this->var['thread_active'] && empty($this->postInfo['thread_start'])) {
+                $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_REQUEST_URI . "' data-forum-action='deletepost'  data-confirm='" . LAN_JSCONFIRM . "' data-forum-post='" . $postID . "'>" . LAN_DELETE . " " . $tp->toGlyph('fa-trash') . "</a></li>";
+                ++$link_count;
+            }
+        }
+
+        if (isset($this->postInfo['post_forum']) && $this->forum->checkperm($this->postInfo['post_forum'], 'post')) {
+            $url = e107::url('forum', 'post') . "?f=quote&amp;id=" . $threadID . "&amp;post=" . $postID;
+            //$url = e107::getUrl()->create('forum/thread/quote', array('id' => $threadID, 'post'=>$postID));
+            $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_FORUM_2041 . " " . $tp->toGlyph('fa-share-alt') . "</a></li>";
+            ++$link_count;
+            //	$text .= "<li class='text-right float-right'><a href='".e107::getUrl()->create('forum/thread/quote', array('id' => $postID))."'>".LAN_FORUM_2041." ".$tp->toGlyph('share-alt')."</a></li>";
+        }
+
+
+        if (defset('MODERATOR')) {
+            ++$link_count;  //enough, at least one link
+            $text .= "<li role='presentation' class='divider'><hr class='dropdown-divider'></li>";
+            $type = ($this->postInfo['thread_start']) ? 'thread' : 'Post';
+
+            //	print_a($this->postInfo);
+
+            if ((USER && isset($this->postInfo['post_user']) && $this->postInfo['post_user'] != USERID && $this->var['thread_active'])) {
+                $url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID;
+                // $url = e107::getUrl()->create('forum/thread/edit', array('id' => $threadID, 'post'=>$postID));
+
+                $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
+            }
+
+            // only show delete button when post is not the initial post of the topic
+            //	if(!$this->forum->threadDetermineInitialPost($postID))
+            if (empty($this->postInfo['thread_start'])) {
+                $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_REQUEST_URI . "' data-forum-action='deletepost' data-confirm='" . LAN_JSCONFIRM . "'  data-forum-post='" . $postID . "'>" . LAN_DELETE . " " . $tp->toGlyph('fa-trash') . "</a></li>";
+            }
+
+            if ($type == 'thread') {
+                $url = e107::url('forum', 'move', array('thread_id' => $threadID));
+                $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_FORUM_2042 . " " . $tp->toGlyph('fa-arrows') . "</a></li>";
+            } elseif (e_DEVELOPER === true) { //TODO
+                $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e107::url('forum', 'split', array('thread_id' => $threadID, 'post_id' => $postID)) . "'>" . LAN_FORUM_2043 . " " . $tp->toGlyph('fa-cut') . "</a></li>";
+            }
+        }
+
+        if ($link_count == 0) {
+            $text_options = '<div class="btn-group pull-right float-right float-end">
+    		<button class="btn btn-default btn-secondary disabled btn-sm btn-small">
+    		' . LAN_FORUM_8013 . '</button></div>';
+        } else {
+            $text_options = '<div class="btn-group pull-right float-right float-end">
     		<button class="btn btn-default btn-secondary btn-sm btn-small dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown">
     		' . LAN_FORUM_8013 . '
     	    ';
-
-		if(defined('BOOTSTRAP') && BOOTSTRAP !== 4)
-		{
-			$text .= '<span class="caret"></span>';
-		}
-
-		$text .= '
-    		</button>
+            
+            if (defined('BOOTSTRAP') && BOOTSTRAP !== 4) {
+                $text_options .='<span class="caret"></span>';
+            }
+      
+            $text_options .= '
+          		</button>
     		<ul class="dropdown-menu pull-right dropdown-menu-end float-right text-right text-end">';
-
-
-	//	$text .= "<li class='text-right text-end float-right float-right'><a class='dropdown-item' href='" . e_HTTP . "email.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2044 . " " . $tp->toGlyph('fa-envelope') . "</a></li>";
-	//	$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_HTTP . "print.php?plugin:forum." . $threadID . "'>" . LAN_FORUM_2045 . " " . $tp->toGlyph('fa-print') . "</a></li>"; // FIXME
-
-		if(USER) // Report
-		{
-			$urlReport = e107::url('forum', 'post') . "?f=report&amp;id=" . $threadID . "&amp;post=" . $postID;
-			//	$urlReport = $this->e107->url->create('forum/thread/report', "id={$threadID}&post={$postID}");
-			$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $urlReport . "'>" . LAN_FORUM_2046 . " " . $tp->toGlyph('fa-flag') . "</a></li>";
-		}
-
-		// Edit
-		if((USER && isset($this->postInfo['post_user']) && $this->postInfo['post_user'] == USERID && $this->var['thread_active']))
-		{
-
-
-			$url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID;
-			//$url = e107::getUrl()->create('forum/thread/edit', array('id' => $threadID, 'post'=>$postID));
-			$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
-
-		}
-
-		// Delete own post, if it is the last in the thread
-		if($this->thisIsTheLastPost && USER && $this->thread->threadInfo['thread_lastuser'] == USERID)
-		{
-			/* only show delete button when post is not the initial post of the topic
-			 * AND if this post is the last post in the thread */
-			if($this->var['thread_active'] && empty($this->postInfo['thread_start']))
-			{
-				$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_REQUEST_URI . "' data-forum-action='deletepost'  data-confirm='" . LAN_JSCONFIRM . "' data-forum-post='" . $postID . "'>" . LAN_DELETE . " " . $tp->toGlyph('fa-trash') . "</a></li>";
-			}
-		}
-
-		if(isset($this->postInfo['post_forum']) && $this->forum->checkperm($this->postInfo['post_forum'], 'post'))
-		{
-			$url = e107::url('forum', 'post') . "?f=quote&amp;id=" . $threadID . "&amp;post=" . $postID;
-			//$url = e107::getUrl()->create('forum/thread/quote', array('id' => $threadID, 'post'=>$postID));
-			$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_FORUM_2041 . " " . $tp->toGlyph('fa-share-alt') . "</a></li>";
-
-			//	$text .= "<li class='text-right float-right'><a href='".e107::getUrl()->create('forum/thread/quote', array('id' => $postID))."'>".LAN_FORUM_2041." ".$tp->toGlyph('share-alt')."</a></li>";
-		}
-
-
-		if(defset('MODERATOR'))
-		{
-			$text .= "<li role='presentation' class='divider'><hr class='dropdown-divider'></li>";
-			$type = ($this->postInfo['thread_start']) ? 'thread' : 'Post';
-
-			//	print_a($this->postInfo);
-
-			if((USER && isset($this->postInfo['post_user']) && $this->postInfo['post_user'] != USERID && $this->var['thread_active']))
-			{
-
-				$url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID;
-				// $url = e107::getUrl()->create('forum/thread/edit', array('id' => $threadID, 'post'=>$postID));
-
-				$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
-			}
-
-			// only show delete button when post is not the initial post of the topic
-			//	if(!$this->forum->threadDetermineInitialPost($postID))
-			if(empty($this->postInfo['thread_start']))
-			{
-				$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_REQUEST_URI . "' data-forum-action='deletepost' data-confirm='" . LAN_JSCONFIRM . "'  data-forum-post='" . $postID . "'>" . LAN_DELETE . " " . $tp->toGlyph('fa-trash') . "</a></li>";
-			}
-
-			if($type == 'thread')
-			{
-				$url = e107::url('forum', 'move', array('thread_id' => $threadID));
-				$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_FORUM_2042 . " " . $tp->toGlyph('fa-arrows') . "</a></li>";
-			}
-			elseif(e_DEVELOPER === true) //TODO
-			{
-				$text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e107::url('forum', 'split', array('thread_id' => $threadID, 'post_id' => $postID)) . "'>" . LAN_FORUM_2043 . " " . $tp->toGlyph('fa-cut') . "</a></li>";
-
-			}
-		}
-
-
-		$text .= '
-		</ul>
-		</div>';
-
-		return $text;
-
-
-	}
+            $text_options .= $text;
+            $text_options .= '
+      		</ul>
+      		</div>';
+        }
+ 
+        return $text_options;
+    }
 
 //---- SHORTCODES CONVERTED FROM $tVars....
 	function sc_threadname($parm = null)
