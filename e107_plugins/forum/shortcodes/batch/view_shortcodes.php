@@ -602,7 +602,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
         // the same code as in Post Reply
         $printUrl = "<a class='btn btn-default btn-info btn-thread-print" . ($url ? "" : " disabled") . "' "
 			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2045 . "'
-	           style='cursor: not-allowed; pointer-events: all !important;'"  . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('fas-print')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
+	           style='cursor: not-allowed; pointer-events: all !important;'" . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('fas-print')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
                        
         if(is_null($this->postInfo['thread_start'])) return $printUrl;
  

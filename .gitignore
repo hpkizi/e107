@@ -19,3 +19,5 @@ e107InstallLog.log
 
 
  
+e107_plugins/forum/forum_test.php
+e107_plugins/forum/forum_conf.php
