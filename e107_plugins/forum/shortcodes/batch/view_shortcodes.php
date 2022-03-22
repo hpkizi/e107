@@ -572,16 +572,17 @@ class plugin_forum_view_shortcodes extends e_shortcode
         $pref_email_item_class = e107::getConfig()->get('email_item_class', e_UC_MEMBER);
         
         $url = '';
+        $cursor = " style='cursor: not-allowed; pointer-events: all !important;'";
 
 		if(check_class(varset($pref_email_item_class,e_UC_MEMBER)))
 		{
 			$url = e_HTTP . "email.php?plugin:forum." . $this->var['thread_id'];
+            $cursor = '';
 		}
         
         // the same code as in Post Reply
         $emailUrl = "<a class='btn btn-default btn-info btn-thread-email" . ($url ? "" : " disabled") . "' "
-			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2044 . "'
-	           style='cursor: not-allowed; pointer-events: all !important;'"  . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
+			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2044 ."'". $cursor  . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
     
         //outside posts inside template
         if(is_null($this->postInfo['thread_start'])) return $emailUrl;
@@ -601,13 +602,14 @@ class plugin_forum_view_shortcodes extends e_shortcode
         
         // the same code as in Post Reply
         $printUrl = "<a class='btn btn-default btn-info btn-thread-print" . ($url ? "" : " disabled") . "' "
-			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2045 . "'
-	           style='cursor: not-allowed; pointer-events: all !important;'" . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('fas-print')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
-                       
+			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2045 ."'". $cursor  . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('fas-print')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
+        
+		//outside posts inside template	
         if(is_null($this->postInfo['thread_start'])) return $printUrl;
  
+		//for first post 
         if(!empty($this->postInfo['thread_start'])) return $printUrl;
-	 
+		
         //	return e107::getParser()->parseTemplate("{PRINT_ITEM=" . LAN_FORUM_2045 . "^plugin:forum.{$this->postInfo['post_thread']}}");	 
 	}
 
