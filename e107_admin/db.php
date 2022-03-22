@@ -184,6 +184,10 @@ class system_tools
 		if(deftrue('e_DEVELOPER'))
 		{
 			$this->_options['multisite'] = array('diz'=>"<span class='label label-warning'>".DBLAN_114."</span>", 'label'=> 'Multi-Site' , 'icon'=>'fas-clone.glyph');
+            
+        }
+        
+        if(getperms('0')) {    
 			$this->_options['github'] = array('diz'=>"<span class='label label-warning'>".DBLAN_114."</span> ".DBLAN_115."", 'label'=> DBLAN_112, 'icon'=>'fab-github.glyph' );
 		}
 
@@ -333,16 +337,19 @@ class system_tools
 		$mes = e107::getMessage();
 		$pref = e107::pref();
 
-		if(empty($pref['developer']))
+		if(!getperms('0'))
 		{
 			e107::getMessage()->addError("Developer mode has to be enabled in order to use this functionality!");
 			e107::getRender()->tablerender(DBLAN_10.SEP.DBLAN_112, $mes->render());
 			return;
 		}
+        
+		e107::getMessage()->addWarning("Be aware that you are not syncing with official git repo!");
+		e107::getRender()->tablerender(DBLAN_10.SEP.DBLAN_112, $mes->render());
 
 		// Check for minimum required PHP version, and display warning instead of sync button to avoid broken functionality after syncing
 		// MIN_PHP_VERSION constant only defined in install.php, thus hardcoded here
-		$min_php_version = '5.6'; 
+		$min_php_version = '7.4'; 
 		
 		if(version_compare(PHP_VERSION, $min_php_version, "<"))
 		{
