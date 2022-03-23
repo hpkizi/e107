@@ -848,9 +848,7 @@ class e107forum
 		{
 			return -1;
 		}
-
-
-
+ 
 		$addUserPostCount = true;
 		$result = false;
 
@@ -867,10 +865,10 @@ class e107forum
 
 		$info['data']['post_id'] = $postId; // Append last inserted ID to data array for passing it to event callbacks.
 
-
-		$triggerData = $info['data'];
-	  	e107::getEvent()->trigger('user_forum_post_created', $triggerData);
-
+        if($updateThread) {
+    		$triggerData = $info['data'];
+    	  	e107::getEvent()->trigger('user_forum_post_created', $triggerData);
+        }
 	  	ob_start(); // precaution so json doesn't break.
 		$this->trackEmail($info['data']);
 		ob_end_clean();
@@ -1012,6 +1010,8 @@ class e107forum
 			if($postInfo !== false)
 			{
 				$postInfo['post_thread'] = $newThreadId;
+                
+ 
 
 				if(!$newPostId = $this->postAdd($postInfo, false))
 				{
