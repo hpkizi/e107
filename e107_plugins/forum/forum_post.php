@@ -1160,15 +1160,15 @@ class forum_post_handler
 			if (USER)
 			{
 				$postInfo['post_user']              = USERID;
-				$threadInfo['thread_lastuser']      = USERID;
-				$threadInfo['thread_user']          = USERID;
-				$threadInfo['thread_lastuser_anon'] = '';
+			//	$threadInfo['thread_lastuser']      = USERID;
+			 	$threadInfo['thread_user']          = USERID;
+			//	$threadInfo['thread_lastuser_anon'] = '';
 			}
 			else
 			{
 				$postInfo['post_user_anon']         = $_POST['anonname'];
-				$threadInfo['thread_lastuser_anon'] = $_POST['anonname'];
-				$threadInfo['thread_user_anon']     = $_POST['anonname'];
+			//	$threadInfo['thread_lastuser_anon'] = $_POST['anonname'];
+			 	$threadInfo['thread_user_anon']     = $_POST['anonname'];
 			}
 
 			$time = time();
@@ -1177,7 +1177,7 @@ class forum_post_handler
 			$postInfo['post_datestamp']             = $time;
 			$postInfo['post_ip']                    = e107::getIPHandler()->getIP(FALSE);
 
-			$threadInfo['thread_lastpost']          = $time;
+			//$threadInfo['thread_lastpost']          = $time;
 
 			if(isset($_POST['no_emote']))
 			{
