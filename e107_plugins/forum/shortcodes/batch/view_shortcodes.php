@@ -491,7 +491,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
 				if(deftrue('BOOTSTRAP'))
 				{
 
-					return "<ul class='thumbnails list-unstyled list-inline'><li>" . implode("</li><li>", $images) . "</li></ul>" . vartrue($txt);
+					return "<ul class='row thumbnails list-unstyled list-inline'><li class='col-md-4'>" . implode("</li><li>", $images) . "</li></ul>" . vartrue($txt);
 				}
 				else
 				{
@@ -963,6 +963,14 @@ class plugin_forum_view_shortcodes extends e_shortcode
             $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
             ++$link_count;
         }
+ 
+        // delete attachment the same rules as edit + delete - clear this!
+        if ((USER && isset($this->postInfo['post_user']) && $this->postInfo['post_user'] == USERID && $this->var['thread_active']) && isset($this->postInfo['post_attachments'] )) {
+            if ($this->var['thread_active'] && empty($this->postInfo['thread_start'])) {
+                $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_REQUEST_URI . "' data-forum-action='deletepostattachments'  data-confirm='" . LAN_JSCONFIRM . "' data-forum-post='" . $postID . "'>" . LAN_DELETE . " attachment " . $tp->toGlyph('fa-trash') . "</a></li>";
+                ++$link_count;
+            }
+        }       
 
         // Delete own post, if it is the last in the thread
         if ($this->thisIsTheLastPost && USER && $this->thread->threadInfo['thread_lastuser'] == USERID) {

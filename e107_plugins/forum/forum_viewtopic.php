@@ -88,7 +88,7 @@ $thread->init();
 $moderatorUserIds = $forum->getModeratorUserIdsByThreadId($thread->threadInfo['thread_id']);
 define('MODERATOR', (USER && in_array(USERID, $moderatorUserIds) || getperms('0') ));
 
-
+ 
 if(e_AJAX_REQUEST)
 {
 	if(varset($_POST['action']) == 'quickreply')
@@ -108,6 +108,10 @@ if(e_AJAX_REQUEST)
 	else if(varset($_POST['action']) == 'deletepost')
 	{
 		$forum->usersLastPostDeletion();
+	}
+    else if(varset($_POST['action']) == 'deletepostattachments')
+	{
+        $forum->usersPostAttachmentsDeletion();
 	}
 }
 

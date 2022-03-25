@@ -447,7 +447,47 @@ class e107forum
 		exit();
 	}
 
+	/**
+	 * Allow a user to delete their own attachments.
+	 */
+	function usersPostAttachmentsDeletion()
+	{
+		$ret = array('hide' => false, 'msg' => LAN_FORUM_7008, 'status' => 'error');
+		$actionAllowed = false;
 
+		if (isset($_POST['post']) && is_numeric($_POST['post']))
+		{
+			$postId = intval($_POST['post']);
+			$sql = e107::getDb();
+			$query = "SELECT fp.post_user
+                  FROM #forum_post AS fp
+                  WHERE fp.post_id = ". $postId;
+			if ($sql->gen($query) > 0)
+			{
+				$row = $sql->fetch();
+				if (USERID == $row['post_user']) $actionAllowed = true;
+			}
+		}
+ 
+		if ($actionAllowed && $_POST['action'] == 'deletepostattachments')
+		{
+			if ($this->postDeleteAttachments("post", $postId))
+			{
+				$ret['msg'] 	= ''.LAN_FORUM_8021.' attachments #'.$postId;
+				$ret['hidea'] 	= true;
+				$ret['status'] 	= 'ok';
+			}
+			else
+			{
+				$ret['msg'] 	= "".LAN_FORUM_8022." attachments #".$postId;
+				$ret['status'] 	= 'error';
+			}
+		}
+        
+		echo json_encode($ret);
+		exit();
+	}
+    
 	/**
 	 * get user ids with moderator permissions for the given $postId
 	 * @param $postId id of a forum post
@@ -548,13 +588,13 @@ class e107forum
 				case 'delete':
 					if($this->threadDelete($threadId))
 					{
-						$ret['msg'] 	= ''.LAN_FORUM_8020.' #'.$threadId;
+						$ret['msg'] 	= ''.LAN_FORUM_8020.' #'.$threadId;  //define("LAN_FORUM_8020", "Deleted topic");
 						$ret['hide'] 	= true; 
 						$ret['status'] 	= 'ok';	
 					}
 					else
 					{
-						$ret['msg'] 	= LAN_FORUM_8019;
+						$ret['msg'] 	= LAN_FORUM_8019;  //define("LAN_FORUM_8019", "Couldn't delete the topic!");
 						$ret['status'] 	= 'error';	
 					}
 				break;
@@ -570,13 +610,35 @@ class e107forum
 					
 					if($this->postDelete($postId))
 					{
-						$ret['msg'] 	= ''.LAN_FORUM_8021.' #'.$postId;
+						$ret['msg'] 	= ''.LAN_FORUM_8021.' #'.$postId;  //define("LAN_FORUM_8021", "Deleted post");
 						$ret['hide'] 	= true; 
 						$ret['status'] 	= 'ok';	
 					}
 					else
 					{
-						$ret['msg'] 	= "".LAN_FORUM_8022." #".$postId;
+						$ret['msg'] 	= "".LAN_FORUM_8022." #".$postId;  //define("LAN_FORUM_8022", "Couldn't delete post");
+						$ret['status'] 	= 'error';	
+					}
+				break;
+                
+                case 'deletepostattachments':
+					if(!$postId)
+					{
+						// echo "No Post";
+						// exit;
+						$ret['msg'] 	= LAN_FORUM_7008;
+						$ret['status'] 	= 'error';		
+					}
+					
+					if($this->postDeleteAttachments("post", $postId))
+					{
+						$ret['msg'] 	= ''.LAN_FORUM_8021.' attachments #'.$postId;
+						$ret['hidea'] 	= true; 
+						$ret['status'] 	= 'ok';	
+					}
+					else
+					{
+						$ret['msg'] 	= "".LAN_FORUM_8022." attachments #".$postId;
 						$ret['status'] 	= 'error';	
 					}
 				break;
@@ -1421,6 +1483,8 @@ class e107forum
 
 	   		// Empty the post_attachments field for this post in the database (prevents loop when deleting entire thread)
 	   		$sql->update("forum_post", "post_attachments = NULL WHERE post_id = ".$id);
+            
+            return true;
 
 		}
 	}

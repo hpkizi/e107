@@ -300,15 +300,46 @@ class plugin_forum_post_shortcodes extends e_shortcode
 	{
 		$pref = e107::getPref();
 		$tp = e107::getParser();
+	    $fl = e107::getFile();
 
 		global $forum;
-		
+ 
 		//. <div>".($pref['image_post'] ? "Attach file / image" : "Attach file")."</div>
 		$allowedFileTypes = e107::getFile()->getAllowedFileTypes();
 
 		$tooltip = LAN_FORUM_3016.": ".implode(', ',array_keys($allowedFileTypes))."\n".LAN_FORUM_3017."\n".LAN_FORUM_3018.": ".(vartrue($max_upload_size) ? $max_upload_size." ".LAN_FORUM_3019 : ini_get('upload_max_filesize'));
 
         $info = "<div class='alert alert-info'>".$tooltip."</div>";
+        
+        /* existing attachments */
+        if($this->var['post_attachments']) {
+           $data = e107::unserialize($this->var['post_attachments']);
+           $existing = '';
+
+			if(!empty($data['img']))
+			{
+				$existing .= "<ul class='list-unstyled'>";
+				foreach($data['img'] as $v)
+				{
+					$existing .= "<li><span class='label label-primary'>".$tp->toGlyph('fa-file-image-o').$v['name']."</span> <small>".$fl->file_size_encode($v['size'])."</small></li>";
+				}
+
+				$existing .= "</ul>";
+			}
+
+			if(!empty($data['file']))
+			{
+				$existing .= "<ul class='list-unstyled'>";
+				foreach($data['file'] as $v)
+				{
+					$existing .= "<li><span class='label label-primary'>".$tp->toGlyph('fa-file-text-o').$v['name']."</span> <small>".$fl->file_size_encode($v['size'])."</small></li>";
+				}
+
+				$existing .= "</ul>";
+			}
+                    
+        }
+        
   	    $fileattach = "
   			<div>	
   				<div id='fiupsection'>
@@ -323,7 +354,7 @@ class plugin_forum_post_shortcodes extends e_shortcode
         
         $add_fileattach = "<input class='tbox e-tip' type='button' name='addoption' value='".LAN_FORUM_3020."' onclick=\"duplicateHTML('fiupopt','fiupsection')\" />";
         
-        $text = $info.$fileattach.$add_fileattach;
+        $text = $existing.$info.$fileattach.$add_fileattach;
         
 		//<input class='btn btn-default button' type='button' name='addoption' value=".LAN_FORUM_3020."  />
 		if(is_object($this->forum) &&  $this->forum->prefs->get('attach') && (check_class($pref['upload_class']) || getperms('0')))
