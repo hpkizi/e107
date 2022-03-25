@@ -308,21 +308,27 @@ class plugin_forum_post_shortcodes extends e_shortcode
 
 		$tooltip = LAN_FORUM_3016.": ".implode(', ',array_keys($allowedFileTypes))."\n".LAN_FORUM_3017."\n".LAN_FORUM_3018.": ".(vartrue($max_upload_size) ? $max_upload_size." ".LAN_FORUM_3019 : ini_get('upload_max_filesize'));
 
-		$fileattach = "
-			<div>	
-				<div id='fiupsection'>
-				<span id='fiupopt'>
-					<input class='tbox e-tip' title=\"".$tp->toAttribute($tooltip)."\" name='file_userfile[]' type='file' size='47'  multiple='multiple' />
-				</span>
-				</div>
-
-			</div>
-		
+        $info = "<div class='alert alert-info'>".$tooltip."</div>";
+  	    $fileattach = "
+  			<div>	
+  				<div id='fiupsection'>
+  				<span id='fiupopt'>
+  					<input class='tbox e-tip' title=\"".$tp->toAttribute($tooltip)."\" name='file_userfile[]' type='file' size='47'  />
+  				</span>
+  				</div>
+  
+  			</div>
+  		
 		";	
+        
+        $add_fileattach = "<input class='tbox e-tip' type='button' name='addoption' value='".LAN_FORUM_3020."' onclick=\"duplicateHTML('fiupopt','fiupsection')\" />";
+        
+        $text = $info.$fileattach.$add_fileattach;
+        
 		//<input class='btn btn-default button' type='button' name='addoption' value=".LAN_FORUM_3020."  />
 		if(is_object($this->forum) &&  $this->forum->prefs->get('attach') && (check_class($pref['upload_class']) || getperms('0')))
 		{
-			return $fileattach;
+			return $text;
 		}
 		
 	}
