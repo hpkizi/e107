@@ -503,6 +503,13 @@
 		{
 			$backtrace = debug_backtrace();
 			$caller = $backtrace[1]['function'];
+            
+            if(empty($this->var['thread_total_replies']))
+      		{   
+
+      			return ''; 
+      		}
+            
 			if($this->var['forum_lastpost_info'])
 			{
 				//	global $gen;
@@ -622,7 +629,14 @@
 
 		function threadlastpostdata()
 		{
-			$backtrace = debug_backtrace();
+			//see newforumposts_menu         
+        	if(empty($this->var['thread_total_replies']))
+      		{   
+
+      			return ''; 
+      		}
+        
+            $backtrace = debug_backtrace();
 			$caller = $backtrace[1]['function'];
 //	if($this->var['thread_views'])
 //($this->var['thread_total_replies']?:"0")
