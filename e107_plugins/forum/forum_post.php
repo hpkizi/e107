@@ -1514,7 +1514,7 @@ class forum_post_handler
 			$threadVals['thread_sticky'] = (MODERATOR ? (int)$_POST['threadtype'] : 0);
 
 			$this->forumObj->threadUpdate($this->data['post_thread'], $threadVals);
-			$this->forumObj->postUpdate($this->data['post_id'], $postVals);
+			//$this->forumObj->postUpdate($this->data['post_id'], $postVals);
 
 			e107::getCache()->clear('newforumposts');
 
