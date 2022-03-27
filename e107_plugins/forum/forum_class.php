@@ -1193,11 +1193,13 @@ class e107forum
 		{
 			e107::getMessage()->addDebug("Post Update Failed: ".print_a($info,true));
 		}
-
-		$triggerData = $postInfo;
-		$triggerData['post_id'] = intval($postId);
-	  	e107::getEvent()->trigger('user_forum_post_updated', $triggerData);
-	}
+        
+        if($postInfo['update_reply']) {
+		  $triggerData = $postInfo;
+		  $triggerData['post_id'] = intval($postId);
+	  	  e107::getEvent()->trigger('user_forum_post_updated', $triggerData);
+	    }
+    }
 
 
 

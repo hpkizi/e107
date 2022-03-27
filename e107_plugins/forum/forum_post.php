@@ -1505,6 +1505,7 @@ class forum_post_handler
 			$postVals['post_edit_datestamp']    = time();
 			$postVals['post_edit_user']         = USERID;
 			$postVals['post_entry']             = $_POST['post'];
+            $postVals['update_reply']           = false;
 
 			if(!empty($_POST['subject']))
 			{
@@ -1558,6 +1559,7 @@ class forum_post_handler
 		$postVals['post_edit_datestamp']    = time();
 		$postVals['post_edit_user']         = USERID;
 		$postVals['post_entry']             = $_POST['post'];
+        $postVals['update_reply']          = true;
 
 		if($uploadResult = $this->processAttachments())
 		{
