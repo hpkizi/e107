@@ -977,7 +977,7 @@ class e107forum
 
 			$triggerData = $info['data'];
 			$triggerData['thread_id'] = $postInfo['post_thread'];
-		  	e107::getEvent()->trigger('user_forum_topic_updated', $triggerData);
+		  	//e107::getEvent()->trigger('user_forum_topic_updated', $triggerData);
 		}
 
 		if(($result || !$updateThread) && $updateForum)
