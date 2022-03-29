@@ -501,6 +501,11 @@
 
 		function subinfo()
 		{
+			if(empty($this->var['thread_total_replies']))
+			{   
+    			return ''; 
+			}
+			
 			$backtrace = debug_backtrace();
 			$caller = $backtrace[1]['function'];
             
@@ -629,14 +634,12 @@
 
 		function threadlastpostdata()
 		{
-			//see newforumposts_menu         
-        	if(empty($this->var['thread_total_replies']))
-      		{   
-
-      			return ''; 
-      		}
-        
-            $backtrace = debug_backtrace();
+			if(empty($this->var['thread_total_replies']))
+			{   
+    			return ''; 
+			}
+			
+			$backtrace = debug_backtrace();
 			$caller = $backtrace[1]['function'];
 //	if($this->var['thread_views'])
 //($this->var['thread_total_replies']?:"0")
