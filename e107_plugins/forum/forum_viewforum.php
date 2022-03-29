@@ -365,6 +365,9 @@ function init()
     elseif($forumId == 70) {
     	$threadList = $forum->forumGetThreadsByAlphabet($forumId, $threadFrom, $view, $threadFilter);    
     }
+    elseif($forumId == 73) {
+    	$threadList = $forum->forumGetThreadsByAlphabet($forumId, $threadFrom, $view, $threadFilter);    
+    }
     else {
     	$threadList = $forum->forumGetThreads($forumId, $threadFrom, $view, $threadFilter);
     }
