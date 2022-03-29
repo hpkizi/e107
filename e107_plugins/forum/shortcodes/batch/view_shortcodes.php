@@ -952,7 +952,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
         if (USER) { // Report
             $urlReport = e107::url('forum', 'post') . "?f=report&amp;id=" . $threadID . "&amp;post=" . $postID;
             //	$urlReport = $this->e107->url->create('forum/thread/report', "id={$threadID}&post={$postID}");
-            $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $urlReport . "'>" . LAN_FORUM_2046 . " " . $tp->toGlyph('fa-flag') . "</a></li>";
+            $text .= "<li class='text-right text-end float-right w-100'><a class='dropdown-item' href='" . $urlReport . "'>" . LAN_FORUM_2046 . " " . $tp->toGlyph('fa-flag') . "</a></li>";
             ++$link_count;
         }
 
@@ -960,14 +960,14 @@ class plugin_forum_view_shortcodes extends e_shortcode
         if ((USER && isset($this->postInfo['post_user']) && $this->postInfo['post_user'] == USERID && $this->var['thread_active'])) {
             $url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID;
             //$url = e107::getUrl()->create('forum/thread/edit', array('id' => $threadID, 'post'=>$postID));
-            $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
+            $text .= "<li class='text-right text-end float-right w-100'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
             ++$link_count;
         }
  
         // delete attachment the same rules as edit + delete - clear this!
         if ((USER && isset($this->postInfo['post_user']) && $this->postInfo['post_user'] == USERID && $this->var['thread_active']) && isset($this->postInfo['post_attachments'] )) {
             if ($this->var['thread_active'] && empty($this->postInfo['thread_start'])) {
-                $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_REQUEST_URI . "' data-forum-action='deletepostattachments'  data-confirm='" . LAN_JSCONFIRM . "' data-forum-post='" . $postID . "'>" . LAN_DELETE . " attachment " . $tp->toGlyph('fa-trash') . "</a></li>";
+                $text .= "<li class='text-right text-end float-right w-100'><a class='dropdown-item' href='" . e_REQUEST_URI . "' data-forum-action='deletepostattachments'  data-confirm='" . LAN_JSCONFIRM . "' data-forum-post='" . $postID . "'>" . LAN_DELETE . " attachment " . $tp->toGlyph('fa-trash') . "</a></li>";
                 ++$link_count;
             }
         }       
@@ -977,7 +977,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
             /* only show delete button when post is not the initial post of the topic
              * AND if this post is the last post in the thread */
             if ($this->var['thread_active'] && empty($this->postInfo['thread_start'])) {
-                $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . e_REQUEST_URI . "' data-forum-action='deletepost'  data-confirm='" . LAN_JSCONFIRM . "' data-forum-post='" . $postID . "'>" . LAN_DELETE . " " . $tp->toGlyph('fa-trash') . "</a></li>";
+                $text .= "<li class='text-right text-end float-right w-100'><a class='dropdown-item' href='" . e_REQUEST_URI . "' data-forum-action='deletepost'  data-confirm='" . LAN_JSCONFIRM . "' data-forum-post='" . $postID . "'>" . LAN_DELETE . " " . $tp->toGlyph('fa-trash') . "</a></li>";
                 ++$link_count;
             }
         }
@@ -985,7 +985,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
         if (isset($this->postInfo['post_forum']) && $this->forum->checkperm($this->postInfo['post_forum'], 'post')) {
             $url = e107::url('forum', 'post') . "?f=quote&amp;id=" . $threadID . "&amp;post=" . $postID;
             //$url = e107::getUrl()->create('forum/thread/quote', array('id' => $threadID, 'post'=>$postID));
-            $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_FORUM_2041 . " " . $tp->toGlyph('fa-share-alt') . "</a></li>";
+            $text .= "<li class='text-right text-end float-right w-100'><a class='dropdown-item' href='" . $url . "'>" . LAN_FORUM_2041 . " " . $tp->toGlyph('fa-share-alt') . "</a></li>";
             ++$link_count;
             //	$text .= "<li class='text-right float-right'><a href='".e107::getUrl()->create('forum/thread/quote', array('id' => $postID))."'>".LAN_FORUM_2041." ".$tp->toGlyph('share-alt')."</a></li>";
         }
@@ -1002,7 +1002,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
                 $url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID;
                 // $url = e107::getUrl()->create('forum/thread/edit', array('id' => $threadID, 'post'=>$postID));
 
-                $text .= "<li class='text-right text-end float-right'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
+                $text .= "<li class='text-right text-end float-right w-100'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
  
                 // only show delete button when post is not the initial post of the topic and not user
                 //	if(!$this->forum->threadDetermineInitialPost($postID))
