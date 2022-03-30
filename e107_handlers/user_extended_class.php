@@ -1309,9 +1309,11 @@ class e107_user_extended
 
 				$order = !empty($choices[3]) ? "ORDER BY " . $tp->toDB($choices[3], true) : "";
 
-				if($sql->select($tp->toDB($choices[0], true), $tp->toDB($choices[1], true) . "," . $tp->toDB($choices[2], true), "1 $order"))
+                $uef_where = !empty($choices[4]) ?   $tp->toDB($choices[4], true) : "1";
+   
+				if($sql->select($tp->toDB($choices[0], true), $tp->toDB($choices[1], true) . "," . $tp->toDB($choices[2], true), $uef_where." ".$order))
 				{
-					$choiceList = $sql->db_getList('ALL', false);
+				    $choiceList = $sql->db_getList('ALL', false);
 					$ret = "<select id='{$fid}' {$include} name='{$fname}' {$required}  {$title}>\n";
 					$ret .= "<option value=''>&nbsp;</option>\n";  // ensures that the user chose it.
 
