@@ -702,7 +702,8 @@ class plugin_forum_view_shortcodes extends e_shortcode
 
 		if(USER && !empty($this->postInfo['post_user']) && $this->postInfo['post_user'] == USERID && $this->var['thread_active'])
 		{
-			$qry = array('f' => 'edit', 'id' => $this->postInfo['post_thread'], 'post' => $this->postInfo['post_id']);
+			$page= (varset($_GET['p']) ? (int)$_GET['p'] : 1);
+            $qry = array('f' => 'edit', 'id' => $this->postInfo['post_thread'], 'post' => $this->postInfo['post_id'], 'p' => $page);
 			$editURL = e107::url('forum', 'post', null, array('query' => $qry));
 
 			return "<a class='e-tip' href='" . $editURL . "' title=\"" . LAN_EDIT . "\">" . IMAGE_edit . '</a> ';
@@ -941,6 +942,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
         $tp = e107::getParser();
         $threadID = !empty($this->postInfo['post_thread']) ? $this->postInfo['post_thread'] : 0;
         $postID = !empty($this->postInfo['post_id']) ? $this->postInfo['post_id'] : 0;
+        $page= (varset($_GET['p']) ? (int)$_GET['p'] : 1);
         // {EMAILITEM} {PRINTITEM} {REPORTIMG}{EDITIMG}{QUOTEIMG}
 
         $link_count = 0;  // count if there is at least one link in dropdown, if not, disable button 
@@ -958,7 +960,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
 
         // Edit
         if ((USER && isset($this->postInfo['post_user']) && $this->postInfo['post_user'] == USERID && $this->var['thread_active'])) {
-            $url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID;
+            $url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID . "&amp;p=".$page;
             //$url = e107::getUrl()->create('forum/thread/edit', array('id' => $threadID, 'post'=>$postID));
             $text .= "<li class='text-right text-end float-right w-100'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";
             ++$link_count;
@@ -999,7 +1001,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
             //	print_a($this->postInfo);
 
             if ((USER && isset($this->postInfo['post_user']) && $this->postInfo['post_user'] != USERID && $this->var['thread_active'])) {
-                $url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID;
+                $url = e107::url('forum', 'post') . "?f=edit&amp;id=" . $threadID . "&amp;post=" . $postID . "&amp;p=".$page;
                 // $url = e107::getUrl()->create('forum/thread/edit', array('id' => $threadID, 'post'=>$postID));
 
                 $text .= "<li class='text-right text-end float-right w-100'><a class='dropdown-item' href='" . $url . "'>" . LAN_EDIT . " " . $tp->toGlyph('fa-edit') . "</a></li>";

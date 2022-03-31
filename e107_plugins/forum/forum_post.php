@@ -1518,7 +1518,15 @@ class forum_post_handler
 
 			e107::getCache()->clear('newforumposts');
 
-			$url = e107::url('forum','topic',$this->data);
+            $page= (varset($_GET['p']) ? (int)$_GET['p'] : 1);
+                
+            if($page > 1) 
+            {
+                    $url = e107::url('forum','topic',$this->data)."?p=".$page; 
+            }
+            else {
+                $url = e107::url('forum','topic',$this->data);
+            }
 
 			$this->redirect($url);
 			exit;
