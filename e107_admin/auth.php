@@ -285,8 +285,8 @@ class auth
 		if(e_QUERY == 'failed')
 		{
 			e107::lan('core', 'login');
-			$text .= "<div class='alert alert-danger'>".LAN_LOGIN_21."</div>";
-			$text .= "<script type='text/javascript'>
+			$text .= e107::getMessage()->render(); // see e107_handlers/login.php L622
+			$text .= "<script>
 				window.setTimeout(function() {
 			    $('.alert').fadeTo(500, 0).slideUp(500, function(){
 			        $(this).remove();

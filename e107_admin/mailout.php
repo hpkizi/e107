@@ -2435,7 +2435,7 @@ function sendImmediately($id)
 	//Initiate the Function in the Background. 
 
 	$text .= "
-	<script type='text/javascript'>
+	<script>
 	
 	//<![CDATA[
 		new Ajax.Updater('mstatus', '".e_SELF."?mode=process&id=".intval($id)."', {
@@ -2447,7 +2447,7 @@ function sendImmediately($id)
 	
 	// Update the Progress in real-time. 
 	$text .= "
-	<script type='text/javascript'>
+	<script>
 	//<![CDATA[
 
 		x = new Ajax.PeriodicalUpdater('progress', '".e_SELF."?mode=progress&id=".intval($id)."',
@@ -2734,7 +2734,7 @@ if(!function_exists('headerjs'))
 	{
 
 		$text = "
-		<script type='text/javascript'>
+		<script>
 			
 	
 		function bouncedisp(type)

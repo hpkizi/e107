@@ -399,7 +399,7 @@ else
 
 // end -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-echo "<script type=\"text/javascript\">
+echo "<script>
 	function confirm_(mode, forum_id, thread_id, thread) {
 	if (mode == 'Thread') {
 	return confirm(" . $tp->toJSON(LAN_FORUM_2009) . ");
