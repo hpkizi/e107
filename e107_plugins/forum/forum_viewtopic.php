@@ -646,6 +646,15 @@ class e107ForumThread
 
 		$totalPosts = $this->threadInfo['thread_total_replies'] + 1; // add +1 for the original post. ie. not a reply.
 		$this->pages = ceil(($totalPosts)  / $this->perPage);
+        
+        if($this->page > $this->pages) {
+            $this->page = $this->pages;
+        }
+        
+        if($this->page < 1) {
+            $this->page = 1;
+        }
+
 		$this->noInc = false;
 	}
 
