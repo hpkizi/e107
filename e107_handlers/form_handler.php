@@ -2497,8 +2497,8 @@ class e_form
             }
         
         }
-        else {
-        
+        else 
+        {
             $ret .=	e107::getBB()->renderButtons($template,$help_tagid);
         }
         
