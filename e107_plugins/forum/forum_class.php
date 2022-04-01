@@ -2564,7 +2564,7 @@ class e107forum
 		
 		if(deftrue('BOOTSTRAP'))
 		{
-			$BREADCRUMB =  $frm->breadcrumb($breadcrumb);
+			$BREADCRUMB =  $frm->breadcrumb($breadcrumb, true);
 			e107::breadcrumb($breadcrumb); // assign to {---BREADCRUMB---}
 		}
 		
