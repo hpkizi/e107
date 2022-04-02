@@ -567,30 +567,38 @@ class plugin_forum_view_shortcodes extends e_shortcode
 
 	function sc_emailitem()
 	{
+
+		//check if emailing is allowed at all 
+		$pref_email_item_class = e107::getConfig()->get('email_item_class', e_UC_MEMBER);
  
-        //check if emailing is allowed at all 
-        $pref_email_item_class = e107::getConfig()->get('email_item_class', e_UC_MEMBER);
-        
-        $url = '';
-        $cursor = " style='cursor: not-allowed; pointer-events: all !important;'";
+		$url = '';
+		$cursor = " style='cursor: not-allowed; pointer-events: all !important;'";
 
 		if(check_class(varset($pref_email_item_class,e_UC_MEMBER)))
 		{
 			$url = e_HTTP . "email.php?plugin:forum." . $this->var['thread_id'];
-            $cursor = '';
+			$cursor = '';
 		}
-        
-        // the same code as in Post Reply
-        $emailUrl = "<a class='btn btn-default btn-info btn-thread-email" . ($url ? "" : " disabled") . "' "
+
+		//outside posts inside template
+		if(is_null($this->postInfo)) 
+		{
+			$url = e_HTTP . "email.php?plugin:forum." . $this->var['thread_id'];
+		}
+		//for first post
+		else {
+			$url = e_HTTP . "email.php?plugin:forum." . $this->postInfo['post_thread'];
+		}
+				
+		// the same code as in Post Reply
+		$emailUrl = "<a class='btn btn-default btn-info btn-thread-email" . ($url ? "" : " disabled") . "' "
 			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2044 ."'". $cursor  . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
     
-        //outside posts inside template
-        if(is_null($this->postInfo['thread_start'])) return $emailUrl;
-       
-        //for first post 
-        if(!empty($this->postInfo['thread_start']))  return $emailUrl;
- 
-         //return e107::getParser()->parseTemplate("{EMAIL_ITEM=" . LAN_FORUM_2044 . "^plugin:forum.{$this->postInfo['post_thread']}}");
+			
+		if(is_null($this->postInfo) || !empty($this->postInfo['thread_start']))
+		{
+			return $emailUrl;
+		} 
  
 	}
 
