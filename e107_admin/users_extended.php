@@ -123,9 +123,7 @@ if(varset($_GET['mode']) == "ajax")
 					}
 					$text .= "</select></td></tr>";
 				}
-                
-                $text .= "</td><td> WHERE (SQL)</td><td>";
-                $text .= "</td></tr>";
+
 				$text .= "</table>";
 
 
@@ -472,7 +470,7 @@ e107::js('footer-inline', js());
 
 			if($new_data['user_extended_struct_type'] == EUF_DB_FIELD)
 			{
-		        $new_data['user_extended_struct_values'] = array($new_data['table_db'],$new_data['field_id'],$new_data['field_value'],$new_data['field_order'], $new_data['field_where']);
+		        $new_data['user_extended_struct_values'] = array($new_data['table_db'],$new_data['field_id'],$new_data['field_value'],$new_data['field_order']);
 			}
 
 			if(isset($new_data['user_extended_struct_values']))
@@ -990,7 +988,7 @@ e107::js('footer-inline', js());
 
 			$text = "<div id='values' style='display:$val_hide'>\n";
 			$text .= "<div id='value_container' >\n";
-			$curVals = explode(",",varset($current['user_extended_struct_values']));   
+			$curVals = explode(",",varset($current['user_extended_struct_values']));
 			if(count($curVals) == 0)
 			{
 				$curVals[]='';
@@ -1019,7 +1017,9 @@ e107::js('footer-inline', js());
 			}
 
 // End of Values. --------------------------------------
- 
+
+
+
 
 			$db_hide = ($current['user_extended_struct_type'] == EUF_DB_FIELD) ? "block" : "none";
 
@@ -1092,9 +1092,7 @@ e107::js('footer-inline', js());
 					}
 				}
 				$text .= " </select></td></tr>";
-                $text .= "</td><td>WHERE (SQL) </td><td>";
-                $text .= "<input id='{$fid}' type='text' name='field_where'  value=\"$curVals[4]\" class=\"tbox form-control input-xxlarge ui-state-valid\" />";
-                $text .= "</td></tr>";
+
 			}
 			$text .= "</table></div>";
 // ---------------------------------------------------------
