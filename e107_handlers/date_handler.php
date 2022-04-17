@@ -11,8 +11,12 @@
 if (!defined('e107_INIT')) { exit; }
 
 //e107::includeLan(e_LANGUAGEDIR.e_LANGUAGE."/lan_date.php");
-e107::coreLan('date'); 
+e107::coreLan('date');
 
+
+/**
+ *
+ */
 class e_date
 {
 	
@@ -140,9 +144,9 @@ class e_date
 	 */
 	function convert_date($datestamp, $mask = '')
 	{
- 	
-    	$datestamp = (int) $datestamp;
-        if($datestamp == 0) return "";
+		$datestamp = (int) $datestamp;
+		if($datestamp == 0) return "";
+
 		if(empty($mask))
 		{
 			$mask = 'long';
@@ -597,7 +601,8 @@ class e_date
 	function computeLapse($older_date, $newer_date = FALSE, $mode = FALSE, $show_secs = TRUE, $format = 'long') 
 	{
 		$older_date = (int) $older_date;
-        if($older_date == 0) return "";
+		if($older_date == 0) return "";
+
 		if(empty($newer_date))
 		{
 			$newer_date = time();
@@ -796,9 +801,10 @@ class e_date
 	}
 
 
-
-
-
+	/**
+	 * @param $mode
+	 * @return bool
+	 */
 	function supported($mode = FALSE)
 	{
 		$strftimeFormats = array(
@@ -911,6 +917,10 @@ class e_date
 		return in_array($timezone, timezone_identifiers_list());
 	}
 
+	/**
+	 * @param $datestamp
+	 * @return array
+	 */
 	public function dateFormats($datestamp = null)
 	{
 		if(empty($datestamp))
@@ -938,7 +948,8 @@ class e_date
 						
 						"%Y-%m-%d",
 						"%d-%m-%Y",
-						"%m/%d/%Y"
+						"%m/%d/%Y",
+						"%d.%m.%Y"
 					);
 
 		$ret = [];
@@ -951,6 +962,10 @@ class e_date
 		return $ret;
 	}
 
+	/**
+	 * @param $datestamp
+	 * @return array
+	 */
 	function timeFormats($datestamp=null)
 	{
 		if(empty($datestamp))

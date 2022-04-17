@@ -55,6 +55,9 @@ class e_theme
 	const CACHETAG  = "Meta_theme";
 
 
+	/**
+	 * @param $options
+	 */
 	function __construct($options=array())
 	{
 		$options['force'] = isset($options['force']) ? $options['force'] : false;
@@ -79,6 +82,9 @@ class e_theme
 
 	}
 
+	/**
+	 * @return string[]
+	 */
 	function getCategoryList()
 	{
 		return self::$allowedCategories;
@@ -135,6 +141,9 @@ class e_theme
 		return $LAYOUT;
 	}
 
+	/**
+	 * @return void
+	 */
 	public static function showPreview()
 	{
 
@@ -157,7 +166,7 @@ class e_theme
 	/**
 	 * Return an array of theme library or stylesheet values (as defined in theme.xml) that match the desired scope.
 	 * @note New in v2.3.1+
-	 * @param string $type library | stylesheet
+	 * @param string $type library | css
 	 * @param string $scope  front | admin | all | auto (as defined in theme.xml)
 	 * @return array
 	 */
@@ -278,8 +287,7 @@ class e_theme
 	/**
 	 * Load library dependencies.
 	 *
-	 * @param string $scope
-	 *  front | admin | all | auto
+	 * @param string $scope  front | admin | all | auto
 	 */
 	public function loadLibrary($scope = 'auto')
 	{
@@ -293,12 +301,19 @@ class e_theme
 
 		$loaded = [];
 
+		$excludeCSS = (string) $this->cssAttribute('auto', 'exclude'); // current theme style
+
 		foreach($libraries as $name => $library)
 		{
 
 			if(empty($name))
 			{
 				continue;
+			}
+
+			if($name === $excludeCSS)
+			{
+				$library['files'] = 'js'; // load only JS, but not CSS since the style excluded it.
 			}
 
 			if($name === 'bootstrap' && !empty($library['version']))
@@ -397,6 +412,9 @@ class e_theme
 	}
 
 
+	/**
+	 * @return $this
+	 */
 	public function clearCache()
 	{
 		e107::getCache()->clear(self::CACHETAG, true);
@@ -404,6 +422,10 @@ class e_theme
 	}
 
 
+	/**
+	 * @param $text
+	 * @return array|string|string[]
+	 */
 	public function upgradeThemeCode($text)
 	{
 		$search = array();
@@ -502,16 +524,27 @@ class e_theme
 	 */
 	public function getFontAwesome()
 	{
+		return $this->getLibVersion('fontawesome');
+	}
+
+	/**
+	 * Returns the libarie's version of the currently loaded theme.
+	 * @param string $name eg. 'fontawesome' or 'bootstrap'
+	 * @return false|int
+	 */
+	public function getLibVersion($name)
+	{
 		$lib = $this->get('library');
 		foreach($lib as $var)
 		{
-			if($var['name'] === 'fontawesome' && !empty($var['version']) )
+			if($var['name'] === $name && !empty($var['version']) )
 			{
 				return (int) $var['version'];
 			}
 		}
 
 		return false;
+
 	}
 
 	/**
@@ -791,7 +824,7 @@ class e_theme
 	/**
 	 * Internal Use. Heavy CPU usage.
 	 * Use e107::getTheme($themeDir,$force)->get() instead.
-	 * @param $file
+	 * @param string $file theme directory name.
 	 * @return mixed
 	 */
 	public static function getThemeInfo($file)
@@ -857,7 +890,7 @@ class e_theme
 		if(!empty($themeArray[$file]['css']) && count($themeArray[$file]['css']) > 1)
 		{
 			$themeArray[$file]['multipleStylesheets'] = true;
-		}
+				}
 
 
 
@@ -867,8 +900,11 @@ class e_theme
 	}
 
 
-
-
+	/**
+	 * Legacy Plugin theme.php meta data parser.
+	 * @param string $path theme folder name
+	 * @return array
+	 */
 	public static function parse_theme_php($path)
 	{
 		$CUSTOMPAGES = null;
@@ -1004,6 +1040,11 @@ class e_theme
 		return $themeArray;
 	}
 
+	/**
+	 * Reads theme.xml and returns an array of data from it.
+	 * @param string $path theme folder name
+	 * @return array
+	 */
 	public static function parse_theme_xml($path)
 	{
 		$tp = e107::getParser();
@@ -1039,7 +1080,6 @@ class e_theme
 		$vars['category'] 		= self::getThemeCategory(varset($vars['category']));
 		$vars['xhtmlcompliant'] = varset($vars['compliance']['@attributes']['xhtml']);
 		$vars['csscompliant'] 	= varset($vars['compliance']['@attributes']['css']);
-		$vars['path'] 			= $path;
 		$vars['@attributes']['default'] = (varset($vars['@attributes']['default']) && strtolower($vars['@attributes']['default']) == 'true') ? 1 : 0;
 		$vars['preview'] 		= varset($vars['screenshots']['image']);
 		$vars['thumbnail'] 		= isset($vars['preview'][0]) && file_exists(e_THEME.$path.'/'.$vars['preview'][0]) ?  $vars['preview'][0] : '';
@@ -1158,6 +1198,7 @@ class e_theme
 					"name"          => $val['@attributes']['file'],
 					"info"          => $val['@attributes']['name'],
 					"nonadmin"      => $notadmin,
+					'default'       => vartrue($val['@attributes']['default'], false),
 					'scope'         => vartrue($val['@attributes']['scope'], 'front'),
 					'exclude'       => vartrue($val['@attributes']['exclude']),
 					'description'   => vartrue($val['@attributes']['description']),
@@ -1265,6 +1306,11 @@ class e_theme
 
 	}
 
+	/**
+	 * @param $themeDir
+	 * @param $layout
+	 * @return void
+	 */
 	private static function initThemePreview($themeDir, $layout=null)
 	{
 		$themeDir = filter_var($themeDir);
@@ -1309,7 +1355,7 @@ class e_theme
 			define('THEME_STYLE', $pref['admincss']);
 			self::initThemeLayout();  // the equivalent for frontend is in header_default.php
 		}
-		elseif(!empty($pref['themecss']) && file_exists(THEME.$pref['themecss']))
+		elseif(!empty($pref['themecss']) && (file_exists(THEME.$pref['themecss']) || strpos($pref['themecss'],'https') === 0))
 		{
 			define('THEME_STYLE', $pref['themecss']);
 		}
@@ -1428,9 +1474,9 @@ class e_theme
 }
 
 
-
-
-
+/**
+ *
+ */
 class themeHandler
 {
 	
@@ -1497,6 +1543,9 @@ class themeHandler
 	
 	}
 
+	/**
+	 * @return void
+	 */
 	public function postObserver()
 	{
 
@@ -1661,9 +1710,9 @@ class themeHandler
 	}
 
 	/**
-	 * @deprecated Use e107::getTheme($file)->get(); instead.
 	 * @param string $file - theme folder name.
-	 * @return array|mixed
+	 * @return array|bool
+	 *@deprecated Use e107::getTheme($file)->get(); instead.
 	 */
 	function getThemeInfo($file)
 	{
@@ -1827,8 +1876,17 @@ class themeHandler
 	 * 
 	 */
 	}
-	
 
+
+	/**
+	 * @param $name
+	 * @param $searchVal
+	 * @param $submitName
+	 * @param $filterName
+	 * @param $filterArray
+	 * @param $filterVal
+	 * @return string
+	 */
 	private function search($name, $searchVal, $submitName, $filterName='', $filterArray=false, $filterVal=false)
 	{
 		$frm = e107::getForm();
@@ -2110,7 +2168,11 @@ class themeHandler
 		$ns->tablerender(TPVLAN_26.SEP.TPVLAN_38, $mes->render().$text);
 	}
 */
-	
+
+	/**
+	 * @param $theme
+	 * @return string|null
+	 */
 	function renderThemeInfo($theme)
 	{
 
@@ -2277,7 +2339,10 @@ class themeHandler
 	
 		return $text;
 	}
-	
+
+	/**
+	 * @return void
+	 */
 	function loadThemeConfig()
 	{
 		$mes = e107::getMessage();
@@ -2335,6 +2400,10 @@ class themeHandler
 	}
 	
 	// TODO process custom theme configuration - .
+
+	/**
+	 * @return string|void
+	 */
 	function renderThemeConfig()
 	{
 		
@@ -2383,8 +2452,9 @@ class themeHandler
 	}
 
 
-
-	
+	/**
+	 * @return false|mixed|void
+	 */
 	function renderThemeHelp()
 	{
 		if($this->themeConfigObj)
@@ -2393,7 +2463,10 @@ class themeHandler
 		}
 	}
 
-	
+
+	/**
+	 * @return bool|mixed|void
+	 */
 	function setThemeConfig()
 	{
 		$this->loadThemeConfig();
@@ -2765,38 +2838,12 @@ class themeHandler
 		
 					$text .= varset($itext);
 
-
-
 					// Render skin previews.
-					if(self::RENDER_ADMINPREFS === $mode)
+					if($skinText = self::renderSkin($theme, $mode, $pref))
 					{
-						$parms = [];
-						$parms['path'] = e_THEME.$theme['path'].'/';
-						$parms['block-class'] = 'admin-css-selector col-md-3';
-
-						foreach($theme['css'] as $val)
-						{
-							$kid = $val['name'];
-						 // $val['description'];
-							$parms['optArray'][$kid] = array(
-								'thumbnail' => $val['thumbnail'],
-								'label'     => $val['info']."<br /><small>".$val['description']."</small>",
-							);
-						}
-
-						$text .= "<tr><td style='vertical-align:top;'><b>".TPVLAN_95.":</b></td>
-								<td colspan='2' style='vertical-align:top'>
-								";
-						$text .= e107::getForm()->radioImage('admincss', vartrue($pref['admincss']), $parms);
-						$text .= "</td></tr>";
-
-
+						$text .= $skinText;
 					}
-
-
-
-
-					if(array_key_exists("multipleStylesheets", $theme) && $mode && !empty($theme['css']) && self::RENDER_SITEPREFS === $mode)
+					elseif(!empty($theme['multipleStylesheets']) && $mode && !empty($theme['css']) && self::RENDER_SITEPREFS === $mode)
 					{
 						$pLabel =  TPVLAN_22;
 
@@ -2896,7 +2943,11 @@ class themeHandler
 	}
 
 
-
+	/**
+	 * @param $mode
+	 * @param $theme
+	 * @return array|false
+	 */
 	private function filterStylesheets($mode, $theme)
 	{
 
@@ -2938,6 +2989,10 @@ class themeHandler
 	}
 
 
+	/**
+	 * @param $key
+	 * @return string
+	 */
 	function renderPresets($key)
 	{
 		require_once (e_HANDLER."menumanager_class.php");
@@ -2971,13 +3026,10 @@ class themeHandler
 	}
 
 
-
-
-
-
-
-
-	
+	/**
+	 * @param $pluginOpts
+	 * @return string
+	 */
 	function renderPlugins($pluginOpts)
 	{
 
@@ -3016,13 +3068,20 @@ class themeHandler
 		
 		return $text;
 	}
-	
+
+	/**
+	 * @param $page
+	 * @return void
+	 */
 	function refreshPage($page = e_QUERY )
 	{
 		header("Location: ".e_SELF."?".$page);
 		exit;
 	}
-	
+
+	/**
+	 * @return void
+	 */
 	function themePreview()
 	{
 		echo "<script>document.location.href='".e_BASE."index.php?themepreview.".$this->id."'</script>\n";
@@ -3044,15 +3103,16 @@ class themeHandler
 		
 		$themeArray = e107::getTheme()->getList("id");
 		
-		$name = ($name) ? $name : vartrue($themeArray[$this->id]);
-		$layout = $pref['sitetheme_layouts'] = is_array($this->themeArray[$name]['layouts']) ? $this->themeArray[$name]['layouts'] : array();
-		$deflayout = $this->findDefault($name);
+		$name        = ($name) ? $name : vartrue($themeArray[$this->id]);
+		$layout      = $pref['sitetheme_layouts'] = is_array($this->themeArray[$name]['layouts']) ? $this->themeArray[$name]['layouts'] : array();
+		$deflayout   = $this->findDefault($name);
 		$customPages = $this->themeArray[$name]['custompages'];
-		$version = $this->themeArray[$name]['version'];
-		$glyphs = $this->themeArray[$name]['glyphs'];
-		
+		$version     = $this->themeArray[$name]['version'];
+		$glyphs      = $this->themeArray[$name]['glyphs'];
+		$style       = $this->findDefaultCSS($name);
+
 		$core->set('sitetheme', $name);
-		$core->set('themecss', 'style.css');
+		$core->set('themecss', $style);
 		$core->set('sitetheme_layouts', $layout);
 		$core->set('sitetheme_deflayout', $deflayout);
 		$core->set('sitetheme_custompages', $customPages);
@@ -3103,14 +3163,17 @@ class themeHandler
 		if($contentCheck === true)
 		{
 			$sql->delete("menus", "menu_layout !='' ");
+			$this->installContentCheck($name);
 		}
-		
+
+
 		e107::getCache()->clear();
 		e107::getCache()->clearAll('js');
 		e107::getCache()->clearAll('css');
 		e107::getCache()->clearAll('library');
+		e107::getCache()->clearAll('browser');
 		
-		if($core->save())
+		if($core->save(true,false,false))
 		{
 			$mes->addDebug("Default Layout: ".$deflayout);
 			$mes->addDebug("Custom Pages: ".print_a($customPages,true));
@@ -3119,10 +3182,7 @@ class themeHandler
 			$med->import('_common_image', e_THEME.$name, "^.*?logo.*?(\.png|\.jpeg|\.jpg|\.JPG|\.GIF|\.PNG)$");	
 			$med->import('_common_image', e_THEME.$name, '', 'min-size=20000');
 			
-			if($contentCheck === true)
-			{
-				$this->installContentCheck($name);
-			}
+
 
 			$this->theme_adminlog('01', $name.', style.css');
 
@@ -3139,6 +3199,7 @@ class themeHandler
 
 	/**
 	 * @param $name
+	 * @return false|void
 	 */
 	function installContentCheck($name)
 	{
@@ -3173,7 +3234,19 @@ class themeHandler
 			$text .= "<li>".$tp->lanVars(TPVLAN_60, $data)."</li>";
 		}
 
-		$text .= "</ul>
+		$text .= "</ul>";
+
+		if(!empty($xmlArray['prefs']['core']))
+		{
+			$text .= "<p>".LAN_PREFS.":</p><ul>";
+			foreach($xmlArray['prefs']['core'] as $key=>$val)
+			{
+				$text .= "<li>".$val['@attributes']['name']."</li>";
+			}
+			$text .= "</ul>";
+		}
+
+		$text .= "
 
 		<p>".$tp->toHTML(TPVLAN_61, true)."</p>
 
@@ -3187,6 +3260,10 @@ class themeHandler
 	}
 
 
+	/**
+	 * @param $name
+	 * @return void
+	 */
 	function installContent($name)
 	{
 		$mes = e107::getMessage();
@@ -3197,6 +3274,7 @@ class themeHandler
 
 
 	/**
+	 * Find the default layout as marked in theme.xml
 	 * @param $theme
 	 * @return int|string
 	 */
@@ -3206,16 +3284,16 @@ class themeHandler
 		{
 			return e107::getParser()->filter($_POST['layout_default'], 'w');
 		}
-		
+
 	//	$l = $this->themeArray[$theme];
-		
+
 	//	if(!$l)
 		{
 			$l = e107::getTheme($theme)->get(); // $this->getThemeInfo($theme);
 		}
 
-		
-		if($l['layouts'])
+
+		if(!empty($l['layouts']))
 		{
 			foreach ($l['layouts'] as $key=>$val)
 			{
@@ -3229,6 +3307,32 @@ class themeHandler
 		{
 			return "";
 		}
+	}
+
+	/**
+	 * Find the default css style as defined in theme.xml.  When not found, use 'style.css'.
+	 * @param string $theme theme-folder name.
+	 * @return string
+	 */
+	function findDefaultCSS($theme)
+	{
+		$l = e107::getTheme($theme)->get();
+
+		if(empty($l['css']))
+		{
+			return 'style.css';
+		}
+
+		foreach($l['css'] as $item)
+		{
+			if(!empty($item['default']) && $item['default'] === 'true')
+			{
+				return $item['name'];
+			}
+
+		}
+
+		return 'style.css';
 	}
 	/*
 	function setAdminTheme()
@@ -3280,7 +3384,10 @@ class themeHandler
 
 
 	}
-	
+
+	/**
+	 * @return void
+	 */
 	function setAdminStyle()
 	{
 		//TODO adminlog
@@ -3302,7 +3409,11 @@ class themeHandler
 			|| e107::getConfig()->dataHasChangedFor('adminstyle')
 			|| e107::getConfig()->dataHasChangedFor('adminpref'));*/
 	}
-	
+
+	/**
+	 * @param $array
+	 * @return void
+	 */
 	function SetCustomPages($array)
 	{
 		if(!is_array($array))
@@ -3343,6 +3454,12 @@ class themeHandler
 
 	
 	// Log event to admin log
+
+	/**
+	 * @param $msg_num
+	 * @param $woffle
+	 * @return void
+	 */
 	function theme_adminlog($msg_num = '00', $woffle = '')
 	{
 		if($this->noLog)
@@ -3365,16 +3482,56 @@ class themeHandler
 
 	}
 */
+	/**
+	 * @param array $theme
+	 * @param string $mode
+	 * @param mixed $value
+	 * @return array
+	 */
+	private static function renderSkin($theme, $mode, $pref)
+	{
 
+		$parms = [];
+		$parms['path'] = e_THEME . $theme['path'] . '/';
+		$parms['block-class'] = 'admin-css-selector col-md-3';
 
+		foreach($theme['css'] as $val)
+		{
+			if(empty($val['thumbnail']))
+			{
+				continue;
+			}
+
+			$kid = $val['name'];
+			// $val['description'];
+			$parms['optArray'][$kid] = array(
+				'thumbnail' => $val['thumbnail'],
+				'label'     => $val['info'] . "<br /><small>" . $val['description'] . "</small>",
+			);
+		}
+
+		if(empty($parms['optArray']))
+		{
+			return '';
+		}
+
+		$text = "<tr><td style='vertical-align:top;'><b>" . TPVLAN_95 . ":</b></td>
+								<td colspan='2' style='vertical-align:top'>
+								";
+		$css = ($mode === self::RENDER_ADMINPREFS) ? 'admincss' : 'themecss';
+		$text .= e107::getForm()->radioImage($css, vartrue($pref[$css]), $parms);
+		$text .= "</td></tr>";
+
+		return $text;
+	}
 
 
 }
 
 
-
-
-
+/**
+ *
+ */
 interface e_theme_config
 {
 	/**
@@ -3404,8 +3561,19 @@ interface e_theme_config
  */
 interface e_theme_render
 {
+
+	/**
+	 * @return mixed
+	 */
 	public function init();
 
+	/**
+	 * @param $caption
+	 * @param $text
+	 * @param $mode
+	 * @param $data
+	 * @return mixed
+	 */
 	public function tablestyle($caption, $text, $mode='', $data=array());
 
 }

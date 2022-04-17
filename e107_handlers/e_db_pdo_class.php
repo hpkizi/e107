@@ -118,17 +118,27 @@ class e_db_pdo implements e_db
 
 	}
 
+	/**
+	 * @return bool
+	 */
 	function getPDO()
 	{
 		return true;
 	}
 
+	/**
+	 * @param $bool
+	 * @return void
+	 */
 	function debugMode($bool)
 	{
 		$this->debugMode = (bool) $bool;
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	function getMode()
 	{
 		 $this->gen('SELECT @@sql_mode');
@@ -204,7 +214,7 @@ class e_db_pdo implements e_db
 	/**
 	 * Select the database to use.
 	 * @param string $database name
-	 * @param string $table prefix . eg. e107_
+	 * @param string $prefix prefix . eg. e107_
 	 * @param boolean $multiple set to maintain connection to a secondary database.
 	 * @return boolean true when database selection was successful otherwise false.
 	 */
@@ -311,7 +321,7 @@ class e_db_pdo implements e_db
 	 * @param bool   $debug
 	 * @param string $log_type
 	 * @param string $log_remark
-	 * @return boolean|PDOStatement | resource - as mysql_query() function.
+	 * @return boolean|int|PDOStatement - as mysql_query() function.
 	 *            false indicates an error
 	 *            For SELECT, SHOW, DESCRIBE, EXPLAIN and others returning a result set, returns a resource
 	 *            TRUE indicates success in other cases
@@ -906,6 +916,9 @@ class e_db_pdo implements e_db
 	}
 
 
+	/**
+	 * @return bool|int
+	 */
 	public function lastInsertId()
 	{
 		$tmp = (int) $this->mySQLaccess->lastInsertId();
@@ -923,6 +936,10 @@ class e_db_pdo implements e_db
 	}
 
 
+	/**
+	 * @param $result
+	 * @return int
+	 */
 	public function rowCount($result=null)
 	{
 
@@ -967,8 +984,11 @@ class e_db_pdo implements e_db
 	}
 
 
-
-
+	/**
+	 * @param $tableName
+	 * @param $arg
+	 * @return false|mixed|string
+	 */
 	private function _prepareUpdateArg($tableName, $arg)
 	{
 		$this->pdoBind = array();
@@ -1091,7 +1111,10 @@ class e_db_pdo implements e_db
 	}
 
 
-
+	/**
+	 * @param $arg
+	 * @return array|mixed
+	 */
 	private function _getTypes(&$arg)
 	{
 		if(isset($arg['_FIELD_TYPES']))
@@ -1112,11 +1135,11 @@ class e_db_pdo implements e_db
 	}
 
 	/**
-	* @return mixed
 	* @param string|array $fieldValue
-	* @desc Return new field value in proper format<br />
+	 * @desc Return new field value in proper format<br />
 	*
 	* @access private
+	*@return array|float|int|string
 	*/
 	private function _getFieldValue($fieldKey, $fieldValue, &$fieldTypes)
 	{
@@ -1255,6 +1278,7 @@ class e_db_pdo implements e_db
 	/**
 	 * Convert FIELD_TYPE to PDO compatible Field-Type
 	 * @param $type
+	 * @param null $value
 	 * @return int
 	 */
 	private function _getPDOType($type, $value = null)
@@ -1555,7 +1579,10 @@ class e_db_pdo implements e_db
 	}
 
 
-
+	/**
+	 * @param $matches
+	 * @return string
+	 */
 	function ml_check($matches)
 	{
 		$table = $this->hasLanguage($matches[1]);
@@ -1577,7 +1604,7 @@ class e_db_pdo implements e_db
 	* Check for the existence of a matching language table when multi-language tables are active.
 	* @param string|array $table Name of table, without the prefix. or an array of table names.
 	* @access private
-	* @return mixed the name of the language table (eg. lan_french_news) or an array of all matching language tables. (with mprefix)
+	* @return array|false|string the name of the language table (eg. lan_french_news) or an array of all matching language tables. (with mprefix)
 	*/
 	public function hasLanguage($table, $multiple=false)
 	{
@@ -1925,7 +1952,9 @@ class e_db_pdo implements e_db
 	}
 
 
-
+	/**
+	 * @return int
+	 */
 	function columnCount()
 	{
 		/** @var PDOStatement $resource */
@@ -2362,7 +2391,7 @@ class e_db_pdo implements e_db
 	 * @param string $newtable
 	 * @param bool $drop
 	 * @param bool $data
-	 * @return bool|int|PDOStatement|resource
+	 * @return bool|int
 	 */
 	public function copyTable($oldtable, $newtable, $drop = false, $data = false)
 	{
@@ -2527,17 +2556,28 @@ class e_db_pdo implements e_db
 
 
 	// Return error number for last operation
+
+	/**
+	 * @return int
+	 */
 	function getLastErrorNumber()
 	{
 		return $this->mySQLlastErrNum;		// Number of last error
 	}
 
 	// Return error text for last operation
+
+	/**
+	 * @return string
+	 */
 	function getLastErrorText()
 	{
 		return $this->mySQLlastErrText;		// Text of last error (empty string if no error)
 	}
 
+	/**
+	 * @return void
+	 */
 	function resetLastError()
 	{
 		$this->mySQLlastErrNum = 0;
@@ -2554,7 +2594,9 @@ class e_db_pdo implements e_db
 	}
 
 
-
+	/**
+	 * @return void
+	 */
 	private function setSQLMode()
 	{
 		$this->db_Query("SET SESSION sql_mode='NO_ENGINE_SUBSTITUTION';");
@@ -2580,6 +2622,9 @@ class e_db_pdo implements e_db
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	public function getCharset()
 	{
 		return $this->mySQLcharset;

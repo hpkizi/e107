@@ -19,6 +19,10 @@ e107::includeLan(e_LANGUAGEDIR.e_LANGUAGE."/lan_comment.php");
 global $comment_shortcodes;
 require_once (e_CORE."shortcodes/batch/comment_shortcodes.php");
 
+
+/**
+ *
+ */
 class comment
 {
 	public $known_types = array(
@@ -130,8 +134,11 @@ class comment
 	}
 
 
-
-	function replyComment($id) // Ajax Reply. 
+	/**
+	 * @param $id
+	 * @return string|void|null
+	 */
+	function replyComment($id) // Ajax Reply.
 	{
 		if($this->engine != 'e107')
 		{
@@ -271,7 +278,7 @@ class comment
 			$text = "\n<div{$indent}>\n".e107::getMessage()->render('postcomment', true, false);//temporary here
 			
 		//	$text .= "Indent = ".$indent;
-			$text .= "<form id='{$formid}' method='post' action='".str_replace('http:', '', $_SERVER['REQUEST_URI'])."'  >";	
+			$text .= "<form id='{$formid}' method='post' action='".str_replace('http:', '', e_REQUEST_URI)."'  >";
 					
 			$data = array(
 				'action'	=> $action,
@@ -563,7 +570,7 @@ class comment
 	 * @param $id - comment_id to delete
 	 * @param string $table - comment belongs to this table eg. 'news'
 	 * @param string $itemid - corresponding item from the table. eg. news_id
-	 * @return int|null|void
+	 * @return int|null
 	 */
 	function deleteComment($id, $table='', $itemid='') // delete a single comment by comment id.
 	{
@@ -588,8 +595,12 @@ class comment
 
 		return $status;
 	}
-	
-	function approveComment($id) // appropve a single comment by comment id.  
+
+	/**
+	 * @param $id
+	 * @return int|void
+	 */
+	function approveComment($id) // appropve a single comment by comment id.
 	{
 		if(!getperms('0') && !getperms("B"))
 		{
@@ -599,8 +610,13 @@ class comment
 		return e107::getDb()->update("comments","comment_blocked=0 WHERE comment_id = ".intval($id)."");
 	}
 
-	
-	function updateComment($id,$comment)
+
+	/**
+	 * @param $id
+	 * @param $comment
+	 * @return string|void|null
+	 */
+	function updateComment($id, $comment)
 	{
 		if($this->engine != 'e107')
 		{
@@ -621,8 +637,12 @@ class comment
 			return "Update Failed"; // trigger ajax error message. 
 		}		
 	}
-	
-	
+
+
+	/**
+	 * @param $var
+	 * @return bool
+	 */
 	function moderateComment($var)
 	{	
 		if ($var == e_UC_MEMBER) // different behavior to check_class();
@@ -1198,7 +1218,7 @@ class comment
 	 * @param $comment
 	 * @param $form
 	 * @param $modcomment
-	 * @return mixed
+	 * @return array|string|string[]
 	 */
 	public function parseLayout($comment, $form, $modcomment)
 	{
@@ -1211,8 +1231,14 @@ class comment
 	}
 
 
-	
-	public function getComments($table,$id,$from=0,$att=null)
+	/**
+	 * @param $table
+	 * @param $id
+	 * @param $from
+	 * @param $att
+	 * @return array
+	 */
+	public function getComments($table, $id, $from=0, $att=null)
 	{
 		$sql 		= e107::getDb();
 		$tp 		= e107::getParser();
@@ -1285,8 +1311,13 @@ class comment
 	}
 
 
-
-	function nextprev($table,$id,$from=0)
+	/**
+	 * @param $table
+	 * @param $id
+	 * @param $from
+	 * @return string|void
+	 */
+	function nextprev($table, $id, $from=0)
 	{
 		//return "table=".$table."  id=".$id."  from=".$from;
 		//$from = $from + $this->commentsPerPage;
@@ -1308,11 +1339,10 @@ class comment
 	}
 
 
-
-
-
-
-
+	/**
+	 * @param $id
+	 * @return void
+	 */
 	function recalc_user_comments($id)
 	{
 		$sql = e107::getDb(); 
@@ -1338,7 +1368,12 @@ class comment
 		}
 
 
-		function get_author_list($id, $comment_type)
+	/**
+	 * @param $id
+	 * @param $comment_type
+	 * @return array
+	 */
+	function get_author_list($id, $comment_type)
 		{
 			$sql = e107::getDb();
 			
@@ -1360,7 +1395,12 @@ class comment
 		}
 
 
-		function delete_comments($table, $id)
+	/**
+	 * @param $table
+	 * @param $id
+	 * @return int
+	 */
+	function delete_comments($table, $id)
 		{
 			$sql 	= e107::getDb(); 
 			$tp 	= e107::getParser(); 
@@ -1386,7 +1426,10 @@ class comment
 		//get all e_comment.php files and collect the variables
 
 
-		function get_e_comment()
+	/**
+	 * @return array|false|mixed|void|null
+	 */
+	function get_e_comment()
 		{
 
 			if($this->engine != 'e107')
@@ -1453,7 +1496,15 @@ class comment
 		 */
 
 
-		function getCommentData($amount = '', $from = 0, $qry = '', $cdvalid = FALSE, $cdreta = FALSE)
+	/**
+	 * @param $amount
+	 * @param $from
+	 * @param $qry
+	 * @param $cdvalid
+	 * @param $cdreta
+	 * @return array|mixed|null
+	 */
+	function getCommentData($amount = '', $from = 0, $qry = '', $cdvalid = FALSE, $cdreta = FALSE)
 		{
 
 			if($this->engine != 'e107')
@@ -1562,10 +1613,19 @@ class comment
 							}
 							break;
 						case 'page': //	Custom Page
-							$ret['comment_type'] = COMLAN_TYPE_PAGE;
-							$ret['comment_title'] = $ret['comment_subject'] ? $ret['comment_subject']:
-							$ret['comment_comment'];
-							$ret['comment_url'] = e_HTTP."page.php?".$row['comment_item_id'];
+							if ($sql2->select("page", "*", "page_id='".$row['comment_item_id']."' AND page_class REGEXP '".e_CLASS_REGEXP."' "))
+							{
+								$row2 = $sql2->fetch();
+
+								$row2 = pageHelper::addSefFields($row2);
+
+								$route = empty($row2['page_chapter']) ? "page/view/other" : "page/view/index"; // Determine if page belongs to book/chapter.
+
+								$ret['comment_type'] = COMLAN_TYPE_PAGE;
+								$ret['comment_title'] = $ret['comment_subject'] ? $ret['comment_subject']:
+								$ret['comment_comment'];
+								$ret['comment_url'] = e107::getUrl()->create($route, $row2);  // e_HTTP."page.php?".$row['comment_item_id'];
+							}
 							break;
 						default:
 							if (isset($e_comment[$row['comment_type']]) && is_array($e_comment[$row['comment_type']]))

@@ -252,7 +252,7 @@ class e_menu
 	 * @param string $menu menu name. including the _menu but not the .php
 	 * @param array $parms
 	 * @param string|int $location default 'all' or  a menu area number..
-	 * @return int|boolean number of records updated or false.
+	 * @return int number of records updated or false.
 	 */
 	public function setParms($plugin, $menu, $parms=array(), $location = 'all')
 	{
@@ -443,6 +443,9 @@ class e_menu
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	protected function isFrontPage()
 	{
 		return e_REQUEST_SELF == SITEURL;

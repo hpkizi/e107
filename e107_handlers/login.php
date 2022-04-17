@@ -54,6 +54,10 @@ class userlogin
 		$this->userMethods = e107::getUserSession();
 	}
 
+	/**
+	 * @param $area
+	 * @return void
+	 */
 	public function setSecureImageMode($area)
 	{
 		$modes = array(
@@ -252,13 +256,35 @@ class userlogin
 		$user_email = $this->userData['user_email'];
 
 		/* restrict more than one person logging in using same us/pw */
-		if(!empty($pref['track_online']) && !empty($pref['disallowMultiLogin']) && !empty($user_id))
+		if(!empty($pref['session_save_method']) && ($pref['session_save_method'] === 'db') && !empty($pref['disallowMultiLogin']) && !empty($user_id))
+		{
+			// logout any existing user of this account.
+			$mLog = '';
+			if($sql->delete('session', "session_user = ".$user_id))
+			{
+				$mLog = 'Dropped existing user session: #' . $user_id. " ".$username;
+			}
+
+			if($onlineIP = $sql->retrieve("online", "online_ip", "online_user_id='".$user_id.".".$user_name."'"))
+			{
+				$mLog .= ' ('. e107::getIpHandler()->ipDecode($onlineIP).')';
+				$sql->delete('online', "online_user_id='".$user_id.".".$user_name."'");
+			}
+
+			if(!empty($mLog))
+			{
+				$this->logNote('LAN_ROLL_LOG_07', $mLog );
+			}
+
+		}
+		elseif(!empty($pref['track_online']) && !empty($pref['disallowMultiLogin']) && !empty($user_id))
 		{
 			if($sql->select("online", "online_ip", "online_user_id='".$user_id.".".$user_name."'"))
 			{
 				return $this->invalidLogin($username, LOGIN_MULTIPLE, $user_id);
 			}
 		}
+
 
 
 
@@ -323,6 +349,9 @@ class userlogin
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getUserData()
 	{
 		return $this->userData;
@@ -415,7 +444,7 @@ class userlogin
 	 * @param string $userpass - as entered
 	 * @param string $response - received string if CHAP used
 	 * @param boolean $forceLogin - TRUE if login is being forced from clicking signup link; normally FALSE
-	 * @return TRUE if valid password
+	 * @return bool|string if valid password
 	 *		   otherwise FALSE
 	 */
 	protected function checkUserPassword($username, $userpass, $response, $forceLogin)
@@ -491,6 +520,9 @@ class userlogin
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function test()
 	{
 
@@ -526,7 +558,9 @@ class userlogin
 
 	/**
 	 * called to log the reason for a failed login.
-	 * @param string $plugname
+	 * @param $username
+	 * @param $reason
+	 * @param string $extra_text
 	 * @return boolean Currently always returns false - could return some other value
 	 */
 	protected function invalidLogin($username, $reason, $extra_text = '')
@@ -612,7 +646,7 @@ class userlogin
 				$this->logNote('LAN_ROLL_LOG_10', $username);
 		}
 
-		e107::getMessage()->reset()->addError($message); // prevent duplicates.
+		e107::getMessage()->reset()->addError($message, 'default', true); // prevent duplicates, session=true needed for admin-area login.
 
 		if($this->testMode === true)
 		{
@@ -649,7 +683,7 @@ class userlogin
 	 * Make a note of an event in the rolling log
 	 * @param string $title - title of logged event
 	 * @param string $text - detail of event
-	 * @return none
+	 * @return void
 	 */
 	protected function logNote($title, $text)
 	{
@@ -658,6 +692,7 @@ class userlogin
 	//	$text = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS_);
 
 		$debug = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,4);
+		$debug[] = $text;
 
 		// unset($debug[0]);
 		$debug[0] = e_REQUEST_URI;
@@ -672,7 +707,7 @@ class userlogin
 	 * Make a note of a failed login in the 'generic' table
 	 * @param string $username - as entered
 	 * @param string $msg1 - detail of event
-	 * @return none
+	 * @return void
 	 */
 	protected function genNote($username, $msg1)
 	{
@@ -686,7 +721,7 @@ class userlogin
 	 * Assumes the user is valid and logs them in.
 	 * @param array $userData ie. user_id, user_name, user_email,user_join, user_admin
 	 * @param bool $autologin 
-	 * @return array
+	 * @return bool|void
 	 */
 	public function validLogin($userData, $autologin=false)
 	{

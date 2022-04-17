@@ -25,6 +25,10 @@
 		private $thm;
 
 
+		/**
+		 * @param $adminarea
+		 * @return void
+		 */
 		public function _init($adminarea=false)
 		{
 			$this->adminarea = (bool) $adminarea;
@@ -36,6 +40,10 @@
 		}
 
 		// Called in header_default.php.
+
+		/**
+		 * @return void|null
+		 */
 		public function init()
 		{
 
@@ -146,6 +154,9 @@
 		}
 
 
+		/**
+		 * @return array
+		 */
 		function getMagicShortcodes()
 		{
 
@@ -342,6 +353,9 @@
 		}
 
 
+		/**
+		 * @return bool
+		 */
 		private function hasLegacyCode()
 		{
 
@@ -380,7 +394,7 @@
 
 			$options['uniqueId'] = (string) $this->uniqueId;
 			$options['menuArea'] = (int) $this->eMenuArea;
-			$options['menuCount'] = (int) $this->eMenuCount;
+			$options['menuCount'] = $this->eMenuCount;
 			$options['menuTotal'] = (int) varset($this->eMenuTotal[$this->eMenuArea]);
 			$options['setStyle'] = (string) $this->eSetStyle;
 

@@ -16,6 +16,9 @@ if (!defined('e107_INIT')) { exit; }
 
 use Intervention\Image\ImageManagerStatic as Intervension;
 
+/**
+ *  Media class.
+ */
 class e_media
 {
 	protected $imagelist = array();
@@ -55,6 +58,10 @@ class e_media
 	}
 
 
+	/**
+	 * @param $val
+	 * @return void
+	 */
 	public function debug($val)
 	{
 
@@ -365,7 +372,11 @@ class e_media
 	{
 		// TODO
 	}*/
-	
+
+	/**
+	 * @param (string) $owner
+	 * @return bool|null
+	 */
 	public function deleteAllCategories($owner='')
 	{
 		if($owner == '')
@@ -663,6 +674,12 @@ class e_media
 	}
 
 
+	/**
+	 * @param $category
+	 * @param $tagid
+	 * @param $option
+	 * @return string
+	 */
 	private function mediaSelectNav($category, $tagid='', $option=null)
 	{
 		if(is_string($option))
@@ -1134,8 +1151,11 @@ class e_media
 	}
 
 
-
-
+	/**
+	 * @param (string) $mime
+	 * @param (string) $path (optional)
+	 * @return false|string
+	 */
 	public function getPath($mime, $path=null)
 	{
 		$mes = e107::getMessage();
@@ -1178,7 +1198,7 @@ class e_media
 	/**
 	 * detected Media Type from Media URL
 	 * @param string $mediaURL
-	 * @return int|string
+	 * @return string|null
 	 */
 	public function detectType($mediaURL)
 	{
@@ -1216,37 +1236,34 @@ class e_media
 	 */
 	public function previewTag($default, $options=array())
 	{
+
 		$tp = e107::getParser();
 
-		$type = !empty($options['type']) ? $options['type'] : $this->detectType($default);
+		$type       = !empty($options['type']) ? $options['type'] : $this->detectType($default);
 
-		$width = vartrue($options['w'], 220);
-		$height = vartrue($options['h'], 190);
-		$crop = vartrue($options['crop'], 0);
-		$preview = '';
+		$width      = vartrue($options['w'], 220);
+		$height     = vartrue($options['h'], 190);
+		$crop       = vartrue($options['crop'], 0);
+		$preview    = '';
 
 		switch($type)
 		{
 
 			case "video":
 				$preview = $tp->toVideo($default, array('w'=>$width, 'h'=> ($height - 50)));
-			//	$previewURL = $tp->toVideo($default, array('mode'=>'url'));
-				break;
+			break;
 
 			case "audio":
 				$preview = $tp->toAudio($default);
-			//	$previewURL = false;
-				break;
+			break;
 
 			case "image":
 				$preview = $tp->toImage($default, array('w'=>$width, 'h'=>$height, 'crop'=>$crop, 'class'=> varset($options['class'],'image-selector img-responsive img-fluid'), 'legacy'=>varset($options['legacyPath'])));
-			//	$previewURL = $tp->thumbUrl($default, array('w'=>800));
-				break;
+			break;
 
 			case "application": // file.
-			//	$preview = $tp->toImage($default, array('w'=>$width, 'h'=>$height, 'class'=>'image-selector img-responsive img-fluid'));
-			//	$previewURL = $tp->thumbUrl($default, array('w'=>800));
-				break;
+				$preview = "<div class='text-center' style='padding-top:40px; padding-bottom:40px'>".defset('LAN_FILE', 'File')."</div>";
+			break;
 
 			case "glyph":
 				$preview = $tp->toGlyph($default);
@@ -1254,7 +1271,6 @@ class e_media
 
 			case "icon":
 				$preview = $tp->toIcon($default);
-			//	$previewURL = false;
 			break;
 
 			default: // blank
@@ -1266,8 +1282,10 @@ class e_media
 	}
 
 
-
-
+	/**
+	 * @param (string) $sc_path
+	 * @return array|false
+	 */
 	public function mediaData($sc_path)
 	{
 		if(!$sc_path) return array();
@@ -1297,17 +1315,12 @@ class e_media
 			'media_dimensions'	=> (isset($info['img-width']) && isset($info['img-height'])) ? $info['img-width']." x ".$info['img-height'] : ''
 		);
 	}
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	/**
+	 * @param $message
+	 * @return void
+	 */
 	public function log($message)
 	{
 		if($this->logging == false) return; 
@@ -1478,6 +1491,14 @@ class e_media
 	}
 
 
+	/**
+	 * @param (array) $data = [
+	 *  'close' => (int)
+	 *  'style' => (string)
+	 *  'class' => (string)
+	 * ]
+	 * @return string
+	 */
 	private function browserCarouselItemSelector($data)
 	{
 	//	$close  = (E107_DEBUG_LEVEL > 0) ? "" : "  data-close='true' ";	//
@@ -1501,7 +1522,11 @@ class e_media
 
 	}
 
-	
+
+	/**
+	 * @param array $row
+	 * @return string
+	 */
 	function browserCarouselItem($row = array())
 	{
 		$tp = e107::getParser();
@@ -1530,7 +1555,7 @@ class e_media
 		
 		foreach($default as $k=>$v)
 		{
-			$data[$k] = isset($row[$k]) ? $row[$k] : $default[$k];	
+			$data[$k] = isset($row[$k]) ? $row[$k] : $v;
 		}
 		
 			
@@ -2372,7 +2397,15 @@ class e_media
 	
 	}
 
-	private function ajaxUploadLog($filePath,$fileName,$fileSize,$result, $msg='')
+	/**
+	 * @param string $filePath
+	 * @param string $fileName
+	 * @param int $fileSize
+	 * @param bool $result
+	 * @param string $msg
+	 * @return void
+	 */
+	private function ajaxUploadLog($filePath, $fileName, $fileSize, $result, $msg='')
 	{
 		$log = e107::getParser()->filter($_GET);
 

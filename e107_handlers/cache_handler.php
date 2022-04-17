@@ -58,18 +58,22 @@ class ecache {
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	public function getMD5()
 	{
 		return $this->CachePageMD5;
 	}
 
 	/**
-	* @return string
-	* @param string $query
-	* @desc Internal class function that returns the filename of a cache file based on the query.
-	* @scope private
-	* If the tag begins 'menu_', e_QUERY is not included in the hash which creates the file name
-	*/
+	 * @param $CacheTag
+	 * @param bool $syscache
+	 * @return string
+	 * @desc Internal class function that returns the filename of a cache file based on the query.
+	 * @scope private
+	 * If the tag begins 'menu_', e_QUERY is not included in the hash which creates the file name
+	 */
 	function cache_fname($CacheTag, $syscache = false)
 	{
 		if(strpos($CacheTag, "nomd5_") === 0) {
@@ -199,13 +203,13 @@ class ecache {
 	}
 
 	/**
-	* @return string 
-	* @param string $CacheTag
-	* @param int $MaximumAge the time in minutes before the cache file 'expires'
-	 * @param boolean $force
-	* @desc Returns the data from the cache file associated with $query, else it returns false if there is no cache for $query.
-	* @scope public
-	*/
+	 * @param string $CacheTag
+	 * @param bool $MaximumAge the time in minutes before the cache file 'expires'
+	 * @param bool $ForcedCheck
+	 * @return string
+	 * @desc Returns the data from the cache file associated with $query, else it returns false if there is no cache for $query.
+	 * @scope public
+	 */
 	function retrieve_sys($CacheTag, $MaximumAge = false, $ForcedCheck = false)
 	{
 		if(isset($this) && $this instanceof ecache)
@@ -226,7 +230,7 @@ class ecache {
 	 * @param boolean $ForceCache [optional] if TRUE, writes cache even when disabled in admin prefs. 
 	 * @param boolean $bRaw [optional] if TRUE, writes data exactly as provided instead of prefacing with php leadin
 	 * @param boolean $syscache [optional]
-	 * @return none
+	 * @return void|null
 	 */
 	public function set($CacheTag, $Data, $ForceCache = false, $bRaw=0, $syscache = false)
 	{

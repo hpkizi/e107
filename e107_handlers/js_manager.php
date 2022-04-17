@@ -239,18 +239,9 @@ class e_jsmanager
 		}
 		else // Front-End.
 		{
-			if(defset('e_DEBUG_JQUERY') === 2)
-			{
-				e107::library('load', 'jquery');
-				// jQuery Once is used in e107.behaviors.
-				e107::library('load', 'jquery.once');
-			}
-			else
-			{
-				e107::library('load', 'jquery3');
-			}
-
-
+			$jqueryLib = (defset('e_DEBUG_JQUERY') === 2) ? 'jquery' : 'jquery3';
+			e107::library('load',$jqueryLib);
+			e107::library('load', 'jquery.once'); // jQuery Once is used in e107.behaviors.
 		}
 
 		// TODO
@@ -422,7 +413,7 @@ class e_jsmanager
 	/**
 	 * Add CSS code to site header
 	 *
-	 * @param string|array $js_content
+	 * @param string|array $css_content
 	 * @param string $media (not implemented yet) any valid media attribute string - http://www.w3schools.com/TAGS/att_link_media.asp
 	 * @return e_jsmanager
 	 */
@@ -595,7 +586,8 @@ class e_jsmanager
 	 *
 	 * @param string $plugname
 	 * @param string $file_path relative to plugin root folder
-	 * @param integer $zone 1-5 (see header.php) - REMOVED, actually we need to prevent zone change
+	 * @param string $pre
+	 * @param string $post
 	 * @return e_jsmanager
 	 */
 	public function headerPlugin($plugname, $file_path, $pre, $post)
@@ -704,18 +696,30 @@ class e_jsmanager
 		$this->addJs('settings', $js_settings);
 		return $this;
 	}
-	
-	
+
+
+	/**
+	 * @param $dep
+	 * @return void
+	 */
 	function setDependency($dep)
 	{
 		$this->_dependence = $dep;		
 	}
-	
+
+	/**
+	 * @return void
+	 */
 	public function resetDependency()
 	{
 		$this->_dependence = null;
 	}
 
+	/**
+	 * @param $name
+	 * @param $value
+	 * @return void
+	 */
 	public function set($name, $value)
 	{
 		$this->$name = $value;
@@ -761,7 +765,12 @@ class e_jsmanager
 		return false;
 		
 	}
-	
+
+	/**
+	 * @param $rlocation
+	 * @param $libs
+	 * @return $this|void
+	 */
 	public function checkLibDependence($rlocation, $libs = null)
 	{
 		$opts = [
@@ -951,6 +960,10 @@ class e_jsmanager
 		// e107 Core Minimum should function independently of framework. 
 		// ie. e107 Core Minimum: JS similar to e107 v1.0 should be loaded  "e_js.php" (no framwork dependency) 
 		// with basic functions like SyncWithServerTime() and expandit(), externalLinks() etc. 
+		if(empty($opts))
+		{
+			$opts = [];
+		}
 
 		$pre = !empty($opts['pre']) ? $opts['pre'] : '';
 		$post = !empty($opts['post']) ? $opts['post'] : '';
@@ -1070,7 +1083,7 @@ class e_jsmanager
 			break;
 
 			case 'theme_css':
-				$file_path = $runtime_location.$this->_sep.'{e_THEME}'.$this->getCurrentTheme().'/'.trim($file_path, '/').$this->_sep.$pre.$this->_sep.$post;
+				$file_path = $runtime_location.$this->_sep.(strpos($file_path, 'http') !== 0 && strpos($file_path, '//') !== 0 ?'{e_THEME}'.$this->getCurrentTheme().'/'.trim($file_path, '/') : $file_path).$this->_sep.$pre.$this->_sep.$post;
 				if(!isset($this->_e_css['theme'])) $this->_e_css['theme'] = array();
 				$registry = &$this->_e_css['theme'];
 				$runtime = true;
@@ -1105,9 +1118,14 @@ class e_jsmanager
 					$post
 				];
 
-				if(!empty($opts['defer']))
+				if(isset($opts['defer']) || in_array('defer', $opts, true))
 				{
 					$info[] = 'defer';
+				}
+
+				if(!empty($opts['async']) || in_array('async', $opts, true))
+				{
+					$info[] = 'async';
 				}
 
 				$file_path = implode($this->_sep, $info);
@@ -1134,9 +1152,14 @@ class e_jsmanager
 					$post
 				];
 
-				if(!empty($opts['defer']))
+				if(isset($opts['defer']) || in_array('defer', $opts, true))
 				{
 					$info[] = 'defer';
+				}
+
+				if(!empty($opts['async']) || in_array('async', $opts, true))
+				{
+					$info[] = 'async';
 				}
 
 				$file_path = implode($this->_sep, $info);
@@ -1268,8 +1291,8 @@ class e_jsmanager
 			case 'core_css': //e_jslib
 				if($this->_theme_css_processor)
 				{
-					$this->_e_css['core'] = e107::callMethod('theme', 'css', $this->_e_css['core'], 'core');
-					e107::getMessage()->addDebug('Theme css() method is experimental and is subject to removal at any time. Use at own risk');
+					$this->_e_css['core'] = e107::callMethod('theme', 'cssFilter', $this->_e_css['core'], 'core');
+					e107::getMessage()->addDebug('Theme cssFilter() method is experimental and is subject to removal at any time. Use at own risk');
 				}
 				$this->renderFile(varset($this->_e_css['core'], array()), $external, 'Core CSS', $mod, false);
 				unset($this->_e_css['core']);
@@ -1278,7 +1301,7 @@ class e_jsmanager
 			case 'plugin_css': //e_jslib
 				if($this->_theme_css_processor)
 				{
-					$this->_e_css['plugin'] = e107::callMethod('theme', 'css', $this->_e_css['plugin'], 'plugin');
+					$this->_e_css['plugin'] = e107::callMethod('theme', 'cssFilter', $this->_e_css['plugin'], 'plugin');
 				}
 				$this->renderFile(varset($this->_e_css['plugin'], array()), $external, 'Plugin CSS', $mod, false);
 				unset($this->_e_css['plugin']);
@@ -1292,7 +1315,7 @@ class e_jsmanager
 			case 'other_css':
 				if($this->_theme_css_processor)
 				{
-					$this->_e_css['other'] = e107::callMethod('theme', 'css', $this->_e_css['other'], 'other');
+					$this->_e_css['other'] = e107::callMethod('theme', 'cssFilter', $this->_e_css['other'], 'other');
 				}
 				$this->renderFile(varset($this->_e_css['other'], array()), $external, 'Other CSS', $mod, false);
 				unset($this->_e_css['other']);
@@ -1531,7 +1554,7 @@ class e_jsmanager
 				if($pre) $pre .= "\n";
 				$post = varset($path[2], '');
 				if($post) $post = "\n".$post;
-				$inline = isset($path[3]) ? $path[3] : '';
+				$inline = isset($path[3]) ? str_replace($this->_sep, ' ',$path[3]) : '';
 				if($inline) $inline = " ".$inline;
 				$path = $path[0];
 
@@ -1648,7 +1671,7 @@ class e_jsmanager
 	 * Check CDN Url is valid.
 	 * Experimental.
 	 * @param $url
-	 * @return resource
+	 * @return bool
 	 */
 	private function isValidUrl($url)
 	{
@@ -1694,11 +1717,10 @@ class e_jsmanager
 	}
 
 
-
-
 	/**
 	 * Render Cached JS or CSS file.
 	 * @param $type
+	 * @return false|void
 	 */
 	public function renderCached($type)
 	{
@@ -1767,7 +1789,7 @@ class e_jsmanager
 	 * Get js/css file to be cached and update url links.
 	 * @param $path string
 	 * @param $type string (js|css)
-	 * @return mixed|string
+	 * @return string
 	 */
 	private function getCacheFileContent($path, $type)
 	{
@@ -1911,8 +1933,9 @@ class e_jsmanager
 	/**
 	 * Render JS/CSS source array
 	 *
-	 * @param array $js_content_array
+	 * @param $content_array
 	 * @param string $label added as comment if non-empty
+	 * @param string $type
 	 * @return void
 	 */
 	function renderInline($content_array, $label = '', $type = 'js')
@@ -2087,6 +2110,11 @@ class e_jsmanager
 		return (isset($this->_lastModified[$what]) ? $this->_lastModified[$what] : 0);
 	}
 
+	/**
+	 * @param $mod
+	 * @param $array_newlib
+	 * @return $this
+	 */
 	public function addLibPref($mod, $array_newlib)
 	{
 
@@ -2135,6 +2163,11 @@ class e_jsmanager
 		return $this;
 	}
 
+	/**
+	 * @param $mod
+	 * @param $array_removelib
+	 * @return $this
+	 */
 	public function removeLibPref($mod, $array_removelib)
 	{
 

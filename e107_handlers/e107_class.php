@@ -259,6 +259,9 @@ class e107
 		'e107MailManager'                => '{e_HANDLER}mail_manager_class.php',
 		'e_library_manager'              => '{e_HANDLER}library_manager.php',
 		'error_page'                     => '{e_HANDLER}error_page_class.php',
+
+		// Core plugin auto-loaders.
+		'pageHelper'                     => '{e_PLUGIN}page/includes/pageHelper.php'
 	);
 
 	/**
@@ -293,6 +296,9 @@ class e107
 		//register_shutdown_function(array($this, 'destruct'));
 	}
 
+	/**
+	 * @return void
+	 */
 	private static function die_http_400()
 	{
 		header('HTTP/1.0 400 Bad Request', true, 400);
@@ -313,6 +319,10 @@ class e107
 	 */
 	public static function renderLayout($LAYOUT, $opts = array())
 	{
+		if(empty($LAYOUT))
+		{
+			$LAYOUT = '';
+		}
 
 		$tp = self::getParser();
 
@@ -1435,6 +1445,9 @@ class e107
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public static function getThemeGlyphs()
 	{
 
@@ -2121,7 +2134,6 @@ class e107
 	/**
 	 * Retrieve user model object.
 	 *
-	 * @param integer $user_id target user
 	 * @return e_user_extended_structure_tree
 	 */
 	public static function getUserStructure()
@@ -2432,6 +2444,11 @@ class e107
 	}
 
 
+	/**
+	 * @param $type
+	 * @param $val
+	 * @return void
+	 */
 	public static function set($type=null, $val=true)
 	{
 		if($type === 'js_enabled')
@@ -2635,7 +2652,7 @@ class e107
 		$jshandler = self::getJs();
 		$jshandler->setDependency($dep);
 
-		if(strpos($data,'http')===0)
+		if(strpos($data,'http')===0 && ($type !== 'theme'))
 		{
 			$type = 'url';
 		}
@@ -2653,7 +2670,7 @@ class e107
 			break;
 
 			case 'theme':
-				// data is path relative to current theme
+				// data is path relative to current theme or URL to load in the 'theme' zone.
 				$jshandler->themeCSS($data, $media, $preComment, $postComment);
 			break;
 
@@ -2832,11 +2849,10 @@ class e107
 
 	/**
 	 * Retrieves class Object for specific plugin's addon such as e_url.php, e_cron.php, e_sitelink.php
-	 * 	 *
+	 *     *
 	 * @param string $pluginName e.g. faq, page
 	 * @param string $addonName eg. e_cron, e_url, e_module
 	 * @param mixed $className [optional] true - use default name, false - no object is returned (include only), any string will be used as class name
-	 * @param mixed $param [optional] construct() param
 	 * @return object
 	 */
 	public static function getAddon($pluginName, $addonName, $className = true)
@@ -3323,7 +3339,7 @@ class e107
 	 * - $USER_TEMPLATE['short_start'] (if key is null, $USER_TEMPLATE will be returned)
 	 *
 	 * @param string $plug_name if null getCoreTemplate method will be called
-	 * @param string $id - file prefix, e.g. calendar for calendar_template.php
+	 * @param string $id - file prefix, e.g. calendar for calendar_template.php, or 'true' or 'null' for same as plugin name.
 	 * @param string|null $key $YOURTEMPLATE_TEMPLATE[$key]
 	 * @param boolean $override see {@link getThemeInfo()}
 	 * @param boolean $merge merge theme with plugin templates, default is false
@@ -3741,7 +3757,7 @@ class e107
 	 * @param string $plugin plugin name
 	 * @param string|bool|null $fname filename without the extension part (e.g. 'common')
 	 * @param boolean $flat false (default, preferred) Language folder structure; true - prepend Language to file name
-	 * @param boolean $return When true, returns the path, but does not include the file or set the registry.
+	 * @param boolean $returnPath When true, returns the path, but does not include the file or set the registry.
 	 * @return bool|null
 	 */
 	public static function plugLan($plugin, $fname = '', $flat = false, $returnPath = false)
@@ -4058,7 +4074,9 @@ class e107
 	/**
 	 * Reverse lookup of current URI against legacy e_url entry for the specified plugin.
 	 * Useful for when SEF (e_SINGLE_ENTRY) is not in use.
-	 * @param string $route eg. forum/index (must match SEF route )
+	 * @param string|null $plugin
+	 * @param string|null $uri
+	 * @return string|null
 	 */
 	public static function detectRoute($plugin=null, $uri=null)
 	{
@@ -4362,6 +4380,23 @@ class e107
 		self::getRedirect()->go($url, true, $http_response_code);
 	}
 
+	/**
+	 * Getter/Setter for schema. eg. Google structured data etc.
+	 * @param string $json
+	 * @return string|bool
+	 */
+	public static function schema($json = null)
+	{
+		if(empty($json))
+		{
+			return self::getRegistry('core/e107/schema', false);
+		}
+
+
+		return self::setRegistry('core/e107/schema',$json);
+
+	}
+
 
 	/**
 	 * Retrieve error page handler.
@@ -4430,7 +4465,12 @@ class e107
 	}
 
 
-	public static function minify($js,$options=array())
+	/**
+	 * @param $js
+	 * @param $options
+	 * @return mixed|string|null
+	 */
+	public static function minify($js, $options=array())
 	{
 		if(empty($js))
 		{
@@ -4465,6 +4505,8 @@ class e107
 		static $availEditors;
 		$fallbackEditor = 'bbcode';
 
+		global $_E107;
+
 		if (self::getPref('wysiwyg',false) != true)
 		{
 			// wysiwyg disabled by global pref
@@ -4472,12 +4514,11 @@ class e107
 		}
 		else
 		{
-			if(!isset($availEditors))
+			if(!isset($availEditors) || !empty($_E107['phpunit']))
 			{
 				// init list of installed wysiwyg editors
 				$default = self::isInstalled('tinymce4') ? array('tinymce4'=>'TinyMce4') : array();  // if missing pref fallback.
 				$availEditors = self::getPref('wysiwyg_list', $default);
-
 			//	$availEditors = array_keys(e107::getPlug()->getInstalledWysiwygEditors()); // very slow.
 			}
 
@@ -4491,13 +4532,14 @@ class e107
 			// check if choosen editor is installed,
 			// if not, but a different editor is available use that one (e.g. tinymce4 choosen, but only simplemde available available, use simplemde)
 			// if no wysiwyg editor available, use fallback editor (bbcode)
-			if(is_bool($editor) || ($editor !== $fallbackEditor && !in_array($editor, $availEditors)))
+			if(is_bool($editor) || ($editor !== $fallbackEditor && empty($availEditors[$editor])))
 			{
 				$names = array_keys($availEditors);
 			//	$editor = count($availEditors) > 0 ? $availEditors[0] : $fallbackEditor;
 				$editor = count($availEditors) > 0 ? reset($names) : $fallbackEditor;
 			}
 		}
+
 
 		// $returnEditor => false:
 		// false => fallback editor (bbcode)
@@ -5221,7 +5263,7 @@ class e107
 
 		if(self::isCli())
 		{
-			if(!empty($_SERVER['argv']) && empty($_GET))
+			if(!empty($_SERVER['argv']) && isset($_SERVER['argv'][1]) && empty($_GET))
 			{
 				parse_str($_SERVER['argv'][1], $_GET); // convert argv to $_GET for script testing via CLI.
 			}
@@ -5687,7 +5729,7 @@ class e107
 	 * Safe way to set ini var
 	 * @param string $var
 	 * @param string $value
-	 * @return mixed
+	 * @return false|string
 	 */
 	public static function ini_set($var, $value)
 	{
@@ -5840,6 +5882,7 @@ class e107
 			// autoload doesn't REQUIRE files, because this will break things like call_user_func()
 			include($filename);
 		}
+
 	}
 
 	/**
@@ -5866,6 +5909,10 @@ class e107
 		}
 	}
 
+	/**
+	 * @param $name
+	 * @return array|e107_event|e_admin_log|e_array|e_db|e_online|e_parse|e_render|ecache|eIPHandler|eURL|mixed|notify|user_class|null
+	 */
 	public function __get($name)
 	{
 		switch ($name)
@@ -6082,18 +6129,18 @@ interface e_admin_addon_interface
 
 
 	/**
-	* Extend Admin-ui Parameters
-	* @param $ui admin-ui object
-	* @return array
-	*/
+	 * Extend Admin-ui Parameters
+	 * @param e_admin_ui $ui admin-ui object
+	 * @return array
+	 */
 	public function config(e_admin_ui $ui);
 
 
 	/**
-	* Process Posted Data.
-	* @param $ui admin-ui object
-	* @param int $id
-	*/
+	 * Process Posted Data.
+	 * @param e_admin_ui $ui admin-ui object
+	 * @param int $id
+	 */
 	public function process(e_admin_ui $ui, $id=0);
 
 

@@ -550,15 +550,15 @@ function file_upload($uploaddir, $avatar = FALSE, $fileinfo = "", $overwrite = "
 //====================================================================
 
 /**
- * @deprecated Get image (string) mime type
- * @see e_file::getImageMime();
+ * @param $filename
+ * @param bool|false $extended
+ * @return array|string
+ *@see e_file::getImageMime();
  * or when extended - array [(string) mime-type, (array) associated extensions)].
  * A much faster way to retrieve mimes than getimagesize()
  *
- * @param $filename
- * @param bool|false $extended
- * @return array|string|false
- */
+ * @deprecated Get image (string) mime type
+  */
 function get_image_mime($filename, $extended = false)
 {
 	trigger_error(__METHOD__.' is deprecated. Use e107::getFile()->getImageMime($filename, $extended); instead.', E_USER_DEPRECATED);
@@ -899,7 +899,7 @@ function get_image_mime($filename, $extended = false)
 			{ // Unspecified max - use the global value
 				$allowed_filetypes[$t] = $max_upload_size;
 			}
-			elseif ($allowed_filetypes[$t] > $max_upload_size)
+			elseif ($s > $max_upload_size)
 				$allowed_filetypes[$t] = $max_upload_size;
 			if ($allowed_filetypes[$t] > $new_max)
 				$new_max = $allowed_filetypes[$t];
@@ -914,7 +914,10 @@ function get_image_mime($filename, $extended = false)
 	 *
 	 *	@return int largest allowed file size across all file types
 	 */
-	function get_user_max_upload()
+/**
+ * @return int
+ */
+function get_user_max_upload()
 	{
 		$a_filetypes = get_filetypes();
 		if (count($a_filetypes) == 0)

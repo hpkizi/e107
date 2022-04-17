@@ -28,7 +28,10 @@
 	}
 
 
-	class e107Bounce
+/**
+ *
+ */
+class e107Bounce
 	{
 
 		private $debug  = false;
@@ -44,6 +47,10 @@
 			}*/
 		}
 
+		/**
+		 * @param $source
+		 * @return void
+		 */
 		public function setSource($source)
 		{
 			$this->source = $source;
@@ -196,6 +203,11 @@
 		}
 
 
+		/**
+		 * @param $message
+		 * @param $id
+		 * @return array|string|string[]|null
+		 */
 		function getHeader($message, $id = 'X-e107-id')
 		{
 
@@ -212,6 +224,11 @@
 		}
 
 
+		/**
+		 * @param $bounceString
+		 * @param $email
+		 * @return array|bool
+		 */
 		function setUser_Bounced($bounceString = '', $email = '')
 		{
 
@@ -324,13 +341,20 @@
 	*/
 
 
-	class BounceHandler
+/**
+ *
+ */
+class BounceHandler
 	{
 
 
 		// this is the most commonly used public method
 		// quick and dirty
 		// useage: $multiArray = BounceHandler::get_the_facts($strEmail);
+		/**
+		 * @param $eml
+		 * @return array
+		 */
 		static function get_the_facts($eml)
 		{
 
@@ -418,6 +442,12 @@
 
 		// general purpose recursive heuristic function
 		// to try to extract useful info from the bounces produced by busted MTAs
+		/**
+		 * @param $recipient
+		 * @param $arrBody
+		 * @param $index
+		 * @return string
+		 */
 		static function get_status_code_from_text($recipient, $arrBody, $index)
 		{
 
@@ -564,6 +594,11 @@
 			return '';
 		}
 
+		/**
+		 * @param $blob
+		 * @param $format
+		 * @return array|string|string[]
+		 */
 		static function init_bouncehandler($blob, $format = 'string')
 		{
 			$strEmail = "";
@@ -599,6 +634,10 @@
 			return $strEmail;
 		}
 
+		/**
+		 * @param $head_hash
+		 * @return bool
+		 */
 		static function is_RFC1892_multipart_report($head_hash)
 		{
 
@@ -607,6 +646,10 @@
 				&& $head_hash['Content-type']['boundary'] !== '';
 		}
 
+		/**
+		 * @param $headers
+		 * @return array
+		 */
 		static function parse_head($headers)
 		{
 
@@ -638,6 +681,11 @@
 			return $hash;
 		}
 
+		/**
+		 * @param $body
+		 * @param $boundary
+		 * @return array
+		 */
 		static function parse_body_into_mime_sections($body, $boundary)
 		{
 
@@ -658,6 +706,10 @@
 		}
 
 
+		/**
+		 * @param $content
+		 * @return array
+		 */
 		static function standard_parser($content)
 		{ // associative array orstr
 			// receives email head as array of lines
@@ -702,6 +754,10 @@
 			return $hash;
 		}
 
+		/**
+		 * @param $str
+		 * @return array
+		 */
 		static function parse_machine_parsable_body_part($str)
 		{
 
@@ -756,13 +812,16 @@
 					}
 				}
 
-				$hash['per_recipient'][$i] = '';
 				$hash['per_recipient'][$i] = $temp;
 			}
 
 			return $hash;
 		}
 
+		/**
+		 * @param $mime_sections
+		 * @return array
+		 */
 		static function get_head_from_returned_message_body_part($mime_sections)
 		{
 
@@ -774,6 +833,10 @@
 			return $head;
 		}
 
+		/**
+		 * @param $str
+		 * @return mixed|string
+		 */
 		static function extract_address($str)
 		{
 
@@ -791,6 +854,10 @@
 			return $from;
 		}
 
+		/**
+		 * @param $per_rcpt
+		 * @return array|string|string[]
+		 */
 		static function get_recipient($per_rcpt)
 		{
 
@@ -810,6 +877,10 @@
 			return $recipient;
 		}
 
+		/**
+		 * @param $dsn_fields
+		 * @return array
+		 */
 		static function parse_dsn_fields($dsn_fields)
 		{
 
@@ -850,6 +921,10 @@
 			return $hash;
 		}
 
+		/**
+		 * @param $code
+		 * @return array
+		 */
 		static function format_status_code($code)
 		{
 
@@ -870,6 +945,10 @@
 			return $ret;
 		}
 
+		/**
+		 * @param $code
+		 * @return string
+		 */
 		static function fetch_status_messages($code)
 		{
 
@@ -890,7 +969,7 @@
 			$status_code_subclasses['0.0']['descr'] = "Other undefined status is the only undefined error code. It should be used for all errors for which only the class of the error is known.";
 
 			$status_code_subclasses['1.0']['title'] = "Other address status";
-			$status_code_subclasses['0.0']['descr'] = "Something about the address specified in the message caused this DSN.";
+			$status_code_subclasses['1.0']['descr'] = "Something about the address specified in the message caused this DSN.";
 
 			$status_code_subclasses['1.1']['title'] = "Bad destination mailbox address";
 			$status_code_subclasses['1.1']['descr'] = "The mailbox specified in the address does not exist.  For Internet mail names, this means the address portion to the left of the @ sign is invalid.  This code is only useful for permanent failures.";
@@ -926,10 +1005,10 @@
 			$status_code_subclasses['2.2']['descr'] = "The mailbox is full because the user has exceeded a per-mailbox administrative quota or physical capacity.  The general semantics implies that the recipient can delete messages to make more space available.  This code should be used as a persistent transient failure.";
 
 			$status_code_subclasses['2.3']['title'] = "Message length exceeds administrative limit";
-			$status_code_subclasses['2.2']['descr'] = "A per-mailbox administrative message length limit has been exceeded.  This status code should be used when the per-mailbox message length limit is less than the general system limit.  This code should be used as a permanent failure.";
+			$status_code_subclasses['2.3']['descr'] = "A per-mailbox administrative message length limit has been exceeded.  This status code should be used when the per-mailbox message length limit is less than the general system limit.  This code should be used as a permanent failure.";
 
 			$status_code_subclasses['2.4']['title'] = "Mailing list expansion problem";
-			$status_code_subclasses['2.3']['descr'] = "The mailbox is a mailing list address and the mailing list was unable to be expanded.  This code may represent a permanent failure or a persistent transient failure. ";
+			$status_code_subclasses['2.4']['descr'] = "The mailbox is a mailing list address and the mailing list was unable to be expanded.  This code may represent a permanent failure or a persistent transient failure. ";
 
 			$status_code_subclasses['3.0']['title'] = "Other or undefined mail system status";
 			$status_code_subclasses['3.0']['descr'] = "The destination system exists and normally accepts mail, but something about the system has caused the generation of this DSN.";
@@ -1041,6 +1120,10 @@
 			return $str;
 		}
 
+		/**
+		 * @param $code
+		 * @return string
+		 */
 		static function get_action_from_status_code($code)
 		{
 
@@ -1067,6 +1150,10 @@
 			}
 		}
 
+		/**
+		 * @param $dcode
+		 * @return mixed|null
+		 */
 		static function decode_diagnostic_code($dcode)
 		{
 
@@ -1082,6 +1169,10 @@
 			return null;
 		}
 
+		/**
+		 * @param $head_hash
+		 * @return bool
+		 */
 		static function is_a_bounce($head_hash)
 		{
 
@@ -1103,6 +1194,10 @@
 			return false;
 		}
 
+		/**
+		 * @param $first_body_part
+		 * @return array
+		 */
 		static function find_email_addresses($first_body_part)
 		{
 

@@ -68,7 +68,9 @@ class e_session
 	 * @var integer
 	 */
 	const SECURITY_LEVEL_NONE = 0;
-	
+
+
+	const SECURITY_LEVEL_LOW = 3;
 	/**
 	 * Default system protection, balanced for best user experience, 
 	 * label 'Safe mode - Balanced'
@@ -168,6 +170,9 @@ class e_session
 		return $this;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getOptions()
 	{
 		return $this->_options;
@@ -199,7 +204,7 @@ class e_session
         $config = array(
             'ValidateRemoteAddr' => (e_SECURITY_LEVEL >= self::SECURITY_LEVEL_BALANCED),
             'ValidateHttpVia' => (e_SECURITY_LEVEL >= self::SECURITY_LEVEL_HIGH),
-            'ValidateHttpXForwardedFor' => (e_SECURITY_LEVEL >= self::SECURITY_LEVEL_BALANCED),
+            'ValidateHttpXForwardedFor' => (e_SECURITY_LEVEL >= self::SECURITY_LEVEL_LOW),
             'ValidateHttpUserAgent' => (e_SECURITY_LEVEL >= self::SECURITY_LEVEL_HIGH),
         );
 
@@ -499,6 +504,11 @@ class e_session
 		return $this;
 	}
 
+	/**
+	 * @param $namespace
+	 * @param $sessionName
+	 * @return void
+	 */
 	public function init($namespace, $sessionName = null)
 	{
 		$this->start($sessionName);
@@ -637,7 +647,7 @@ class e_session
 	/**
 	 * Set new session name
 	 * @param string $name alphanumeric characters only
-	 * @return string old session name or false on error
+	 * @return false old session name or false on error
 	 */
 	public function setSessionName($name)
 	{
@@ -891,13 +901,20 @@ class e_session
 		session_destroy();
 		return $this;
 	}
-	
+
+	/**
+	 * @return void
+	 */
 	public function replaceRegistry()
 	{
 		e107::setRegistry('core/e107/session/'.$this->_namespace, $this, true);
 	}
 }
 
+
+/**
+ *
+ */
 class e_core_session extends e_session
 {
 	/**
@@ -958,6 +975,11 @@ class e_core_session extends e_session
 		$this->end();
 	}
 
+	/**
+	 * @param $status
+	 * @param $type
+	 * @return void|null
+	 */
 	private function log($status, $type=E_LOG_FATAL)
 	{
 
@@ -1024,7 +1046,7 @@ class e_core_session extends e_session
 		// TODO e-token required for all system forms?
 		
 		// only if not disabled and not in 'cli' mod
-		if(e_SECURITY_LEVEL < e_session::SECURITY_LEVEL_BALANCED || e107::getE107('cli')) return true;
+		if(e_SECURITY_LEVEL < e_session::SECURITY_LEVEL_LOW || e107::getE107('cli')) return true;
 		
 		if($this->getSessionId())
 		{
@@ -1131,7 +1153,7 @@ class e_session_db #implements SessionHandlerInterface
 	 * @var e_db
 	 */
 	protected $_db = null;
-	
+
 	/**
 	 * Table name
 	 * @var string
@@ -1145,9 +1167,12 @@ class e_session_db #implements SessionHandlerInterface
 	
 	public function __construct()
 	{
-		$this->_db = e107::getDb('session');		
+		$this->_db = e107::getDb('session');
 	}
-	
+
+	/**
+	 *
+	 */
 	public function __destruct()
 	{
 		session_write_close();
@@ -1268,10 +1293,12 @@ class e_session_db #implements SessionHandlerInterface
     		'data' => array(
 	    		'session_expires' => time() + $this->getLifetime(),
 	    		'session_data' 	  => base64_encode($session_data),
+	    		'session_user'    => defset('USERID'),
     		),
     		'_FIELD_TYPES' => array(
     			'session_id'		=> 'str',
     			'session_expires'	=> 'int',
+    			'session_user'      => 'int',
     			'session_data'		=> 'str'
     		),
     		'_DEFAULT' => 'str'
@@ -1280,7 +1307,7 @@ class e_session_db #implements SessionHandlerInterface
     	{
     		return false;
     	}
-    	
+
     	$check = $this->_db->select($this->getTable(), 'session_id', "`session_id`='{$session_id}'");
     	
     	if($check)
