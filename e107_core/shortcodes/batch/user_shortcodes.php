@@ -182,7 +182,7 @@ class user_shortcodes extends e_shortcode
 	
 	function sc_user_lastvisit($parm='')
 	{
-        return $this->var['user_currentvisit'] ? e107::getDate()->convert_date($this->var['user_currentvisit'], "long") : e107::getDate()->convert_date($this->var['user_lastvisit'], "long");
+		return $this->var['user_currentvisit'] ? e107::getDate()->convert_date($this->var['user_currentvisit'], "long") : e107::getDate()->convert_date($this->var['user_lastvisit'], "long");
 	}
 	
 	
@@ -200,7 +200,7 @@ class user_shortcodes extends e_shortcode
 
 	function sc_user_join($parm='')
 	{
-		return e107::getDate()->convert_date($this->var['user_join'], "short");
+		return e107::getDate()->convert_date($this->var['user_join'], "forum");
 	}
 	
 	

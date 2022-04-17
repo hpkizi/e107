@@ -877,37 +877,45 @@ class admin_shortcodes extends e_shortcode
 		{
 			return;
 		}
+
+		$pid = e107::getDb()->retrieve('plugin', 'plugin_id', "plugin_path = 'pm'");
+
+		if(!getperms(0) && !getperms('P', 'P'.$pid))
+		{
+			return;
+		}
         
         $sql = e107::getDb();
 		$tp = e107::getParser();
 		
         $count =  $sql->count('private_msg','(*)','WHERE pm_read = 0 AND pm_to='.USERID);
        
-       if ($count >0)
-       {
+       	if ($count >0)
+       	{
             $countDisp = ' <span class="badge badge-primary">'.$count.'</span> ' ;
-       }
-       else
-      {
+       	}
+       	else
+      	{
             $countDisp = '';    
-      }
+      	}
          
-		$inboxUrl = e_PLUGIN.'pm/admin_config.php?mode=inbox&amp;action=list&amp;iframe=1';
-		$outboxUrl = e_PLUGIN.'pm/admin_config.php?mode=outbox&amp;action=list&amp;iframe=1';
+		$inboxUrl 	= e_PLUGIN.'pm/admin_config.php?mode=inbox&amp;action=list&amp;iframe=1';
+		$outboxUrl 	= e_PLUGIN.'pm/admin_config.php?mode=outbox&amp;action=list&amp;iframe=1';
 		$composeUrl = e_PLUGIN.'pm/admin_config.php?mode=outbox&amp;action=create&amp;iframe=1';
 
-       $text = '<ul class="nav nav-admin navbar-nav navbar-right">
-        <li class="dropdown">
-            <a class="dropdown-toggle" title="'.defset('LAN_PM').'" role="button" data-toggle="dropdown" data-bs-toggle="dropdown" href="#" >
-                '.$tp->toGlyph('fa-envelope').$countDisp.'
-            </a> 
-            <ul class="dropdown-menu" role="menu" >
-                <li class="nav-header navbar-header dropdown-header">'.defset('LAN_PM').'</li>
-                    <li><a class="e-modal" data-cache="false" data-modal-caption="'.defset('LAN_PLUGIN_PM_INBOX').'" data-target="#uiModal" href="'.$inboxUrl.'" >'.defset('LAN_PLUGIN_PM_INBOX').'</a></li>
-                    <li><a class="e-modal" data-cache="false" data-modal-caption="'.defset('LAN_PLUGIN_PM_OUTBOX').'" data-target="#uiModal" href="'.$outboxUrl.'">'.defset('LAN_PLUGIN_PM_OUTBOX').'</a></li>
-                    <li><a class="e-modal" data-cache="false" data-modal-caption="'.defset('LAN_PM_35').'" data-target="#uiModal" href="'.$composeUrl.'">'.defset('LAN_PM_35').'</a></li>
-                </ul>
-        </li>
+      	$text = '
+      	<ul class="nav nav-admin navbar-nav navbar-right">
+        	<li class="dropdown">
+	            <a class="dropdown-toggle" title="'.defset('LAN_PM').'" role="button" data-toggle="dropdown" data-bs-toggle="dropdown" href="#" >
+	                '.$tp->toGlyph('fa-envelope').$countDisp.'
+	            </a> 
+	            <ul class="dropdown-menu" role="menu" >
+	                <li class="nav-header navbar-header dropdown-header">'.defset('LAN_PM').'</li>
+	              	<li><a class="e-modal" data-cache="false" data-modal-caption="'.defset('LAN_PLUGIN_PM_INBOX').'" data-target="#uiModal" href="'.$inboxUrl.'" >'.defset('LAN_PLUGIN_PM_INBOX').'</a></li>
+	                <li><a class="e-modal" data-cache="false" data-modal-caption="'.defset('LAN_PLUGIN_PM_OUTBOX').'" data-target="#uiModal" href="'.$outboxUrl.'">'.defset('LAN_PLUGIN_PM_OUTBOX').'</a></li>
+	                <li><a class="e-modal" data-cache="false" data-modal-caption="'.defset('LAN_PM_35').'" data-target="#uiModal" href="'.$composeUrl.'">'.defset('LAN_PM_35').'</a></li>
+	            </ul>
+        	</li>
         </ul>
         '; 
         
@@ -1314,17 +1322,18 @@ class admin_shortcodes extends e_shortcode
 
 	private function getLastGitUpdate()
 	{
-		$gitFetch = e_BASE.'synced.txt';  
+		$gitFetch = e_BASE.'.git/FETCH_HEAD';
 
-        $text = '<br /><b>Last Git Sync</b><br />';  
-        $time =  'Never';
 		if(file_exists($gitFetch))
 		{
-			$unix = filemtime($gitFetch);	 
-			$time = ($unix) ? date('r',$unix)  : 'Never';	
+			$unix = filemtime($gitFetch);
+
+			$text = '<br /><b>Last Git Update</b><br />'; // NO LAN required. Developer-Only
+			$text.= ($unix) ? date('r',$unix)  : 'Never';
+			$text .= '<br />';
+			return $text;
 		}
-        $text .= $time.'<br />';
-        return $text;
+
 	}
 
 	public function sc_admin_status($parm=null)
@@ -2364,7 +2373,7 @@ Inverse 	10 	<span class="badge badge-inverse">10</span>
 							
 			$tmp[5]['text'] 			= 'e107 Website';
 			$tmp[5]['description'] 		= '';
-			$tmp[5]['link'] 			= 'http://e107.org';
+			$tmp[5]['link'] 			= 'https://e107.org';
 			$tmp[5]['image'] 			= E_16_E107;
 			$tmp[5]['image_large'] 		= '';
 			$tmp[5]['image_src'] 		= '';
@@ -2374,7 +2383,7 @@ Inverse 	10 	<span class="badge badge-inverse">10</span>
 										
 			$tmp[6]['text'] 			= 'e107 on Twitter';
 			$tmp[6]['description'] 		= '';
-			$tmp[6]['link'] 			= 'http://twitter.com/e107';
+			$tmp[6]['link'] 			= 'https://twitter.com/e107';
 			$tmp[6]['image'] 			= E_16_TWITTER; // "<img src='".E_16_NAV_LGOT."' alt='".ADLAN_151."' class='icon S16' />";
 			$tmp[6]['image_large'] 		= '';
 			$tmp[6]['image_src'] 		= '';

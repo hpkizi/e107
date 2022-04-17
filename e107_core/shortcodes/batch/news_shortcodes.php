@@ -123,7 +123,7 @@ class news_shortcodes extends e_shortcode
 				return "<a href='".e107::getUrl()->create('user/profile/view', $this->news_item)."'>".$this->news_item['user_name']."</a>";
 			}
 		}
-		return "<a href='http://e107.org'>e107</a>";
+		return "<a href='https://e107.org'>e107</a>";
 	}
 
 
@@ -292,16 +292,13 @@ class news_shortcodes extends e_shortcode
 			/* @deprecated - Will cause issues with glyphs */
 			case 'src':
 				return $src;
-			break;
 
 			case 'tag':
 				return $icon;
-			break;
 
 			case 'url':
 			default:
 				return "<a href='".e107::getUrl()->create('news/list/category', $this->news_item)."'>".$icon."</a>";
-			break;
 		}
 	}
 
@@ -629,7 +626,7 @@ class news_shortcodes extends e_shortcode
 
 	function sc_news_author_avatar($parm=null)
 	{
-		if(!empty($this->news_item['user_id']) && !empty($this->news_item['user_image']))
+		if((!empty($this->news_item['user_id']) && !empty($this->news_item['user_image'])) || !empty($parm['placeholder']))
 		{
 			return e107::getParser()->toAvatar($this->news_item, $parm);
 		}
