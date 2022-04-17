@@ -161,7 +161,7 @@
 
 			$class = !empty($imgParms['class']) ? ' ' . $imgParms['class'] : '';
 
-			$imgParms['class'] = "img-rounded rounded bbcode " . e107::getBB()->getClass('img') . $class;  //  This will be overridden if a new class is specified
+			$imgParms['class'] = "img-responsive img-fluid img-rounded rounded bbcode " . e107::getBB()->getClass('img') . $class;  //  This will be overridden if a new class is specified
 
 			if($mode == 'string')
 			{
