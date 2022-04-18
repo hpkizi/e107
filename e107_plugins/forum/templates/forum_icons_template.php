@@ -29,7 +29,9 @@ define('IMAGE_stickyclosed',  		$tp->toGlyph('fa-lock', 'size=2x'));
 define('IMAGE_sticky_small', 		$tp->toGlyph('fa-thumb-tack'));
 define('IMAGE_stickyclosed_small',  $tp->toGlyph('fa-lock'));
 define('IMAGE_announce',  			$tp->toGlyph('fa-bullhorn', 'size=2x'));
+define('IMAGE_announceclosed',  	$tp->toGlyph('fa-lock', 'size=2x'));
 define('IMAGE_announce_small',  	$tp->toGlyph('fa-bullhorn'));
+define('IMAGE_announceclosed_small',$tp->toGlyph('fa-lock', 'size=2x'));
 define('IMAGE_closed_small',  		$tp->toGlyph('fa-lock'));
 define('IMAGE_closed', 				$tp->toGlyph('fa-lock', 'size=2x'));
 define('IMAGE_noreplies', 			$tp->toGlyph('fa-comment-o', 'size=2x'));
@@ -37,22 +39,6 @@ define('IMAGE_noreplies_small', 	$tp->toGlyph('fa-comment-o'));
 define('IMAGE_track', 		        $tp->toGlyph('fa-bell'));
 define('IMAGE_untrack', 	        $tp->toGlyph('fa-bell-o'));
     
-define('IMAGE_forum_new', 			$tp->toGlyph('fa-star', 'size=2x'));
-define('IMAGE_forum_noreplies', 	$tp->toGlyph('fa-comment-o', 'size=2x'));
-define('IMAGE_forum_nonew', 	    $tp->toGlyph('fa-comment', 'size=2x'));
-
-define('IMAGE_forum_new_small', 		$tp->toGlyph('fa-star'));
-define('IMAGE_forum_noreplies_small', 	$tp->toGlyph('fa-comment-o'));
-define('IMAGE_forum_nonew_small', 	    $tp->toGlyph('fa-comment'));
-
-define('IMAGE_new_sticky',  			$tp->toGlyph('fa-thumb-tack', 'size=2x'));
-define('IMAGE_new_announce',  			$tp->toGlyph('fa-bullhorn', 'size=2x'));
-define('IMAGE_new_closed', 				$tp->toGlyph('fa-lock', 'size=2x'));
-
-define('IMAGE_new_sticky_small',  		$tp->toGlyph('fa-thumb-tack'));
-define('IMAGE_new_announce_small',  	$tp->toGlyph('fa-bullhorn'));
-define('IMAGE_new_closed_small', 		$tp->toGlyph('fa-lock'));
-
 } else {
 
 // Thread info
@@ -69,10 +55,14 @@ define('IMAGE_sticky', 				'<img src="'.img_path('sticky.png').'" alt="'.LAN_FOR
 define('IMAGE_sticky_small', 		'<img src="'.img_path('sticky_small.png').'" alt="'.LAN_FORUM_1011.'" title="'.LAN_FORUM_1011.'" />');
 define('IMAGE_stickyclosed', 		'<img src="'.img_path('sticky_closed.png').'" alt="'.LAN_FORUM_1012.'" title="'.LAN_FORUM_1012.'" />');
 define('IMAGE_stickyclosed_small', 	'<img src="'.img_path('sticky_closed_small.png').'" alt="'.LAN_FORUM_1012.'" title="'.LAN_FORUM_1012.'" />');
-define('IMAGE_announce', 			'<img src="'.img_path('announce.png').'" alt="'.LAN_FORUM_1013.'" title="'.LAN_FORUM_1013.'" />');
-define('IMAGE_announce_small', 		'<img src="'.img_path('announce_small.png').'" alt="'.LAN_FORUM_1013.'" title="'.LAN_FORUM_1013.'" />');
+define('IMAGE_announce',				'<img src="'.img_path('announce.png').'" alt="'.LAN_FORUM_1013.'" title="'.LAN_FORUM_1013.'" />');
+define('IMAGE_announce_small',			'<img src="'.img_path('announce_small.png').'" alt="'.LAN_FORUM_1013.'" title="'.LAN_FORUM_1013.'" />');
+define('IMAGE_announceclosed',			'<img src="'.img_path('closed.png').'" alt="'.LAN_FORUM_1013.'" title="'.LAN_FORUM_1013.'" />');
+define('IMAGE_announceclosed_small',	'<img src="'.img_path('closed_small.png').'" alt="'.LAN_FORUM_1013.'" title="'.LAN_FORUM_1013.'" />');
 define('IMAGE_closed_small', 		'<img src="'.img_path('closed_small.png').'" alt="'.LAN_FORUM_1014.'" title="'.LAN_FORUM_1014.'" />');
 define('IMAGE_closed', 				'<img src="'.img_path('closed.png').'" alt="'.LAN_FORUM_1014.'" title="'.LAN_FORUM_1014.'" />');
+define('IMAGE_noreplies', 			'<img src="'.img_path('nonew_popular.png').'" alt="'.LAN_FORUM_1021.'" title="'.LAN_FORUM_1021.'" />');
+define('IMAGE_noreplies_small', 	'<img src="'.img_path('nonew_popular_small.png').'" alt="'.LAN_FORUM_1021.'" title="'.LAN_FORUM_1021.'" />');
 
 define('IMAGE_track', 		'<img src="'.img_path('track.png').'" alt="'.LAN_FORUM_4009.'" title="'.LAN_FORUM_4009.'" class="icon S16 action" />');
 define('IMAGE_untrack', 	'<img src="'.img_path('untrack.png').'" alt="'.LAN_FORUM_4010.'" title="'.LAN_FORUM_4010.'" class="icon S16 action" />');

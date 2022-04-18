@@ -752,14 +752,13 @@
 			{
 				return $this->keyIcon($parm);
 			}
- 
+
 			global $forum;
-//	global $forum, $FORUM_VIEW_FORUM, $FORUM_VIEW_FORUM_STICKY, $FORUM_VIEW_FORUM_ANNOUNCE, $gen, $menu_pref, 
-//$threadsViewed = $forum->threadGetUserViewed();
-//	$newflag = (USER && $this->var['thread_lastpost'] > USERLV && !in_array($this->var['thread_id'], $threadsViewed));
+
 			$newflag = (USER && $this->var['thread_lastpost'] > USERLV && !in_array($this->var['thread_id'], $forum->threadGetUserViewed()));
 			$ICON = ($newflag ? IMAGE_new : IMAGE_nonew);
-//-- CANDIDATE FOR TERNARY IF
+			
+			//-- CANDIDATE FOR TERNARY IF
 			if($this->var['thread_total_replies'] >= $forum->prefs->get('popular', 10))
 			{
 				$ICON = ($newflag ? IMAGE_new_popular : IMAGE_nonew_popular);
@@ -769,20 +768,18 @@
 				$ICON = IMAGE_noreplies;
 			}
 
-//-- CANDIDATE FOR TERNARY IF
+			//-- CANDIDATE FOR TERNARY IF
 			if($this->var['thread_sticky'] == 1)
 			{
-				$ICON = ($newflag ? IMAGE_new_sticky : IMAGE_sticky);
-                $ICON = ($this->var['thread_active'] ? $ICON : IMAGE_stickyclosed);
+				$ICON = ($this->var['thread_active'] ? IMAGE_sticky : IMAGE_stickyclosed);
 			}
 			elseif($this->var['thread_sticky'] == 2)
 			{
- 
-                $ICON = ($newflag ? IMAGE_new_announce : IMAGE_announce);
+				$ICON = ($this->var['thread_active'] ? IMAGE_announce : IMAGE_announceclosed);
 			}
 			elseif(!$this->var['thread_active'])
 			{
-				 $ICON = ($newflag ? IMAGE_new_closed : IMAGE_closed);
+				$ICON = IMAGE_closed;
 			}
 
 			return $ICON;
