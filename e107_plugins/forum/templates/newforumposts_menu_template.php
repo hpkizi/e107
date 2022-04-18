@@ -39,7 +39,7 @@
 														<tr>
 														<td style='width:5%' class='forumheader'>&nbsp;</td>
 														<td style='width:45%' class='forumheader'>{LAN=FORUM_1003}</td>
-														<td style='width:15%; text-align:center' class='forumheader'>{LAN=USER}</td>
+														<td style='width:15%; text-align:center' class='forumheader'>{LAN=FORUM_MENU_001}</td>
 														<td style='width:5%; text-align:center' class='forumheader'>{LAN=FORUM_1005}</td>
 														<td style='width:5%; text-align:center' class='forumheader'>{LAN=FORUM_0003}</td>
 														<td style='width:25%; text-align:center' class='forumheader'>{LAN=FORUM_0004}</td>
