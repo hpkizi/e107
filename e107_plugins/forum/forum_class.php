@@ -2029,9 +2029,10 @@ class e107forum
 		$sql = e107::getDb();
 		$forum_id = (int)$forum_id;
 		$qry = "
-		SELECT f.*, fp.forum_class as parent_class, fp.forum_name as parent_name,
+		SELECT f.*, fp.forum_class as parent_class, 
 		fp.forum_id as parent_id, fp.forum_postclass as parent_postclass,
-		sp.forum_name AS sub_parent, sp.forum_sef AS parent_sef
+		fp.forum_name as parent_name, fp.forum_sef AS parent_sef,		
+		sp.forum_name AS sub_parent, sp.forum_sef AS sub_parent_sef
 		FROM #forum AS f
 		LEFT JOIN #forum AS fp ON fp.forum_id = f.forum_parent
 		LEFT JOIN #forum AS sp ON f.forum_sub = sp.forum_id AND f.forum_sub > 0
