@@ -646,7 +646,16 @@ class userlogin
 				$this->logNote('LAN_ROLL_LOG_10', $username);
 		}
 
-		e107::getMessage()->reset()->addError($message, 'default', true); // prevent duplicates, session=true needed for admin-area login.
+		// prevent duplicates, session=true needed for admin-area login.
+		if(deftrue('e_ADMIN_AREA'))
+		{
+			e107::getMessage()->reset()->addError($message, 'default', true);
+		}
+		else 
+		{
+			e107::getMessage()->reset()->addError($message, 'default');
+		}
+		 
 
 		if($this->testMode === true)
 		{
