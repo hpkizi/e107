@@ -71,7 +71,27 @@ class forum_shortcodes extends e_shortcode
 	{
 		return "<a href='".e107::url('forum','stats')."'>".LAN_FORUM_0017."</a>\n";
 	}
+    
+   	private function keyIcon($parm)
+	{
+		$size = 'small';
 
+		if(!empty($parm['type']))
+		{
+			return deftrue('IMAGE_'.$parm['type'].'_'.$size);
+		}
+	}
+
+
+	function sc_icon($parm)
+	{
+
+		if(!empty($parm))
+		{
+			return $this->keyIcon($parm);
+		}
+    }
+    
 	function sc_iconkey()
 	{
 		if(!defined('IMAGE_new_small'))
@@ -357,7 +377,6 @@ class forum_shortcodes extends e_shortcode
 	{
 	//----		return $this->parentstatus;
 	//  	if(!check_class($this->fparent['forum_postclass']))
- 
 	    if(!check_class($this->var['forum_postclass']))
 	    {
 	        $status = '('.LAN_FORUM_0056.')';
@@ -398,14 +417,14 @@ class forum_shortcodes extends e_shortcode
 		{
 
 			$url = $this->sc_lastpost(array('type'=>'url'));
-			return "<a href='".$url."'>".defset('IMAGE_forum_new').'</a>';
+			return "<a href='".$url."'>".defset('IMAGE_new').'</a>';
 		}
-		elseif(empty($this->var['forum_replies']) && defined('IMAGE_forum_noreplies'))
+		elseif(empty($this->var['forum_replies']) && defined('IMAGE_noreplies'))
 		{
-			return defset('IMAGE_forum_noreplies');
+			return defset('IMAGE_noreplies');
 		}
 
-		return defset('IMAGE_forum_nonew');
+		return defset('IMAGE_nonew');
 
 	}
 
