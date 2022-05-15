@@ -1351,7 +1351,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
 		// Define which tinymce4 template should be used, depending if the current user is registered or a guest
 		if(!deftrue('e_TINYMCE_TEMPLATE'))
 		{
-			define('e_TINYMCE_TEMPLATE', (USER ? 'member' : 'public')); // allow images / videos.
+			define('e_TINYMCE_TEMPLATE', 'forum'); // allow images / videos.
 		}
 
 		if($this->forum->checkPerm($this->var['thread_forum_id'], 'post') && $this->var['thread_active'])

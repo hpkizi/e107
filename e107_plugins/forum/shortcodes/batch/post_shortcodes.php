@@ -190,13 +190,13 @@ class plugin_forum_post_shortcodes extends e_shortcode
 	{
 		$tp = e107::getParser();
 
+       
 		// Define which tinymce4 template should be used, depending if the current user is registered or a guest
 		if (!deftrue('e_TINYMCE_TEMPLATE'))
 		{
-			define('e_TINYMCE_TEMPLATE', (USER ? 'member' : 'public')); // allow images / videos.
+			define('e_TINYMCE_TEMPLATE', ('forum')); // allow images / videos.
 		}
-		
-		
+ 
 		if(!empty($_POST['post']))
 		{
 			$text = $tp->post_toForm($_POST['post']);
