@@ -17,7 +17,8 @@ core/override
 *.swo
 e107InstallLog.log
 
-
+*Slovak*
+*/Slovak/*
  
 e107_plugins/forum/forum_test.php
 e107_plugins/forum/forum_conf.php

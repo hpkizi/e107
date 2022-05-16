@@ -25,7 +25,7 @@ e107::coreLan('top');
 $action = 'top';
 $subaction = 'all';
 $from = 0;
-$view = 10;
+$view = 50;
 
 if (e_QUERY)
 {
@@ -33,7 +33,7 @@ if (e_QUERY)
 	$from = intval(varset($tmp[0], 0));
 	$action = varset($tmp[1], 'top');
 	$subaction = varset($tmp[2], 'all');
-	$view = (isset($tmp[3]) ? intval($tmp[3]) : 10);
+	$view = (isset($tmp[3]) ? intval($tmp[3]) : 50);
 }
 if ($action == 'top')
 {
@@ -59,9 +59,16 @@ if ($action == 'active')
 
 	$forumList = implode(',', $forum->getForumPermList('view'));
 
+	$breadarray = array(
+		array('text' => $forum->prefs->get('title'), 'url' => e107::url('forum', 'index'))
+	);
+    
+    $breadarray[] = array('text' =>LAN_7);
+    e107::breadcrumb($breadarray);
+        
 	$qry = "
 	SELECT
-		t.*, u.user_name, ul.user_name AS user_last, f.forum_name
+		t.*, u.user_name, ul.user_name AS user_last, f.forum_name, f.forum_sef
 	FROM `#forum_thread` as t
 	LEFT JOIN `#forum` AS f ON f.forum_id = t.thread_forum_id
 	LEFT JOIN `#user` AS u ON u.user_id = t.thread_user
@@ -71,6 +78,17 @@ if ($action == 'active')
 	LIMIT
 		{$from}, {$view}
 	";
+    
+    // it has to be the same query without limits, otherwise pagination is wrong 
+	$count_query = "
+	SELECT
+		t.*, u.user_name, ul.user_name AS user_last, f.forum_name, f.forum_sef
+	FROM `#forum_thread` as t
+	LEFT JOIN `#forum` AS f ON f.forum_id = t.thread_forum_id
+	LEFT JOIN `#user` AS u ON u.user_id = t.thread_user
+	LEFT JOIN `#user` AS ul ON ul.user_id = t.thread_lastuser
+	WHERE t.thread_forum_id IN ({$forumList})
+	ORDER BY t.thread_views DESC";    
 
 	if ($sql->gen($qry))
 	{
@@ -96,9 +114,15 @@ if ($action == 'active')
 			{
 				$POSTER = $row['thread_user_anon'];
 			}
-
-			$LINKTOTHREAD = e107::getUrl()->create('forum/thread/view', array('id' =>$row['thread_id'])); //$e107->url->getUrl('forum', 'thread', "func=view&id={$row['thread_id']}");
-			$LINKTOFORUM = e107::getUrl()->create('forum/forum/view', array('id' => $row['thread_forum_id'])); //$e107->url->getUrl('forum', 'forum', "func=view&id={$row['thread_forum_id']}");
+ 
+			//$LINKTOTHREAD = e107::getUrl()->create('forum/thread/view', array('id' =>$row['thread_id'])); //$e107->url->getUrl('forum', 'thread', "func=view&id={$row['thread_id']}");
+            //	'sef'			=> 'forum/{forum_sef}/{thread_id}/{thread_sef}/',
+            $row['thread_sef'] = $forum->getThreadSef($row);
+            $LINKTOTHREAD = e107::url('forum', 'topic', $row);
+            
+            //$LINKTOFORUM = e107::getUrl()->create('forum/forum/view', array('id' => $row['thread_forum_id'])); //$e107->url->getUrl('forum', 'forum', "func=view&id={$row['thread_forum_id']}");
+            //'sef'			=> 'forum/{forum_sef}/',           
+			$LINKTOFORUM  = e107::url('forum', 'forum', $row);
 
 			$lastpost_datestamp = $gen->convert_date($row['thread_lastpost'], 'forum');
 			if ($row['user_last'])
@@ -122,7 +146,8 @@ if ($action == 'active')
 
 		$text .= "</table>\n</div>";
 
-		$ftotal = $sql->count('forum_thread', '(*)', 'WHERE `thread_parent` = 0');
+		$ftotal = count($sql->retrieve($count_query, true));
+ 
 		$parms = "{$ftotal},{$view},{$from},".e_SELF.'?[FROM].active.forum.'.$view;
 		$text .= "<div class='nextprev'>".$tp->parseTemplate("{NEXTPREV={$parms}}").'</div>';
 		$ns->tablerender(LAN_7, $text, 'nfp');
