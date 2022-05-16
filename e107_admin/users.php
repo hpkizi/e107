@@ -549,51 +549,54 @@ class users_admin_ui extends e_admin_ui
 		}
 
 		e107::getMessage()->addDebug(print_a($update,true));
-
-		if(!empty($update))
+        
+        if(!empty($update))
+  		{
+  			e107::getUserExt()->addFieldTypes($update);
+            
+        }
+        
+		if(!e107::getDb()->count('user_extended', '(user_extended_id)', "user_extended_id=".intval($new_data['submit_value'])))
 		{
-			e107::getUserExt()->addFieldTypes($update);
-
-			if(!e107::getDb()->count('user_extended', '(user_extended_id)', "user_extended_id=".intval($new_data['submit_value'])))
+            $update['data']['user_extended_id'] = intval($new_data['submit_value']);
+             
+			if(e107::getDb()->insert('user_extended', $update))
 			{
-				$update['data']['user_extended_id'] = intval($new_data['submit_value']);
-				if(e107::getDb()->insert('user_extended', $update))
-				{
-					// e107::getMessage()->addSuccess(LAN_UPDATED.': '.ADLAN_78); // not needed see pull/1816
-					e107::getMessage()->addDebug(LAN_UPDATED.': '.ADLAN_78); // let's put it in debug instead
-				}
-				else
-				{
-					e107::getMessage()->addError(LAN_UPDATED_FAILED.': '.ADLAN_78);
-					$error = e107::getDb()->getLastErrorText();
-					e107::getMessage()->addDebug($error);
-					e107::getMessage()->addDebug(print_a($update,true));
-
-
-					e107::getDb()->getLastErrorText();
-				}
+				// e107::getMessage()->addSuccess(LAN_UPDATED.': '.ADLAN_78); // not needed see pull/1816
+				e107::getMessage()->addDebug(LAN_UPDATED.': '.ADLAN_78); // let's put it in debug instead
 			}
 			else
 			{
-				$update['WHERE'] = 'user_extended_id='. intval($new_data['submit_value']);
+				e107::getMessage()->addError(LAN_UPDATED_FAILED.': '.ADLAN_78);
+				$error = e107::getDb()->getLastErrorText();
+				e107::getMessage()->addDebug($error);
+				e107::getMessage()->addDebug(print_a($update,true));
 
-				if(e107::getDb()->update('user_extended',$update)===false)
-				{
-					e107::getMessage()->addError(LAN_UPDATED_FAILED.': '.ADLAN_78);
-					$error = e107::getDb()->getLastErrorText();
-					e107::getMessage()->addDebug($error);
-					e107::getMessage()->addDebug(print_a($update,true));
 
-				}
-				else
-				{
-					 e107::getMessage()->reset(E_MESSAGE_SUCCESS)->addSuccess(LAN_UPDATED); 
-					e107::getMessage()->addDebug(LAN_UPDATED.': '.ADLAN_78); // let's put it in debug instead
-				}
+				e107::getDb()->getLastErrorText();
 			}
 		}
-
-
+		else
+		{
+		    if(!empty($update))
+  		    {
+                $update['WHERE'] = 'user_extended_id='. intval($new_data['submit_value']);
+    
+    			if(e107::getDb()->update('user_extended',$update)===false)
+    			{
+    				e107::getMessage()->addError(LAN_UPDATED_FAILED.': '.ADLAN_78);
+    				$error = e107::getDb()->getLastErrorText();
+    				e107::getMessage()->addDebug($error);
+    				e107::getMessage()->addDebug(print_a($update,true));
+    
+    			}
+    			else
+    			{
+    				 e107::getMessage()->reset(E_MESSAGE_SUCCESS)->addSuccess(LAN_UPDATED); 
+    				e107::getMessage()->addDebug(LAN_UPDATED.': '.ADLAN_78); // let's put it in debug instead
+    			}
+            }
+		}
 	}
 
 
