@@ -592,7 +592,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
 				
 		// the same code as in Post Reply
 		$emailUrl = "<a class='btn btn-default btn-info btn-thread-email" . ($url ? "" : " disabled") . "' "
-			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2044 ."'". $cursor  . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('fas-envelope')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
+			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2044 ."'". $cursor  . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('envelope')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
     
 			
 		if(is_null($this->postInfo) || !empty($this->postInfo['thread_start']))
@@ -610,7 +610,7 @@ class plugin_forum_view_shortcodes extends e_shortcode
         
         // the same code as in Post Reply
         $printUrl = "<a class='btn btn-default btn-info btn-thread-print" . ($url ? "" : " disabled") . "' "
-			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2045 ."'". $cursor  . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('fas-print')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
+			.  " data-toggle='tooltip' data-bs-toggle='tooltip' title='" . LAN_FORUM_2045 ."'". $cursor  . " href='" . ($url ?: "#") . "'>".e107::getParser()->toGlyph('print')."</a>" . ($url ? "" : "<span>&nbsp;</span>");
         
 		//outside posts inside template	
         if(is_null($this->postInfo['thread_start'])) return $printUrl;
