@@ -561,21 +561,21 @@ class news_front
 		{
 
 			case "all":
-				e107::meta('robots', 'noindex');
+				e107::meta('robots', 'noindex, follow');
 				e107::route('news/list/items');
 				e107::canonical($this->route, $news);
 			break;
 
 			case "tag":
 				e107::title($this->subAction);
-				e107::meta('robots', 'noindex');
+				e107::meta('robots', 'noindex, follow');
 				e107::route('news/list/tag');
 				e107::canonical('news/list/tag', array('tag'=> str_replace(' ','-',$this->subAction)));
 				break;				
 			case "author":
 
 				e107::title($this->subAction);
-				e107::meta('robots', 'noindex');
+				e107::meta('robots', 'noindex, follow');
 				e107::route('news/list/author');
 				e107::canonical('news/list/author', $news);
 				break;
@@ -583,7 +583,7 @@ class news_front
 			case "list":
 				$title = $tp->toHTML($news['category_name'],false,'TITLE_PLAIN');
 				e107::title($title);
-				e107::meta('robots', 'noindex');
+				e107::meta('robots', 'noindex, follow');
 				e107::route('news/list/category');
 			//	$category = array('id' => $this->news_item['category_id'], 'name' => $this->news_item['category_sef'] );
 
@@ -610,7 +610,7 @@ class news_front
 				$this->dayMonth = $title;
 
 				e107::title($title);
-				e107::meta('robots', 'noindex');
+				e107::meta('robots', 'noindex, follow');
 				
 				if($type == 'day')
 				{
@@ -718,7 +718,8 @@ class news_front
 				$c++;
 			}
 
-			$modifiedTime = strtotime('30 minutes ago');
+			$modifiedTime = !empty($news['news_modified']) ? (int) $news['news_modified'] : (int) $news['news_datestamp'];
+
 			e107::meta('og:updated_time', $modifiedTime);
 
 			e107::meta('article:section', $news['category_name']);
@@ -784,10 +785,11 @@ class news_front
 	}
 
 
-	/**
-	 * @param $cache_tag
-	 * @param string $type 'title' or 'diz' or 'rows' or empty for html.
-	 */
+		/**
+		 * @param        $cachetag
+		 * @param string $type 'title' or 'diz' or 'rows' or empty for html.
+		 * @return array|false|string
+		 */
 	private function getNewsCache($cachetag, $type=null)
 	{
 		if(!empty($type))

@@ -20,6 +20,41 @@ e107::coreLan('news');
 
 class news_gsitemap
 {
+
+	// Dynamically Generated Sitemap;
+	function config()
+	{
+		$config = array();
+
+		// Viewable from  my-website.com/news-latest-sitemap.xml  ie. plugin-folder + function + 'sitemap.xml'
+		$config[] = array(
+			'name'			=> "All News Posts",
+			'function'		=> "allPosts",
+			'sef'           => 'posts', // used in URL. eg. news-posts-sitemap.xml @see e107_plugins/gsitemap/e_url.php L45
+		);
+
+		return $config;
+
+	}
+
+	private function getNewsPosts()
+	{
+		/* public, guests */
+		$userclass_list = "0,252";
+		$_t = time();		/* public, quests */
+
+        $query = "SELECT n.*, nc.category_name, nc.category_sef FROM #news AS n 
+                LEFT JOIN #news_category AS nc ON n.news_category = nc.category_id 
+				WHERE n.news_class IN (". $userclass_list.") AND n.news_start < ".$_t." AND (n.news_end=0 || n.news_end>".time().") ORDER BY n.news_datestamp ASC ";
+
+	//	$data = $sql->retrieve("news", "*", "news_class IN (" . $userclass_list . ") AND news_start < " . $_t . "   ORDER BY news_datestamp ASC", true);
+
+		return e107::getDb()->retrieve($query,true);
+
+	}
+
+
+
 	function import()
 	{
 		$import = array();
@@ -41,15 +76,8 @@ class news_gsitemap
 			);
 		}
 
+		$data = $this->getNewsPosts();
 
-
-        $query = "SELECT n.*, nc.category_name, nc.category_sef FROM #news AS n 
-                LEFT JOIN #news_category AS nc ON n.news_category = nc.category_id 
-				WHERE n.news_class IN (". $userclass_list.") AND n.news_start < ".$_t." AND (n.news_end=0 || n.news_end>".time().") ORDER BY n.news_datestamp ASC ";
-
-	//	$data = $sql->retrieve("news", "*", "news_class IN (" . $userclass_list . ") AND news_start < " . $_t . "   ORDER BY news_datestamp ASC", true);
-
-		$data = $sql->retrieve($query,true);
 
 		foreach($data as $row)
 		{
@@ -66,8 +94,45 @@ class news_gsitemap
 		return $import;
 	}
 
+
+
+	/* Custom Function for dynamic sitemap of news posts */
+	public function allPosts()
+	{
+		$data = $this->getNewsPosts();
+
+		/** @var news_shortcodes $sc */
+		$sc = e107::getScBatch('news');
+
+		e107::getParser()->thumbWidth(1000);
+
+		$ret = [];
+
+		foreach($data as $row)
+		{
+			$sc->setScVar('news_item', $row);
+
+			$imgUrl = $sc->sc_news_image(['item'=>1, 'type'=>'src']);
+
+			$ret[] = [
+				'url'       => $this->url('news', $row),
+				'lastmod'   => !empty($row['news_modified']) ? $row['news_modified'] : (int) $row['news_datestamp'],
+				'freq'      => 'hourly',
+				'priority'  => 0.5,
+				'image'     => (strpos($imgUrl, 'http') === 0) ? $imgUrl : SITEURLBASE.$sc->sc_news_image(['item'=>1, 'type'=>'src']),
+			];
+		}
+
+		return $ret;
+
+	}
+
+
+
 	/**
 	 * Used above and by gsitemap/e_event.php to update the URL when changed in news, pages etc.
+	 *
+	 * @param $table
 	 * @param $row
 	 * @return string
 	 */
