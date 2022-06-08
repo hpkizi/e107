@@ -51,6 +51,8 @@ else
 
 
 require_once(HEADERF);
+
+
 if ($action == 'active')
 {
 	require_once (e_HANDLER.'userclass_class.php');
@@ -180,7 +182,14 @@ if ($action == 'top')
 	{
 		require_once (e_PLUGIN.'forum/forum_class.php');
 		$forum = new e107forum();
-
+        
+        $breadarray = array(
+    		array('text' => $forum->prefs->get('title'), 'url' => e107::url('forum', 'index'))
+    	);
+    
+        $breadarray[] = array('text' =>TOP_LAN_0);
+        e107::breadcrumb($breadarray);
+ 
 		$qry = "
 		SELECT ue.*, u.* FROM `#user_extended` AS ue
 		LEFT JOIN `#user` AS u ON u.user_id = ue.user_extended_id
