@@ -430,7 +430,7 @@ class private_message
 		$text = e107::getParser()->simpleParse($PM_NOTIFY, $data);
 
 		$eml = array();
-		$eml['email_subject']		= LAN_PM_100.USERNAME;
+		$eml['email_subject']		= LAN_PM_100." ".USERNAME;
 		$eml['send_html']			= true;
 		$eml['email_body']			= $text;
 		$eml['template']			= 'default';
@@ -457,7 +457,7 @@ class private_message
 	function pm_send_receipt($pmInfo) //TODO Add Template and combine with method above..
 	{
 		require_once(e_HANDLER.'mail.php');
-		$subject = LAN_PM_106.$pmInfo['sent_name'];
+		$subject = LAN_PM_106." ".$pmInfo['sent_name'];
 
 		$pmlink = e107::url('pm','index', null, array('mode'=>'full')).'?show.'.$pmInfo['pm_id'];
 
