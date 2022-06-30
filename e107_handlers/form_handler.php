@@ -3006,7 +3006,8 @@ class e_form
 
 		if(deftrue('e_ADMIN_AREA'))
 		{
-			$options['switch'] = 'small';
+			// $options['switch'] = 'small'; ISSUE 4803
+            $options['switch'] = ($options['switch']) ? $options['switch'] : 'small';
 			$label_enabled = ($label_enabled) ? strtoupper($label_enabled) : strtoupper(LAN_ON);
 			$label_disabled = ($label_disabled) ?  strtoupper($label_disabled): strtoupper(LAN_OFF);
 		}
