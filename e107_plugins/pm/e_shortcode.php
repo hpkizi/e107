@@ -94,8 +94,12 @@ class pm_shortcodes extends e_shortcode
 		
 		$pm_prefs = e107::getPlugPref('pm');
 
-		$url = e107::url('pm','index').'?send.'.varset($parm['user']);
-
+		
+        $userData = e107::user($parm['user']);
+        if($userData) {
+       
+        $url = e107::url('pm','index').'?send.'.varset($parm['user']);
+ 
 		require_once(e_PLUGIN."pm/pm_class.php");
 
 		$pm = new private_message;
@@ -109,7 +113,7 @@ class pm_shortcodes extends e_shortcode
 		    if(deftrue('FONTAWESOME') && deftrue('BOOTSTRAP'))
 		    {
 		        $img =  e107::getParser()->toGlyph($glyph,'');
-		        return  "<a class='".$class."' href='".$url ."'>{$img} ".LAN_PLUGIN_PM_NEW."</a>";
+		        return  "<a class='".$class."' href='".$url ."'>{$img} ".LAN_USENDPRIVATEMSG." ".$userData['user_name']."</a>";
 		    }
 
 
@@ -130,10 +134,12 @@ class pm_shortcodes extends e_shortcode
 		{
 			return null;
 		}
-
-
-
-
+ 
+        }
+ 		else
+		{
+			return null;
+		}       
 	}
 
 

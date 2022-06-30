@@ -91,3 +91,4 @@ define("LAN_PM_113", "Read Message");
 define("LAN_PM_114", "You do not have access to send to this user.");
 define("LAN_PM_115", "User Not Found");
 
+define("LAN_USENDPRIVATEMSG","Send a Private Message to");
