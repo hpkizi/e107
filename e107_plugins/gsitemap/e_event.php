@@ -46,6 +46,12 @@ class gsitemap_event // plugin-folder + '_event'
 		{
 			return null;
 		}
+        
+        //save time and query
+        if($data['plugin'] == "news" && ($data['newData']['news_modified'] == $data['oldData']['news_modified'] ) )
+		{
+            return null;
+		}   
 
 		/** @var news_gsitemap $gsmap - could be another plugin too */
 		if(!$gsmap = e107::getAddon($data['plugin'], 'e_gsitemap'))
