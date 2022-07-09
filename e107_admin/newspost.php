@@ -474,7 +474,7 @@ class news_admin_ui extends e_admin_ui
 		'news_sticky'			=> array('title' => LAN_NEWS_28, 	'type' => 'boolean',   'data'=>'int', 'tab'=>2, 'width' => 'auto', 	'thclass' => 'center', 	'inline'=>true,		'class' => 'center', 	'nosort' => false, 'batch'=>true, 'filter'=>true),
     	'news_modified'			=> array('title' => LAN_LAST_UPDATED, 	'type' => 'datestamp', 'readonly'=>true, 'noedit'=>true,  'data'=>'int', 'tab'=>2, 'width' => 'auto', 	'thclass' => 'center', 	'inline'=>false,		'class' => 'center', 	'nosort' => false, 'batch'=>false, 'filter'=>true),
 
-        'news_allow_comments' 	=> array('title' => LAN_COMMENTS, 		'type' => 'boolean', 'inline'=> true, 'data'=>'int',  'tab'=>2,	'writeParms'=>'inverse=1',  'width' => 'auto', 	'thclass' => 'center', 			'class' => 'center', 	'nosort' => false,'batch'=>true, 'filter'=>true,'readParms'=>'reverse=1'),
+        'news_allow_comments' 	=> array('title' => LAN_COMMENTS, 		'type' => 'boolean',  'data'=>'int',  'tab'=>2,	'writeParms'=>'inverse=1',  'width' => 'auto', 	'thclass' => 'center', 			'class' => 'center', 	'nosort' => false,'batch'=>true, 'filter'=>true,'readParms'=>'reverse=1'),
         'news_comment_total' 	=> array('title' => LAN_NEWS_60, 	'type' => 'number',    'data'=>'int', 'tab'=>2,	'noedit'=>true, 'width' => '10%', 	'thclass' => '', 				'class' => null, 		'nosort' => false),
 	//	admin_news_notify
 		'news_email_notify'     => array('title' => LAN_NEWS_103, 'type' => 'checkbox',   'tab'=>2,  'data'=>false, 'writeParms'=>array('show'=>1, 'tdClassRight'=>'form-inline'), 'help'=>LAN_NEWS_109),
@@ -588,13 +588,9 @@ class news_admin_ui extends e_admin_ui
 		{
 			$new_data['news_sef'] = eHelper::title2sef($new_data['news_title']);
 		}
- 
-        $new_data['news_modified'] = $old_data['news_modified'];    
-      
-        if( (array_diff($old_data,$new_data) != [])) {
-        		$new_data['news_modified'] = time();   
-        }
- 
+
+		$new_data['news_modified'] = time();
+
 		$this->checkSEFSimilarity($new_data);
 
 		if(!empty($new_data['news_author']))
