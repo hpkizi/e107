@@ -129,7 +129,8 @@ $USER_FULL_TEMPLATE = str_replace('{USER_EMBED_USERPROFILE}','{USER_ADDONS}', $U
 $user_shortcodes = e107::getScBatch('user');
 $user_shortcodes->wrapper('user/view');
 
-
+e107::meta('robots', 'noindex');
+ 
 $user_frm = new form;
 require_once(HEADERF);
 

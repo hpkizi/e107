@@ -313,6 +313,8 @@ if ($redirectFlag)
 	// No redirect found if we get here.
 }
 
+e107::meta('robots', 'noindex');
+
 $comment_ob_start = FALSE;
 if ($action == "reply")
 {
