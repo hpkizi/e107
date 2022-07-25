@@ -4093,7 +4093,8 @@ class eResponse
 {
 	protected $_body = array('default' => '');
 	protected $_title = array('default' => array());
-	protected $_e_PAGETITLE = array();
+	protected $_e_PAGETITLE = array(); // partial <title> tag.
+	protected $_e_PAGETITLE_OVERRIDE = array(); // Full <title> tag
 	protected $_META_DESCRIPTION = array();
 	protected $_META_KEYWORDS = array();
 	protected $_render_mod = array('default' => 'default');
@@ -4106,7 +4107,7 @@ class eResponse
 							'article:section', 'article:tag', 'article:published_time', 'article:modified_time',
 							'og:description', 'og:image', 'og:title', 'og:updated_time','og:url', 'og:type'
 	);
-	protected $_meta_multiple = array('og:image', 'og:image:width','twitter:image');
+	protected $_meta_multiple = array();
 	protected $_meta = array();
 	protected $_meta_robot_types = array('noindex'=>'NoIndex', 'nofollow'=>'NoFollow','noarchive'=>'NoArchive','noimageindex'=>'NoImageIndex' );
 	protected $_title_separator = ' &raquo; ';
@@ -4600,7 +4601,7 @@ class eResponse
 		{
 			$content = str_replace('&amp;', '&', $content);
 
-			if($meta !== '_e_PAGETITLE')
+			if($meta !== '_e_PAGETITLE' && $meta !== '_e_PAGETITLE_OVERRIDE')
 			{
 				$content = htmlspecialchars((string) $content, ENT_QUOTES, 'UTF-8');
 			}
@@ -4642,14 +4643,26 @@ class eResponse
 	 * @param string $title
 	 * @return eResponse
 	 */
-	public function addMetaTitle($title, $reset=false)
+	public function addMetaTitle($title, $reset=false, $override=false)
 	{
 		if($reset)
 		{
-			$this->_e_PAGETITLE = array();
+			if($override)
+			{
+				$this->_e_PAGETITLE_OVERRIDE = array();
+			}
+			else
+			{
+				$this->_e_PAGETITLE = array();
+			}
 		}
 
 		$title = str_replace(['&#39;','&#039;'], "'", $title);
+
+		if($override)
+		{
+			return $this->addMetaData('e_PAGETITLE_OVERRIDE', $title);
+		}
 
 		return $this->addMetaData('e_PAGETITLE', $title);
 	}
@@ -4657,8 +4670,13 @@ class eResponse
 	/**
 	 * @return string
 	 */
-	public function getMetaTitle()
+	public function getMetaTitle($override = false)
 	{
+		if($override)
+		{
+			return $this->getMetaData('e_PAGETITLE_OVERRIDE', $this->_meta_title_separator);
+		}
+
 		return $this->getMetaData('e_PAGETITLE', $this->_meta_title_separator);
 	}
 
@@ -5264,6 +5282,64 @@ class eHelper
 		}
 
 		return $get;
+
+	}
+
+
+	/**
+	 * Duplicates the value from a title form field into the meta-title form field.
+	 * @param str $titleID  eg. news-title
+	 * @param str $metaTitleID eg. news-meta-title
+	 * @return void
+	 */
+	public static function syncSEOTitle($titleID, $metaTitleID)
+	{
+
+		e107::js('footer-inline', '
+
+			$(window).on("load", function () {
+			
+				if(!$("#'.$metaTitleID.'").val()) 
+			    {
+			        var title = $("#'.$titleID.'").val() + " | " + "'.SITENAME.'";
+			        var charlimit = $("#'.$metaTitleID.'").attr("data-char-count");
+			        
+			        $("#'.$metaTitleID.'").attr("placeholder",title);
+
+			        if(title.length > charlimit)
+			        {
+			           $("#'.$metaTitleID.'").addClass("has-error");
+			        }
+			    }
+			    
+			});
+
+
+			$("#'.$metaTitleID.'").on("ready focus", function() {
+			    
+				var title = $("#'.$titleID.'").val() + " | " + "'.SITENAME.'";
+			  
+			    if(!$(this).val()) 
+			    {
+			        $(this).val(title);
+			    }
+			    else
+			    {
+			        $(this).attr("placeholder",title);
+			    }
+			  
+			});
+			
+		
+			$("#'.$titleID.'").on("input change focus", function() 
+			{
+				var title = $("#'.$titleID.'").val() + " | " + "'.SITENAME.'";
+				$("#'.$metaTitleID.'").attr("placeholder",title);
+			
+			});
+			
+		');
+
 
 	}
 

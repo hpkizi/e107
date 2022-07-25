@@ -10,15 +10,17 @@
  *
 */
 
+
+
+
+
 if (!defined('e107_INIT')) { exit; }
-if(!defined('USER_AREA'))
+if(!defined('USER_AREA')) { define('USER_AREA',TRUE); }
+if(!defined('ADMIN_AREA')) { define('ADMIN_AREA', false); }
+
+if($redirect = e107::getRedirect()->redirectStaticDomain())
 {
-	//overload is now possible, prevent warnings
-	define('USER_AREA',TRUE);
-}
-if(!defined('ADMIN_AREA'))
-{
-	define('ADMIN_AREA', false);
+	e107::redirect($redirect);
 }
 
 e107::getDebug()->logTime('(Header Top)');
@@ -109,36 +111,35 @@ $js_body_onload = array();		// Legacy array of code to load with page.
 //else
 
 
-function render_title()
+function renderTitle()
 {
 	if(!defined('e_PAGETITLE') && ($_PAGE_TITLE = e107::getSingleton('eResponse')->getMetaTitle())) // use e107::title() to set.
 	{
 		define('e_PAGETITLE', $_PAGE_TITLE);
-		e107::meta('og:title', $_PAGE_TITLE); // will only populate if not already defined.
-		e107::meta('twitter:title', $_PAGE_TITLE);
 	}
 
-	$arr = [];
-
-	if(!deftrue('e_FRONTPAGE'))
+	if($_FULL_TITLE = e107::getSingleton('eResponse')->getMetaTitle(true)) // override entire title. @see news_meta_title
 	{
-		if(deftrue('e_PAGETITLE'))
-		{
-			$arr[] = e_PAGETITLE;
-		}
-		elseif(defined('PAGE_NAME'))
-		{
-			$arr[] = PAGE_NAME;
-		}
+		$arr = array($_FULL_TITLE);
 	}
-	else // Frontpage
+	else
 	{
-		e107::meta('og:type', 'website');
-		e107::meta('og:title', SITENAME);
-		e107::meta('twitter:title', SITENAME);
-	}
+		$arr = [];
 
-	$arr[] = SITENAME;
+		if(!deftrue('e_FRONTPAGE'))
+		{
+			if(deftrue('e_PAGETITLE'))
+			{
+				$arr[] = e_PAGETITLE;
+			}
+			elseif(defined('PAGE_NAME'))
+			{
+				$arr[] = PAGE_NAME;
+			}
+		}
+
+		$arr[] = SITENAME;
+	}
 
 	if($custom = e107::callMethod('theme', 'title', $arr))
 	{
@@ -163,22 +164,11 @@ echo "<!doctype html>\n";
 $htmlTag = "<html".(defined("TEXTDIRECTION") ? " dir='".TEXTDIRECTION."'" : "").(defined("CORE_LC") ? " lang=\"".CORE_LC."\"" : "").">";
 echo (defined('HTMLTAG') ? str_replace('THEME_LAYOUT', THEME_LAYOUT, HTMLTAG) :  $htmlTag)."\n";
 echo "<head>
-<title>".render_title()."</title>
+<title>".renderTitle()."</title>
 <meta charset='utf-8' />\n";
 if(!empty($pref['meta_copyright'][e_LANGUAGE])) e107::meta('dcterms.rights',$pref['meta_copyright'][e_LANGUAGE]);
 if(!empty($pref['meta_author'][e_LANGUAGE])) e107::meta('author',$pref['meta_author'][e_LANGUAGE]);
-if(!empty($pref['sitebutton']))
-{
-	$siteButton = (strpos($pref['sitebutton'],'{e_MEDIA') !== false) ? e107::getParser()->thumbUrl($pref['sitebutton'],'w=800',false, true) : e107::getParser()->replaceConstants($pref['sitebutton'],'full');
-	e107::meta('og:image',$siteButton);
-	unset($siteButton);
-}
-elseif(!empty($pref['sitelogo'])) // fallback to sitelogo
-{
-	$siteLogo = (strpos($pref['sitelogo'],'{e_MEDIA') !== false) ? e107::getParser()->thumbUrl($pref['sitelogo'],'w=800',false, true) : e107::getParser()->replaceConstants($pref['sitelogo'],'full');
-	e107::meta('og:image',$siteLogo);
-	unset($siteLogo);
-}
+
 
 if(defined("VIEWPORT")) e107::meta('viewport',VIEWPORT); //BC ONLY
 
@@ -197,6 +187,13 @@ if ($e_headers && is_array($e_headers))
 }
 unset($e_headers);
 
+/** @experimental - subject to change at any time */
+if($schema = e107::schema())
+{
+	echo '<script type="application/ld+json">'.$schema."</script>\n";
+}
+
+unset($schema);
 
 echo e107::getSingleton('eResponse')->renderMeta()."\n";  // render all the e107::meta() entries.
 
@@ -257,13 +254,7 @@ if (is_array($pref['e_meta_list']))
 }
 
 // --------  Generate Apple Touch Icon ---------
-
-if(isset($pref['sitebutton']))
-{
-	$appleIcon = e107::getParser()->thumbUrl($pref['sitebutton'],'w=144&h=144&crop=1',null, true);
-	echo "<link rel='apple-touch-icon' href='".$appleIcon."' />\n";	
-	unset($appleIcon);
-}
+echo renderFavicon();
 
 
 
@@ -294,9 +285,13 @@ if(defined("PREVIEWTHEME"))
 } 
 else 
 {
-	$css_default = "all"; // TODO - default should be defined by the theme
-	// theme-css.php auto-detection TODO - convert it to constant or anything different from GLOBAL
-	if (isset($theme_css_php) && $theme_css_php) 
+	$css_default = "all";
+
+	if(method_exists('theme', 'css')) // new v2.3.2  theme styles load override.
+	{
+		e107::callMethod('theme', 'css');
+	}
+	elseif (isset($theme_css_php) && $theme_css_php)
 	{
 		//echo "<link rel='stylesheet' href='".THEME_ABS."theme-css.php' type='text/css' />\n";
 		$e_js->themeCSS('theme-css.php', $css_default);
@@ -345,16 +340,10 @@ $e_js->renderLinks();
 
 // Other CSS - from unknown location, different from core/theme/plugin location or backward compatibility; NOTE - could be removed in the future!!!
 
-//TODO Additional options for 'bootstrap' and 'style' (ie. THEME_STYLE loaded above). Requires changes to js_manager.php 
-
-
-
-
-
 $CSSORDER = deftrue('CSSORDER') ? explode(",",CSSORDER) : array('library', 'other','core','plugin','theme','inline');
 
 /** Experimental - Subject to removal at any time. Use at own risk  */
-if(method_exists('theme', 'css'))
+if(method_exists('theme', 'cssFilter'))
 {
 	$e_js->set('_theme_css_processor', true);
 }
@@ -417,12 +406,12 @@ if (isset($eplug_js) && $eplug_js)
 	   	$eplug_js_unique = array_unique($eplug_js);
     	foreach($eplug_js_unique as $kjs)
 		{
-        	echo ($kjs[0] == "<") ? $kjs : "<script type='text/javascript' src='{$kjs}'></script>\n"; // could be a .php file  so leave the 'type'.
+        	echo ($kjs[0] == "<") ? $kjs : "<script type='text/javascript' src='$kjs'></script>\n"; // could be a .php file  so leave the 'type'.
 		}
 	}
 	else
 	{
-    	echo "<script type='text/javascript' src='{$eplug_js}'></script>\n"; // could be a .php file so leave the 'type'.
+    	echo "<script type='text/javascript' src='$eplug_js'></script>\n"; // could be a .php file so leave the 'type'.
 	}
 }
 
@@ -472,11 +461,17 @@ if(function_exists('theme_head'))
 $diz_merge = (defined("META_MERGE") && META_MERGE != FALSE && $pref['meta_description'][e_LANGUAGE]) ? $pref['meta_description'][e_LANGUAGE]." " : "";
 $key_merge = (defined("META_MERGE") && META_MERGE != FALSE && $pref['meta_keywords'][e_LANGUAGE]) ? $pref['meta_keywords'][e_LANGUAGE]."," : "";
 
+
+
+
+
+
+
 /**
  * @param $type
  * @return string
  */
-function render_meta($type)
+function renderMeta($type)
 {
 	$tp = e107::getParser();
 	$pref = e107::getPref();
@@ -505,6 +500,30 @@ function render_meta($type)
 	return $ret;
 }
 
+function renderFavicon()
+{
+	// ---------- Favicon ---------
+	if (file_exists(THEME."favicon.ico"))
+	{
+		return "<link rel='icon' href='".THEME_ABS."favicon.ico' type='image/x-icon' />\n<link rel='shortcut icon' href='".THEME_ABS."favicon.ico' type='image/xicon' />\n";
+	}
+	elseif(file_exists(e_MEDIA_ICON.'16x16_favicon.png'))
+	{
+		$iconSizes = [16 => 'icon',32 => 'icon',48 => 'icon',192 => 'icon',167 => 'apple-touch-icon',180 => 'apple-touch-icon'];
+		$text = '';
+		foreach($iconSizes as $size => $rel)
+		{
+			$sizes = $size.'x'.$size;
+			$text .= "<link rel='$rel' type='image/png' sizes='$sizes' href='".e_MEDIA_ICON_ABS.$sizes."_favicon.png'>\n";
+		}
+		return $text;
+	}
+	elseif (file_exists(e_BASE."favicon.ico"))
+	{
+		return "<link rel='icon' href='".SITEURL."favicon.ico' type='image/x-icon' />\n<link rel='shortcut icon' href='".SITEURL."favicon.ico' type='image/xicon' />\n";
+	}
+
+}
 // legay meta-tag checks.
 /*
 $isKeywords = e107::getUrl()->response()->getMetaKeywords();
@@ -517,28 +536,22 @@ $isDescription = e107::getSingleton('eResponse')->getMetaDescription();
 
 if(empty($isKeywords))
 {
-	echo (defined("META_KEYWORDS")) ? "\n<meta name=\"keywords\" content=\"".$key_merge.META_KEYWORDS."\" />\n" : render_meta('keywords');
+	echo (defined("META_KEYWORDS")) ? "\n<meta name=\"keywords\" content=\"".$key_merge.META_KEYWORDS."\" />\n" : renderMeta('keywords');
 }
 if(empty($isDescription))
 {
-	echo (defined("META_DESCRIPTION")) ? "\n<meta name=\"description\" content=\"".$diz_merge.META_DESCRIPTION."\" />\n" : render_meta('description');
+	echo (defined("META_DESCRIPTION")) ? "\n<meta name=\"description\" content=\"".$diz_merge.META_DESCRIPTION."\" />\n" : renderMeta('description');
 }
 
 //echo render_meta('copyright');
 //echo render_meta('author');
-echo render_meta('tag');
+echo renderMeta('tag');
+
 
 unset($key_merge,$diz_merge,$isKeywords,$isDescription);
 
-// ---------- Favicon ---------
-if (file_exists(THEME."favicon.ico")) 
-{
-	echo "<link rel='icon' href='".THEME_ABS."favicon.ico' type='image/x-icon' />\n<link rel='shortcut icon' href='".THEME_ABS."favicon.ico' type='image/xicon' />\n";
-}
-elseif (file_exists(e_BASE."favicon.ico")) 
-{
-	echo "<link rel='icon' href='".SITEURL."favicon.ico' type='image/x-icon' />\n<link rel='shortcut icon' href='".SITEURL."favicon.ico' type='image/xicon' />\n";
-}
+
+
 
 // Theme JS
 /** const THEME_ONLOAD @deprecated */
@@ -659,8 +672,8 @@ echo "</head>\n";
     elseif($def && $def != "legacyCustom" && (isset($CUSTOMHEADER[$def]) || isset($CUSTOMFOOTER[$def]))) // 0.7/1.x themes
     {
         // echo " MODE 0.7";
-        $HEADER = ($CUSTOMHEADER[$def]) ? $CUSTOMHEADER[$def] : $HEADER;
-        $FOOTER = ($CUSTOMFOOTER[$def]) ? $CUSTOMFOOTER[$def] : $FOOTER;
+        $HEADER = isset($CUSTOMHEADER[$def]) ? $CUSTOMHEADER[$def] : $HEADER;
+        $FOOTER = isset($CUSTOMFOOTER[$def]) ? $CUSTOMFOOTER[$def] : $FOOTER;
     }
     elseif(!empty($def) && is_array($HEADER)) // 2.0 themes - we use only $HEADER and $FOOTER arrays.
     {
@@ -683,7 +696,10 @@ echo "</head>\n";
         $body_onload .= " class='e-iframe'";
     }
 
-	$HEADER = str_replace("{e_PAGETITLE}",deftrue('e_PAGETITLE'),$HEADER);
+	if(!empty($HEADER))
+	{
+		$HEADER = str_replace("{e_PAGETITLE}",deftrue('e_PAGETITLE'),$HEADER);
+	}
 
 	//$body_onload .= " id='layout-".e107::getForm()->name2id(THEME_LAYOUT)."' ";
 
@@ -843,7 +859,7 @@ e107::getDebug()->logTime('Render Other');
 
 	
 	//XXX TODO LAN in English.php 
-	echo "<noscript><div class='alert alert-block alert-error alert-danger'><strong>This web site requires that javascript be enabled. <a rel='external' href='http://activatejavascript.org'>Click here for instructions.</a>.</strong></div></noscript>";
+	echo "<noscript><div class='alert alert-block alert-error alert-danger'><strong>This web site requires that javascript be enabled. <a rel='external' href='https://activatejavascript.org'>Click here for instructions.</a>.</strong></div></noscript>";
 
 	if(deftrue('BOOTSTRAP'))
 	{

@@ -1655,7 +1655,7 @@ class e_file
 					$zip->extractTo(e_TEMP);
 					chmod(e_TEMP . $dir, 0755);
 
-					if(empty($dir) && e_DEBUG)
+					if(empty($dir) && deftrue('e_DEBUG'))
 					{
 						print_a($fileinfo);
 					}
@@ -1780,7 +1780,7 @@ class e_file
 			{
 				case "core":
 					$localfile = 'e107-master.zip';
-					$remotefile = 'https://codeload.github.com/JM-Support-sk/e107/zip/master';
+					$remotefile = 'https://codeload.github.com/e107inc/e107/zip/master';
 					$excludes = array(
 						'e107-master/.codeclimate.yml',
 						'e107-master/.editorconfig',
@@ -1793,7 +1793,6 @@ class e_file
 						'e107-master/composer.lock',
 						'e107-master/install.php',
 						'e107-master/favicon.ico',
-                        'e107-master/e107_config.php',
 					);
 					$excludeMatch = array(
 						'/.github/',
@@ -1886,22 +1885,10 @@ class e_file
 				}
 
 			}
-            
-            $this->logData();
 
 			return array('success' => $success, 'error' => $error, 'skipped' => $skipped);
 		}
 
-        function logData($label = '', $message = NULL)
-        {
-
-        	if($fp = @fopen(e_BASE."synced.txt","a+"))
-        	{	
-
-                $contents = @fwrite($fp, date('r'));
-        		@fclose($fp);
-        	}			
-        } 
 
 	/**
 	 * @param $file

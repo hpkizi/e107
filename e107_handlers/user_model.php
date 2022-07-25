@@ -2136,21 +2136,44 @@ class e_user extends e_user_model
 		// Don't update if main admin is logged in as current (non main admin) user
 		if(!$this->getParentId())
 		{
+			$iph = e107::getIPHandler();
 			$sql = e107::getDb();
 			$this->set('last_ip', $this->get('user_ip'));
-			$current_ip = e107::getIPHandler()->getIP(FALSE);
-			$update_ip = $this->get('user_ip' != $current_ip ? ", user_ip = '".$current_ip."'" : "");
+			$current_ip = $iph->getIP();
+			$update_ip = '';
+			$edata = [];
+
+			if($this->get('user_ip') != $current_ip)
+			{
+				$old_ip = (string) $this->get('user_ip');
+				$update_ip = ", user_ip = '".$current_ip."'";
+				$edata = [
+					'old_ip'    => $iph->ipDecode($old_ip),
+					'new_ip'    => $iph->ipDecode($current_ip),
+					'time'      => date('c'),
+					'user_id'   => $this->getId(),
+					'user_name' => $this->get('user_name'),
+				];
+				
+			}
+
 			$this->set('user_ip', $current_ip);
+
 			if($this->get('user_currentvisit') + 3600 < time() || !$this->get('user_lastvisit'))
 			{
 				$this->set('user_lastvisit', (integer) $this->get('user_currentvisit'));
 				$this->set('user_currentvisit', time());
-				$sql->update('user', "user_visits = user_visits + 1, user_lastvisit = ".$this->get('user_lastvisit').", user_currentvisit = ".$this->get('user_currentvisit')."{$update_ip} WHERE user_id='".$this->getId()."' ");
+				$sql->update('user', "user_visits = user_visits + 1, user_lastvisit = ".$this->get('user_lastvisit').", user_currentvisit = ".$this->get('user_currentvisit').$update_ip." WHERE user_id = ".$this->getId()." LIMIT 1 ");
 			}
 			else
 			{
 				$this->set('user_currentvisit', time());
-				$sql->update('user', "user_currentvisit = ".$this->get('user_currentvisit')."{$update_ip} WHERE user_id='".$this->getId()."' ");
+				$sql->update('user', "user_currentvisit = ".$this->get('user_currentvisit').$update_ip." WHERE user_id = ".$this->getId()." LIMIT 1 ");
+			}
+
+			if(!empty($edata))
+			{
+				e107::getEvent()->trigger('user_ip_changed', $edata); // new v2.3.3
 			}
 		}
 	}

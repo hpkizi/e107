@@ -2825,14 +2825,15 @@ class e107
 	}
 
 	/**
-	 * Set the Page Title ie. <title>Whatever</title>
+	 * Set the Page Title ie. <title>Whatever | SITENAME</title> or <title>Whatever</title>
 	 * @param string $title
+	 * @param string $override will remove any additional data from the <title> tag. eg.  | SITENAME etc.
 	 */
-	public static function title($title)
+	public static function title($title, $override=false)
 	{
 		/** @var eResponse $response */
 		$response = self::getSingleton('eResponse');
-		$response->addMetaTitle($title, true);
+		$response->addMetaTitle($title, true, $override);
 	}
 
 	/**
@@ -3363,7 +3364,7 @@ class e107
 
 		$path = self::templatePath($plug_name, $id, $override);
 
-		if(ADMIN && E107_DBG_INCLUDES)
+		if(deftrue('ADMIN') && E107_DBG_INCLUDES)
 		{
 			self::getMessage()->addDebug( "Attempting to load Template File: ".$path );
 		}
@@ -4021,8 +4022,9 @@ class e107
 	 * @param string $plugin if empty will return the last assigned canonical url._SITEURL_ will set canonical to the SITEURL.
 	 * @param string|array $key
 	 * @param array $row
+	 * @param array $options mode, query = [],
 	 */
-	public static function canonical($plugin = '', $key = 'index', $row = array())
+	public static function canonical($plugin = '', $key = 'index', $row = array(), $options=array('mode'=>'full'))
 	{
 		if($plugin === '_RESET_') // for testing only, may be removed in future.
 		{
@@ -4037,6 +4039,8 @@ class e107
 			return $alreadyDone;
 		}
 
+
+
 		if(empty($alreadyDone))
 		{
 			if($plugin === '_SITEURL_')
@@ -4045,7 +4049,7 @@ class e107
 			}
 			else
 			{
-				$url = self::url($plugin, $key, $row, array('mode' => 'full'));
+				$url = self::url($plugin, $key, $row, $options);
 			}
 
 			if(!empty($url))
@@ -4876,17 +4880,23 @@ class e107
 
 		if(!defined('e_MOD_REWRITE')) // Allow e107_config.php to override.
 		{
-			define('e_MOD_REWRITE', ((getenv('HTTP_MOD_REWRITE') === 'On' || getenv('REDIRECT_HTTP_MOD_REWRITE') === 'On')));
+			$HTTP_MOD_REWRITE = isset($_SERVER['HTTP_MOD_REWRITE']) ? $_SERVER['HTTP_MOD_REWRITE'] : getenv('HTTP_MOD_REWRITE');
+			$REDIRECT_HTTP_MOD_REWRITE = isset($_SERVER['REDIRECT_HTTP_MOD_REWRITE']) ? $_SERVER['REDIRECT_HTTP_MOD_REWRITE'] : getenv('REDIRECT_HTTP_MOD_REWRITE');
+			define('e_MOD_REWRITE', (($HTTP_MOD_REWRITE === 'On' || $REDIRECT_HTTP_MOD_REWRITE === 'On')));
 		}
 
 		if(!defined('e_MOD_REWRITE_MEDIA')) // Allow e107_config.php to override.
 		{
-			define('e_MOD_REWRITE_MEDIA', ((getenv('HTTP_MOD_REWRITE_MEDIA') === 'On' || getenv('REDIRECT_HTTP_MOD_REWRITE_MEDIA') === 'On')));
+			$HTTP_MOD_REWRITE_MEDIA = isset($_SERVER['HTTP_MOD_REWRITE_MEDIA']) ? $_SERVER['HTTP_MOD_REWRITE_MEDIA'] : getenv('HTTP_MOD_REWRITE_MEDIA');
+			$REDIRECT_HTTP_MOD_REWRITE_MEDIA = isset($_SERVER['REDIRECT_HTTP_MOD_REWRITE_MEDIA']) ? $_SERVER['REDIRECT_HTTP_MOD_REWRITE_MEDIA'] : getenv('REDIRECT_HTTP_MOD_REWRITE_MEDIA');
+			define('e_MOD_REWRITE_MEDIA', (($HTTP_MOD_REWRITE_MEDIA === 'On' || $REDIRECT_HTTP_MOD_REWRITE_MEDIA === 'On')));
 		}
 
 		if(!defined('e_MOD_REWRITE_STATIC')) // Allow e107_config.php to override.
 		{
-			define('e_MOD_REWRITE_STATIC', ((getenv('HTTP_MOD_REWRITE_STATIC') === 'On' || getenv('REDIRECT_HTTP_MOD_REWRITE_STATIC') === 'On')));
+			$HTTP_MOD_REWRITE_STATIC = isset($_SERVER['HTTP_MOD_REWRITE_STATIC']) ? $_SERVER['HTTP_MOD_REWRITE_STATIC'] : getenv('HTTP_MOD_REWRITE_STATIC');
+			$REDIRECT_HTTP_MOD_REWRITE_STATIC = isset($_SERVER['REDIRECT_HTTP_MOD_REWRITE_STATIC']) ? $_SERVER['REDIRECT_HTTP_MOD_REWRITE_STATIC'] : getenv('REDIRECT_HTTP_MOD_REWRITE_STATIC');
+			define('e_MOD_REWRITE_STATIC', (($HTTP_MOD_REWRITE_STATIC === 'On' || $REDIRECT_HTTP_MOD_REWRITE_STATIC === 'On')));
 		}
 
 		$subdomain = false;

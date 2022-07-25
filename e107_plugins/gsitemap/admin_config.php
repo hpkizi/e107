@@ -19,7 +19,7 @@ if(!getperms("P") || !e107::isInstalled('gsitemap'))
 //require_once(e_HANDLER."userclass_class.php");
 
 e107::lan('gsitemap',true);
-
+e107::css('inline', '#admin-gsitemap-main-instructions .block-text ol > li { padding:1rem }');
 
 
 class gsitemap_adminArea extends e_admin_dispatcher
@@ -41,11 +41,11 @@ class gsitemap_adminArea extends e_admin_dispatcher
 	protected $adminMenu = array(
 
 		'main/list'			=> array('caption'=> LAN_MANAGE, 'perm' => 'P'),
-		'main/create'		=> array('caption'=> LAN_CREATE, 'perm' => 'P'),
+		'main/create'		=> array('caption'=> GSLAN_22, 'perm' => 'P'),
 
 		 'main/div0'        => array('divider'=> true),
-		 'main/import'		=> array('caption'=> 'Import', 'perm' => 'P'),
-		 'main/instructions' => array('caption'=> 'Instructions', 'perm' => 'P'),
+		 'main/import'		=> array('caption'=> LAN_IMPORT, 'perm' => 'P'),
+		 'main/instructions' => array('caption'=> GSLAN_53, 'perm' => 'P'),
 		
 	);
 
@@ -91,8 +91,8 @@ class gsitemap_ui extends e_admin_ui
 			'gsitemap_table'          => array (  'title' => 'Table', 'tab'=>1, 'type' => 'text',  'data' => 'safestr',  'width' => 'auto',  'filter' => true,  'help' => '',  'readParms' =>  array (),  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',  'batch' => false,),
 			'gsitemap_table_id'       => array (  'title' => LAN_ID,  'tab'=>1,'type' => 'number',  'data' => 'int',  'width' => '5%',  'readonly' => false,  'help' => '',  'readParms' =>  array (),  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',),
 			'gsitemap_lastmod'        => array (  'title' => GSLAN_27, 'tab'=>1, 'type' => 'datestamp', 'readonly'=>2, 'data' => 'int',  'width' => 'auto',  'help' => '',  'readParms' =>  array (),  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',  'filter' => false,  'batch' => true,),
-			'gsitemap_freq'           => array (  'title' => GSLAN_28,  'type' => 'dropdown',  'data' => 'safestr',  'width' => 'auto',  'help' => '',  'readParms' =>  array (),  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',  'filter' => false,  'batch' => false,),
-			'gsitemap_priority'       => array (  'title' => 'Priority',  'type' => 'method',  'data' => 'safestr',  'width' => 'auto',  'help' => '',  'readParms' =>  array (),  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',  'filter' => false,  'batch' => false,),
+			'gsitemap_freq'           => array (  'title' => GSLAN_28,  'type' => 'dropdown',  'data' => 'safestr',  'width' => 'auto',  'help' => '',  'readParms' =>  array (),  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',  'filter' => true,  'batch' => true,),
+			'gsitemap_priority'       => array (  'title' => GSLAN_9,  'type' => 'method',  'data' => 'safestr',  'width' => 'auto',  'help' => '',  'readParms' =>  array (),  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',  'filter' => true,  'batch' => true,),
 			'gsitemap_cat'            => array (  'title' => LAN_CATEGORY, 'tab'=>1, 'type' => 'text',  'data' => 'safestr',  'width' => 'auto',  'batch' => true,  'filter' => true,  'help' => '',  'readParms' =>  array (),  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',),
 			'gsitemap_order'          => array (  'title' => LAN_ORDER,  'type' => 'number',  'data' => 'int',  'width' => 'auto',  'help' => '',  'readParms' =>  array (),  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',),
 			'gsitemap_img'            => array (  'title' => LAN_IMAGE,  'type' => 'image',  'data' => 'safestr',  'width' => 'auto',  'help' => '',  'readParms' => 'thumb=80x80',  'writeParms' =>  array (),  'class' => 'left',  'thclass' => 'left',),
@@ -182,10 +182,6 @@ class gsitemap_ui extends e_admin_ui
 		// left-panel help menu area. (replaces e_help.php used in old plugins)
 		public function renderHelp()
 		{
-			$caption = LAN_HELP;
-			$text = 'Some help text';
-
-		//	return array('caption'=>$caption,'text'=> $text);
 
 		}
 
@@ -377,14 +373,32 @@ class gsitemap_ui extends e_admin_ui
 			$ns = e107::getRender();
 
 
-			$LINK_1 = "https://www.google.com/accounts/ServiceLogin?service=sitemaps";
+			$LINK_1 = "https://search.google.com/search-console/";
 			$LINK_2 = "http://www.google.com/support/webmasters/?hl=en";
 
 			$srch[0] = "[URL]";
-			$repl[0] = "<a href='".$LINK_1."'>".$LINK_1."</a>";
+			$repl[0] = "<a href='".$LINK_1."' target='_blank'>".$LINK_1."</a>";
 
-			$srch[1] = "[URL2]";
-			$repl[1] = "<blockquote><b>".SITEURL."gsitemap.php</b></blockquote>";
+
+			$addons = e107::getAddonConfig('e_gsitemap', 'gsitemap');
+
+			$extraUrls = '';
+			foreach($addons as $plug => $item)
+			{
+				foreach($item as $data )
+				{
+					$lan = defset("GSLAN_51", "Auto-generated from [x]");
+
+					$key = $plug.'-'.$data['sef'];
+					$url = e107::url('gsitemap', $key, [], ['mode'=>'full']);
+					$extraUrls .= '<li><a href="'.$url.'" target="_blank">'.$url.'</a> <small><em>('.str_replace('[x]', $plug, $lan).')</em></small></li>';
+				}
+
+			}
+
+
+			$srch[1] = "[SITEMAP_URLS]";
+			$repl[1] = "<ul style='margin:10px'><li><a href='".SITEURL."sitemap.xml' target='_blank'>".SITEURL."sitemap.xml</a></li>".$extraUrls."</ul>";
 
 			$srch[2] = "[";
 			$repl[2] = "<a href='".e_ADMIN."prefs.php'>";
@@ -392,15 +406,17 @@ class gsitemap_ui extends e_admin_ui
 			$srch[3] = "]";
 			$repl[3] = "</a>";
 
+			$default = "Once you have some entries, go to [URL] and enter one of the following URLs in the Sitemaps section.[SITEMAP_URLS]  If any of these urls look incorrect to you, please make sure your site url is correct in [preferences].";
+
 		//	$text = "<b>".GSLAN_33."</b><br /><br />";
 $text = "
-			<ul>
+			<ol>
 				<li>".GSLAN_34."</li>
 				<li>".GSLAN_35."</li>
 				<li>".GSLAN_36."</li>
-				<li>".str_replace($srch,$repl,GSLAN_37)."</li>
-				<li>".str_replace("[URL]","<a href='".$LINK_2."'>".$LINK_2."</a>",GSLAN_38)."</li>
-			<ul>
+				<li>".str_replace($srch,$repl,defset("GSLAN_52", $default))."</li>
+				<li>".str_replace("[URL]","<a href='".$LINK_2."' target='_blank'>".$LINK_2."</a>",GSLAN_38)."</li>
+			</ol>
 			";
 
 			return $text;
@@ -594,25 +610,25 @@ class gsitemap_form_ui extends e_admin_form_ui
 			break;
 			
 			case 'write': // Edit Page
+			case 'batch':
+			case 'filter':
+				$array = [];
 				$text = "<select class='tbox' name='gsitemap_priority' >\n";
 
 				for ($i=0.1; $i<1.0; $i=$i+0.1)
 				{
-					$sel = ($curVal == number_format($i,1))? "selected='selected'" : "";
-					$text .= "<option value='".number_format($i,1)."' $sel>".number_format($i,1)."</option>\n";
+					$num = (string) number_format($i,1);
+					$sel = ($curVal == $num) ? "selected='selected'" : "";
+					$text .= "<option value='".$num."' $sel>".$num."</option>\n";
+					$array[$num] = $num;
 				}
 
-		$text.="</select>";
-				return $text;
+				$text.="</select>";
+
+				return ($mode === 'write') ? $text : $array;
 			break;
 			
-			case 'filter':
-				return array('customfilter_1' => 'Custom Filter 1', 'customfilter_2' => 'Custom Filter 2');
-			break;
-			
-			case 'batch':
-				return array('custombatch_1' => 'Custom Batch 1', 'custombatch_2' => 'Custom Batch 2');
-			break;
+
 		}
 		
 		return null;
@@ -1016,14 +1032,14 @@ class gsitemap
 		$ns = e107::getRender();
 		
 		
-		$LINK_1 = "https://www.google.com/accounts/ServiceLogin?service=sitemaps";
+		$LINK_1 = "https://search.google.com/search-console/";
 		$LINK_2 = "http://www.google.com/support/webmasters/?hl=en";
 		
 		$srch[0] = "[URL]";
 		$repl[0] = "<a href='".$LINK_1."'>".$LINK_1."</a>";
 		
 		$srch[1] = "[URL2]";
-		$repl[1] = "<blockquote><b>".SITEURL."gsitemap.php</b></blockquote>";
+		$repl[1] = "<blockquote><b>".SITEURL."sitemap.xml</b></blockquote>";
 		
 		$srch[2] = "[";
 		$repl[2] = "<a href='".e_ADMIN."prefs.php'>";

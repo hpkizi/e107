@@ -1322,20 +1322,18 @@ class admin_shortcodes extends e_shortcode
 
 	private function getLastGitUpdate()
 	{
-		//$gitFetch = e_BASE.'.git/FETCH_HEAD';
-        $gitFetch = e_BASE.'synced.txt';  
+		$gitFetch = e_BASE.'.git/FETCH_HEAD';
 
-        $text = '<br /><b>Last Git Sync</b><br />';  
-        $time =  'Never';
-        
 		if(file_exists($gitFetch))
 		{
-			$unix = filemtime($gitFetch);	 
-			$time = ($unix) ? date('r',$unix)  : 'Never';	
+			$unix = filemtime($gitFetch);
+
+			$text = '<br /><b>Last Git Update</b><br />'; // NO LAN required. Developer-Only
+			$text.= ($unix) ? date('r',$unix)  : 'Never';
+			$text .= '<br />';
+			return $text;
 		}
 
-        $text .= $time.'<br />';
-        return $text;
 	}
 
 	public function sc_admin_status($parm=null)

@@ -3916,6 +3916,10 @@ class e_admin_controller_ui extends e_admin_controller
 					'hour'    => '1 hour ago',
 					'day'     => '24 hours ago',
 					'week'    => '1 week ago',
+					'today'     => 'today midnight',
+					'thisweek' => 'monday this week midnight',
+					'thismonth' => 'first day of this month midnight',
+					'thisyear' => 'first day of January midnight',
 					'month'   => '1 month ago',
 					'month3'  => '3 months ago',
 					'month6'  => '6 months ago',
@@ -3934,9 +3938,9 @@ class e_admin_controller_ui extends e_admin_controller
 				$ky = $filter[2];
 				$time = vartrue($dateConvert[$ky]);
 				$timeStamp = strtotime($time);
-				
-				$res = array($filter[1], $timeStamp);
 
+				$res = array($filter[1], $timeStamp);
+			//	e107::getMessage()->addDebug('Date: '.date('c', $timeStamp));
 				$this->_log('listQry Filtered by ' .$filter[1]. ' (' .$time. ')');
 				
 			break;
@@ -4612,9 +4616,9 @@ class e_admin_controller_ui extends e_admin_controller
 			}
 
 			// filter for WHERE and FROM clauses
-			$searchable_types = array('text', 'textarea', 'bbarea', 'url', 'ip', 'tags', 'email', 'int', 'integer', 'str', 'string', 'number'); //method? 'user',
+			$searchable_types = array('text', 'textarea', 'bbarea', 'url', 'ip', 'tags', 'email', 'int', 'integer', 'str', 'safestr', 'string', 'number'); //method? 'user',
 			
-			if($var['type'] === 'method' && !empty($var['data']) && ($var['data'] === 'string' || $var['data'] === 'str' || $var['data'] === 'int'))
+			if($var['type'] === 'method' && !empty($var['data']) && ($var['data'] === 'string' || $var['data'] === 'str' || $var['data'] === 'safestr' || $var['data'] === 'int'))
 			{
 				$searchable_types[] = 'method';
 			}
@@ -8325,7 +8329,11 @@ class e_admin_form_ui extends e_form
 								'month3' => $tp->lanVars(LAN_UI_FILTER_PAST_XMONTHS,3),
 								'month6' => $tp->lanVars(LAN_UI_FILTER_PAST_XMONTHS,6),
 								'month9' => $tp->lanVars(LAN_UI_FILTER_PAST_XMONTHS,9),
-								'year'   => LAN_UI_FILTER_PAST_YEAR
+								'year'   => LAN_UI_FILTER_PAST_YEAR,
+								'today' => LAN_UI_FILTER_TODAY,
+								'thisweek' => LAN_UI_FILTER_THIS_WEEK,
+								'thismonth' => LAN_UI_FILTER_THIS_MONTH,
+								'thisyear' => LAN_UI_FILTER_THIS_YEAR,
 							);
 
 							$dateFiltersFuture = array (
@@ -8459,7 +8467,7 @@ class e_admin_form_ui extends e_form
 		}
 
 
-		if(!empty($searchFieldOpts))
+		if(!empty($searchFieldOpts) && $type !== 'batch')
 		{
 			$text .= "\t".$this->optgroup_open(defset('LAN_UI_FILTER_SEARCH_IN_FIELD', 'Search in Field'))."\n";
 

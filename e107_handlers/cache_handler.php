@@ -284,6 +284,7 @@ class ecache {
 
 		$file = ($CacheTag) ? preg_replace("#\W#", "_", $CacheTag)."*.cache.php" : "*.cache.php";
 		e107::getEvent()->triggerAdminEvent('cache_clear', "cachetag=$CacheTag&file=$file&syscache=$syscache");
+		e107::getEvent()->trigger('cache_clear', ['tag'=>$CacheTag, 'file'=>$file, 'system'=>$syscache]);
 		$ret = self::delete(e_CACHE_CONTENT, $file, $syscache);
 
 		if($CacheTag && $related) //TODO - too dirty - add it to the $file pattern above
@@ -354,22 +355,27 @@ class ecache {
 	function clearAll($type,$mask = null)
 	{		
 		$path = null;
-		
+
+		$event = e107::getEvent();
+
 		if($type =='content')
 		{
-			$this->clear();	
+			$this->clear();
+			$event->trigger('cache_clear_all', ['type'=>$type,'mask'=>$mask]);
 			return;
 		}
 			
 		if($type === 'system')
 		{
 			$this->clear_sys();
+			$event->trigger('cache_clear_all', ['type'=>$type,'mask'=>$mask]);
 			return;	
 		}
 
 		if($type === 'browser')
 		{
 			e107::getConfig()->set('e_jslib_browser_cache', time())->save(false);
+			$event->trigger('cache_clear_all', ['type'=>$type,'mask'=>$mask]);
 			return;	
 		}
 
@@ -419,6 +425,8 @@ class ecache {
 				unlink($path.$file);
 			}
 		}
+
+		$event->trigger('cache_clear_all', ['type'=>$type,'mask'=>$mask]);
 	}
 	
 }

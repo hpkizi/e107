@@ -27,6 +27,9 @@ e107::css('inline', "
 
 ");
 
+
+
+
 class news_admin extends e_admin_dispatcher
 {
 
@@ -408,11 +411,6 @@ class news_sub_form_ui extends e_admin_form_ui
 		
 }
 
-
-
-
-
-
 // Main News Area. 
 
 class news_admin_ui extends e_admin_ui
@@ -453,8 +451,9 @@ class news_admin_ui extends e_admin_ui
 		'news_body'			    => array('title' => "", 	        'type' => 'method', 'data'=>'str',    'tab'=>0,  'nolist'=>true, 'writeParms'=>'nolabel=1',		'width' => 'auto', 	'thclass' => '',  'class' => null, 		'nosort' => false),
 		'news_extended'			=> array('title' => "", 	        'type' => null,     'data'=>'str', 'tab'=>0,  'nolist'=>true, 'noedit'=>true, 'writeParms'=>'nolabel=1',		'width' => 'auto', 	'thclass' => '',  'class' => null, 		'nosort' => false),
 
-		'news_meta_keywords'	=> array('title' => LAN_KEYWORDS, 	'type' => 'tags', 	  'data'=>'safestr', 'filter'=>true, 'tab'=>1,	'inline'=>true, 'width' => 'auto', 	'thclass' => '', 				'class' => null, 		'nosort' => false),
-		'news_meta_description'	=> array('title' => LAN_DESCRIPTION,'type' => 'textarea', 'data'=>'safestr','filter'=>true,	'tab'=>1,	'width' => 'auto', 	'thclass' => '', 				'class' => null, 		'nosort' => false, 'writeParms'=>array('size'=>'xxlarge', 'maxlength'=>155, 'rows'=>2)),
+		'news_meta_title'	    => array('title' => LAN_META_TITLE, 	    'type' => 'text', 	  'data'=>'safestr', 'filter'=>true, 'tab'=>1,	'inline'=>true, 'width' => 'auto', 'help'=>'', 'writeParms'=>['size'=>'xxlarge', 'placeholder'=>'', 'counter'=>0,  'maxlength'=> 255], 	'nosort' => false),
+		'news_meta_keywords'	=> array('title' => LAN_KEYWORDS, 	'type' => 'tags', 	  'data'=>'safestr', 'filter'=>true, 'tab'=>1,	'inline'=>true, 'width' => 'auto', 	'thclass' => '', 				'class' => null, 		'nosort' => false, 'readParms'=>['maxlength'=>255,'maxItems'=>30], 'writeParms' => ['maxItems'=>30, 'maxlength'=>255]),
+		'news_meta_description'	=> array('title' => LAN_META_DESCRIPTION,'type' => 'textarea', 'data'=>'safestr','filter'=>true,	'tab'=>1,	'width' => 'auto', 	'thclass' => '', 'help'=>'',		'class' => null, 		'nosort' => false, 'writeParms'=>array('size'=>'xxlarge', 'counter'=>0, 'maxlength'=>255, 'rows'=>2)),
 		'news_meta_robots'		=> array('title' => LAN_ROBOTS, 	'type' => 'dropdown',  'data'=>'safestr',  'tab'=>1, 'inline'=>true, 'readParms'=>array('type'=>'checkboxes'), 'writeParms'=>array('multiple'=>1), 'width' => 'auto', 	'thclass' => 'left', 			'class' => 'left', 		'nosort' => false, 'batch'=>true, 'filter'=>true),
 
 		'news_sef'				=> array('title' => LAN_SEFURL, 	'type' => 'text',    'batch'=>1,  'data'=>'str', 'tab'=>1,  'inline'=>true, 	'width' => 'auto', 	'thclass' => '', 				'class' => null, 		'nosort' => false, 'writeParms'=>array('size'=>'xxlarge', 'show'=>1, 'sef'=>'news_title')),
@@ -773,8 +772,9 @@ class news_admin_ui extends e_admin_ui
 		'news_thumbnail',
 
 		'news_sef' ,
-		'news_meta_keywords',
+		'news_meta_title',
 		'news_meta_description' ,
+		'news_meta_keywords',
 		'news_meta_robots' ,
 
 
@@ -934,6 +934,33 @@ class news_admin_ui extends e_admin_ui
 	//	$this->newspost->news_renderTypes = $this->news_renderTypes;
 	//	$this->newspost->observer();
  
+	}
+
+	private function initSEOFields()
+	{
+		eHelper::syncSEOTitle('news-title', 'news-meta-title');
+
+		$seoTitleLimit = (int) e107::pref('core', 'seo_title_limit', 100);
+		$seoDescriptionLimit = (int) e107::pref('core', 'seo_description_limit', 180);
+
+		$this->fields['news_meta_title']['writeParms']['counter'] = $seoTitleLimit;
+		$this->fields['news_meta_title']['help'] = e107::getParser()->lanVars(LAN_SEARCH_ENGINES_X_LIMIT, $seoTitleLimit);
+		$this->fields['news_meta_description']['writeParms']['counter'] = $seoDescriptionLimit;
+		$this->fields['news_meta_description']['help'] = e107::getParser()->lanVars(LAN_SEARCH_ENGINES_X_LIMIT, $seoDescriptionLimit);
+
+	}
+
+	function EditObserver()
+	{
+		parent::EditObserver();
+		$this->initSEOFields();
+
+	}
+
+	function CreateObserver()
+	{
+		parent::CreateObserver();
+		$this->initSEOFields();
 	}
 
 
@@ -1421,7 +1448,7 @@ class news_form_ui extends e_admin_form_ui
 			$sql->select("user", "user_name", "user_id={$auth} LIMIT 1");
 			$row = $sql->fetch();
 			$text .= "<input type='hidden' name='news_author' value='".$auth.chr(35).$row['user_name']."' />";
-			$text .= "<a href='".e107::getUrl()->create('user/profile/view', 'name='.$row['user_name'].'&id='.$curVal)."'>".$row['user_name']."</a>";
+			$text .= "<a target='_blank' href='".e107::getUrl()->create('user/profile/view', 'name='.$row['user_name'].'&id='.$auth)."'>".$row['user_name']."</a>";
 		}
 		else // allow master admin to
 		{
