@@ -589,3 +589,12 @@ define("LAN_RELATIONSHIP_HELP", "Optional 'rel' attribute. Comma separated.");
 
 define("LAN_NO_SCRIPT_ACCESS", "You don't have permission to use [script] tags.");
 define("LAN_NO_SCRIPT_ACCESS_ASK",  "If you believe this is an error, please ask the main administrator to grant you script access via [b]Preferences > Content Filters[/b]");
+
+define("LAN_UI_FILTER_TODAY", "Today");
+define("LAN_UI_FILTER_THIS_WEEK", "This Week");
+define("LAN_UI_FILTER_THIS_MONTH", "This Month");
+define("LAN_UI_FILTER_THIS_YEAR", "This Year");
+
+define("LAN_SEARCH_ENGINES_X_LIMIT", "Read by search engines. Maximum [x] characters.");
+define("LAN_META_TITLE", "Meta Title");
+define("LAN_META_DESCRIPTION", "Meta Description");
