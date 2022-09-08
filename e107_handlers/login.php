@@ -646,16 +646,7 @@ class userlogin
 				$this->logNote('LAN_ROLL_LOG_10', $username);
 		}
 
-		// prevent duplicates, session=true needed for admin-area login.
-		if(deftrue('e_ADMIN_AREA'))
-		{
-			e107::getMessage()->reset()->addError($message, 'default', true);
-		}
-		else 
-		{
-			e107::getMessage()->reset()->addError($message, 'default');
-		}
-		 
+		e107::getMessage()->reset()->addError($message, 'default', true); // prevent duplicates, session=true needed for admin-area login.
 
 		if($this->testMode === true)
 		{
@@ -749,7 +740,7 @@ class userlogin
 		$userAuditPref = e107::getPref('user_audit_class', e_UC_NOBODY);
 		if (check_class($userAuditPref, $class_list))
 		{
-			e107::getLog()->user_audit(USER_AUDIT_LOGIN,'', $edata_li);
+			e107::getLog()->user_audit(USER_AUDIT_LOGIN,  $edata_li, $userData['user_id'], $userData['user_name']);
 		}
 
 		e107::getEvent()->trigger("login", $edata_li);
