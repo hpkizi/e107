@@ -3980,7 +3980,7 @@ class e_parse
 				return null;
 			}
 		}
-
+        $orig_id = $id;
 
 		$spin = null;
 		$rotate = null;
@@ -4123,6 +4123,7 @@ class e_parse
 				{
 					$prefix = $glyphConfig['class'] . ' ';
 					$tag = $glyphConfig['tag'];
+                    $id = $orig_id;
 					continue;
 				}
 			}
