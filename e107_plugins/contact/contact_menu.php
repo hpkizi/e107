@@ -26,11 +26,36 @@ $range = range(00,24);
 		}
 
 		e107::getLanguage()->bcDefs($defs);
+ 
+$template = e107::getCoreTemplate('contact','menu');
 
 
+<<<<<<< Updated upstream
 $template = e107::getCoreTemplate('contact','menu');
 $contact_shortcodes = e107::getScBatch('contact');         
 $contact_shortcodes->wrapper('contact/menu');  
+=======
+if (is_string($parm))
+{
+	parse_str($parm, $parms);
+}
+else
+{
+	$parms = $parm;
+}
+ 
+$layout = $parms['layout'];
+
+if(is_array($template)){
+  $key = varset($layout, 'default') ;
+  $template = $template[$key];
+}
+
+$head = '<form id="contact-menu" action="' . e_HTTP . 'contact.php" method="post" >';
+
+$contact_shortcodes = e107::getScBatch('contact');   
+$contact_shortcodes->wrapper('contact/menu');             
+>>>>>>> Stashed changes
 $text = e107::getParser()->parseTemplate($head. $template . $foot, true, $contact_shortcodes);
 
 
