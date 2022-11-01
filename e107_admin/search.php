@@ -145,6 +145,9 @@ if (isset($_POST['update_handler']))
 	$tmp = e107::serialize($search_prefs, true);
 
 	$check = $sql ->update("core", "e107_value='".$tmp."' WHERE e107_name='search_prefs'");
+    
+    e107::getCache()->clearAll('system');
+        
 	if($check)
 	{
 		$mes->addSuccess(LAN_UPDATED);
