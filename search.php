@@ -176,7 +176,7 @@ class search_front extends e_shortcode
 			}
 
 			$text .= '<ul class="dropdown-menu dropdown-menu-end pull-right">
-	          <li><a class="dropdown-item e-expandit" href="#" data-target="search-advanced,search-enhanced"><small>'.LAN_SEARCH_202.'</small></a></li>
+	          <li><a class="dropdown-item e-expandit" href="#" data-target="search-enhanced"><small>'.LAN_SEARCH_202.'</small></a></li>
 	        </ul>';
 		}
 		
@@ -367,11 +367,12 @@ class search_front extends e_shortcode
 
 	function sc_enhanced_display()
 	{
-		return ($this->enhanced !== true) ?  "style='display: none'" : "" ;
+		return ($this->enhanced !== true) ?  " style='display: none'" : "" ;
 	}
 
 	function sc_search_advanced($parm='')
 	{
+ 
 		$hiddenBlock = (!empty($_GET['t'])) ? "" : "class='e-hideme'";
 		$text = "<div {$hiddenBlock} id='search-advanced' >";
 
