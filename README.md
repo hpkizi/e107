@@ -1,15 +1,17 @@
 [![e107 Content Management System](e107_images/logoHD.png)](https://e107.org)
 =================
 
-This is custom version of e107 CMS. Don't use it. It is public to be able syncing via admin dashboard. 
+This is custom version of e107 CMS. Don't use it. It is public to be able syncing via plugin. 
 
 Some plugins are moved to separate repos:
 
-https://github.com/Jimako-e107-plugins/forum
- 
-https://github.com/Jimako-e107-plugins/featurebox
+[e107 Alt Auth Plugin](https://github.com/Jimako-e107-plugins/alt_auth) 
 
-https://github.com/Jimako-e107-plugins/download
+[e107 Forum Plugin](https://github.com/Jimako-e107-plugins/forum)
+ 
+[e107 Featurebox Plugin](https://github.com/Jimako-e107-plugins/featurebox)
+
+[e107 Download Plugin](https://github.com/Jimako-e107-plugins/download)
 
 
 **[e107][1]** is a free and open-source content management system (CMS) which allows you to manage and publish your content online with ease. Developers can save time in building websites and powerful online applications. Users can avoid programming completely! Blogs, websites, intranets – e107 does it all. 
