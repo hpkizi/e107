@@ -17,7 +17,11 @@ Some plugins are moved to separate repos:
 
 [e107 Featurebox Plugin](https://github.com/Jimako-e107-plugins/featurebox)
 
-[e107 Chatbox Plugin](https://github.com/Jimako-e107-plugins/chatbox_menu)
+[e107 Chatbox Plugin](https://github.com/Jimako-e107-plugins/chatbox)
+
+[e107 Gallery Plugin](https://github.com/Jimako-e107-plugins/gallery)
+
+[e107 FAQs Plugin](https://github.com/Jimako-e107-plugins/faqs)
 
 
 **[e107][1]** is a free and open-source content management system (CMS) which allows you to manage and publish your content online with ease. Developers can save time in building websites and powerful online applications. Users can avoid programming completely! Blogs, websites, intranets – e107 does it all. 
