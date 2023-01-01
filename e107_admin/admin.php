@@ -47,12 +47,7 @@ e107::loadAdminIcons(); // Needs to be loaded before infopanel AND in boot.php
 
 
 $e_sub_cat = 'main';
-
-if (varset($pref['adminstyle'])=='cascade' || varset($pref['adminstyle'])=='beginner') // Deprecated Admin-include. 
-{
-    $pref['adminstyle'] = 'infopanel'; 
-}
-
+ 
 if(in_array($pref['adminstyle'], array('infopanel', 'flexpanel')))
 {
 	require_once(e_ADMIN . 'includes/' . $pref['adminstyle'] . '.php');
@@ -175,8 +170,8 @@ class admin_start
 		e107::getDebug()->logTime('Check Deprecated');
 		$this->checkDeprecated();
 
-		e107::getDebug()->logTime('Check HTMLArea');
-		$this->checkHtmlarea();
+		//e107::getDebug()->logTime('Check HTMLArea');
+		//$this->checkHtmlarea();
 
 		e107::getDebug()->logTime('Check Htaccess');
 		$this->checkHtaccess();
@@ -510,7 +505,7 @@ TMPO;
 
 
 	
-	
+	/*
 	private function checkHtmlarea()
 	{
 		$mes = e107::getMessage();
@@ -519,7 +514,7 @@ TMPO;
 			$mes->addWarning(e_HANDLER_ABS."htmlarea/<br />".e_ADMIN_ABS."htmlarea/");
 		}	
 	}		
-	
+	*/
 
 
 	private function checkIncompatiblePlugins()
@@ -847,7 +842,7 @@ function admin_info()
 function status_request()
 {
 	global $pref;
-	if ($pref['adminstyle'] == 'classis' || $pref['adminstyle'] == 'cascade' || $pref['adminstyle'] == 'beginner' || $pref['adminstyle'] == 'tabbed') {
+	if ($pref['adminstyle'] == 'classis'  || $pref['adminstyle'] == 'tabbed') {
 		return TRUE;
 	} else {
 		return FALSE;
@@ -858,7 +853,7 @@ function status_request()
 function latest_request()
 {
 	global $pref;
-	if ($pref['adminstyle'] == 'classis' || $pref['adminstyle'] == 'cascade' || $pref['adminstyle'] == 'beginner' || $pref['adminstyle'] == 'tabbed') {
+	if ($pref['adminstyle'] == 'classis'  || $pref['adminstyle'] == 'tabbed') {
 		return TRUE;
 	} else {
 		return FALSE;
@@ -868,7 +863,7 @@ function latest_request()
 function log_request()
 {
 	global $pref;
-	if ($pref['adminstyle'] == 'classis' || $pref['adminstyle'] == 'cascade'|| $pref['adminstyle'] == 'beginner' || $pref['adminstyle'] == 'tabbed') {
+	if ($pref['adminstyle'] == 'classis' ||  $pref['adminstyle'] == 'tabbed') {
 		return TRUE;
 	} else {
 		return FALSE;
