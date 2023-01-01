@@ -852,22 +852,12 @@ function status_request()
 
 function latest_request()
 {
-	global $pref;
-	if ($pref['adminstyle'] == 'classis'  || $pref['adminstyle'] == 'tabbed') {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	return FALSE;
 }
 
 function log_request()
 {
-	global $pref;
-	if ($pref['adminstyle'] == 'classis' ||  $pref['adminstyle'] == 'tabbed') {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	return FALSE;
 }
 
 // getPlugLinks() - moved to sitelinks_class.php : pluginLinks();
