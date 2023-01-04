@@ -48,20 +48,19 @@ e107::loadAdminIcons(); // Needs to be loaded before infopanel AND in boot.php
 
 $e_sub_cat = 'main';
  
-if(in_array($pref['adminstyle'], array('infopanel', 'flexpanel')))
-{
-	require_once(e_ADMIN . 'includes/' . $pref['adminstyle'] . '.php');
 
-	$_class = 'adminstyle_' . $pref['adminstyle'];
-	if(class_exists($_class, false))
-	{
-		$adp = new $_class;
-	}
-	else
-	{
-		$adp = new adminstyle_infopanel;
-	}
+require_once(e_ADMIN . 'includes/' . $pref['adminstyle'] . '.php');
+
+$_class = 'adminstyle_' . $pref['adminstyle'];
+if(class_exists($_class, false))
+{
+	$adp = new $_class;
 }
+else
+{
+	$adp = new adminstyle_infopanel;
+}
+ 
 
 // DEBUG THE ADDON_UPDATED INFOPANEL
 //e107::getCache()->clear('Infopanel_plugin', true);
@@ -85,11 +84,7 @@ e107::getDebug()->logTime('(After Admin Checks)');
 $mes = e107::getMessage();
 
 if (!isset($pref['adminstyle'])) $pref['adminstyle'] = 'infopanel';		// Shouldn't be needed - but just in case
-
-
-
-
-
+ 
 class admin_start
 {
 
