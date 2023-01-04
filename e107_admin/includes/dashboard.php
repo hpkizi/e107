@@ -578,24 +578,21 @@ class adminstyle_dashboard extends adminstyle_infopanel
 				ksort($panels[$key]);
 			}
 
-			$layout = varset($user_pref['core-flexpanel-layout'], 'default');
-			$layout_file = e_ADMIN . 'includes/layouts/flexpanel_' . $layout . '.php';
+			$FLEXPANEL_LAYOUT = e107::getCoreTemplate("dashboard", 'layout');
 
-			if (is_readable($layout_file))
+			include_once($layout_file);
+
+			$template = varset($FLEXPANEL_LAYOUT);
+			$template = str_replace('{MESSAGES}', $mes->render(), $template);
+
+			foreach ($panels as $key => $value)
 			{
-				include_once($layout_file);
-
-				$template = varset($FLEXPANEL_LAYOUT);
-				$template = str_replace('{MESSAGES}', $mes->render(), $template);
-
-				foreach ($panels as $key => $value)
-				{
-					$token = '{' . strtoupper(str_replace('-', '_', $key)) . '}';
-					$template = str_replace($token, implode("\n", $value), $template);
-				}
-
-				echo $template;
+				$token = '{' . strtoupper(str_replace('-', '_', $key)) . '}';
+				$template = str_replace($token, implode("\n", $value), $template);
 			}
+
+			echo $template;
+			 
 		}
 
 }
