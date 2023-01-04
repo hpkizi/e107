@@ -63,7 +63,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 
 
 		private $iconlist = array();
-		static $panels	= array();
+		static $positions	= array();
 
 		/**
 		 * Constructor.
@@ -74,7 +74,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 
 			$this->iconlist = $this->getIconList();
 
-			self::$panels = e107::getTemplate(false, 'dashboard', 'panels');
+			self::$positions = e107::getTemplate(false, 'dashboard', 'positions');
 
 			if (FLEXPANEL_ENABLED)
 			{
@@ -235,11 +235,11 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$ns->setUniqueId('core-infopanel-mye107');
 			$coreInfoPanelMyE107 = $ns->tablerender($caption, $mainPanel, "core-infopanel-mye107", true);
 			$info = $this->getMenuPosition('core-infopanel-mye107');
-			if (!isset(self::$panels[$info['area']][$info['weight']]))
+			if (!isset(self::$positions[$info['area']][$info['weight']]))
 			{
-				self::$panels[$info['area']][$info['weight']] = '';
+				self::$positions[$info['area']][$info['weight']] = '';
 			}
-			self::$panels[$info['area']][$info['weight']] .= $coreInfoPanelMyE107;
+			self::$positions[$info['area']][$info['weight']] .= $coreInfoPanelMyE107;
 
 
 			// --------------------- e107 News --------------------------------
@@ -251,11 +251,11 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$ns->setUniqueId('core-infopanel-news');
 			$coreInfoPanelNews = $ns->tablerender(LAN_LATEST_e107_NEWS, e107::getForm()->tabs($newsTabs, array('active' => 'coreFeed')), "core-infopanel-news", true);
 			$info = $this->getMenuPosition('core-infopanel-news');
-			if (!isset(self::$panels[$info['area']][$info['weight']]))
+			if (!isset(self::$positions[$info['area']][$info['weight']]))
 			{
-				self::$panels[$info['area']][$info['weight']] = '';
+				self::$positions[$info['area']][$info['weight']] = '';
 			}
-			self::$panels[$info['area']][$info['weight']] .= $coreInfoPanelNews;
+			self::$positions[$info['area']][$info['weight']] .= $coreInfoPanelNews;
 
 
 			// --------------------- Website Status ---------------------------
@@ -263,11 +263,11 @@ class adminstyle_dashboard extends adminstyle_infopanel
 		$ns->setUniqueId('core-infopanel-website_status');
 		$coreInfoPanelWebsiteStatus = '';// 'hi';/// "<div id='core-infopanel-website_status'>".$this->renderAddonDashboards()."</div>";  $ns->tablerender(LAN_WEBSITE_STATUS, $this->renderAddonDashboards(), "core-infopanel-website_status", true);
 		$info = $this->getMenuPosition('core-infopanel-website_status');
-		self::$panels[$info['area']][$info['weight']] .= $coreInfoPanelWebsiteStatus;*/
+		self::$positions[$info['area']][$info['weight']] .= $coreInfoPanelWebsiteStatus;*/
 
 
 			// --------------------- Latest Comments --------------------------
-			// self::$panels['Area01'] .= $this->renderLatestComments(); // TODO
+			// self::$positions['Area01'] .= $this->renderLatestComments(); // TODO
  
 			// --------------------- User Selected Menus ----------------------
 			if (varset($user_pref['core-infopanel-menus']))
@@ -288,11 +288,11 @@ class adminstyle_dashboard extends adminstyle_infopanel
 						$inc = $tp->parseTemplate("{PLUGIN=$val|TRUE}");
 					}
 					$info = $this->getMenuPosition($id);
-					if (!isset(self::$panels[$info['area']][$info['weight']]))
+					if (!isset(self::$positions[$info['area']][$info['weight']]))
 					{
-						self::$panels[$info['area']][$info['weight']] = '';
+						self::$positions[$info['area']][$info['weight']] = '';
 					}
-					self::$panels[$info['area']][$info['weight']] .= $inc;
+					self::$positions[$info['area']][$info['weight']] .= $inc;
 				}
 			}
 
@@ -308,19 +308,19 @@ class adminstyle_dashboard extends adminstyle_infopanel
 					$ns->setUniqueId($id);
 					$inc = $ns->tablerender($val['caption'], $val['text'], $val['mode'], true);
 					$info = $this->getMenuPosition($id);
-					if (!isset(self::$panels[$info['area']][$info['weight']]))
+					if (!isset(self::$positions[$info['area']][$info['weight']]))
 					{
-						self::$panels[$info['area']][$info['weight']] = '';
+						self::$positions[$info['area']][$info['weight']] = '';
 					}
-					self::$panels[$info['area']][$info['weight']] .= $inc;
+					self::$positions[$info['area']][$info['weight']] .= $inc;
 				}
 			}
 
 
 			// Sorting panels.
-			foreach (self::$panels as $key => $value)
+			foreach (self::$positions as $key => $value)
 			{
-				ksort(self::$panels[$key]);
+				ksort(self::$positions[$key]);
 			}
 
 			$FLEXPANEL_LAYOUT = e107::getCoreTemplate("dashboard", 'layout');
@@ -330,7 +330,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$template = varset($FLEXPANEL_LAYOUT);
 			$template = str_replace('{MESSAGES}', $mes->render(), $template);
 
-			foreach (self::$panels as $key => $value)
+			foreach (self::$positions as $key => $value)
 			{
 				$token = '{' . strtoupper(str_replace('-', '_', $key)) . '}';
 				$template = str_replace($token, implode("\n", $value), $template);

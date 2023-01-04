@@ -116,16 +116,24 @@ $DASHBOARD_TEMPLATE['layout'] = '
 ';
 
 
-$DASHBOARD_TEMPLATE['panels']['menu-area-01'] = array();  // Sidebar.
-$DASHBOARD_TEMPLATE['panels']['menu-area-02'] = array();
-$DASHBOARD_TEMPLATE['panels']['menu-area-03'] = array();
-$DASHBOARD_TEMPLATE['panels']['menu-area-04'] = array();
-$DASHBOARD_TEMPLATE['panels']['menu-area-05'] = array();
-$DASHBOARD_TEMPLATE['panels']['menu-area-06'] = array();
-$DASHBOARD_TEMPLATE['panels']['menu-area-07'] = array();	// Content left.
-$DASHBOARD_TEMPLATE['panels']['menu-area-08'] = array();	// Content right.
-$DASHBOARD_TEMPLATE['panels']['menu-area-09'] = array();
-$DASHBOARD_TEMPLATE['panels']['menu-area-10'] = array();
-$DASHBOARD_TEMPLATE['panels']['menu-area-11'] = array();
-$DASHBOARD_TEMPLATE['panels']['menu-area-12'] = array();
-$DASHBOARD_TEMPLATE['panels']['menu-area-13'] = array();
+//$DASHBOARD_TEMPLATE['positions']['menu-area-01'] = array();  // Sidebar. use admin_template with shortcodes 
+$DASHBOARD_TEMPLATE['positions']['menu-area-02'] = array();
+$DASHBOARD_TEMPLATE['positions']['menu-area-03'] = array();
+$DASHBOARD_TEMPLATE['positions']['menu-area-04'] = array();
+$DASHBOARD_TEMPLATE['positions']['menu-area-05'] = array();
+$DASHBOARD_TEMPLATE['positions']['menu-area-06'] = array();
+$DASHBOARD_TEMPLATE['positions']['menu-area-07'] = array();	// Content left.
+$DASHBOARD_TEMPLATE['positions']['menu-area-08'] = array();	// Content right.
+$DASHBOARD_TEMPLATE['positions']['menu-area-09'] = array();
+$DASHBOARD_TEMPLATE['positions']['menu-area-10'] = array();
+$DASHBOARD_TEMPLATE['positions']['menu-area-11'] = array();
+$DASHBOARD_TEMPLATE['positions']['menu-area-12'] = array();
+$DASHBOARD_TEMPLATE['positions']['menu-area-13'] = array();
+
+
+
+/* available dashboard panels
+core-infopanel-mye107
+core-infopanel-news
+plug-infopanel-user-0
+*/
