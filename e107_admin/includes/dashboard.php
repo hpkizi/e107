@@ -28,6 +28,18 @@ if(e_AJAX_REQUEST)
 {
 	if(FLEXPANEL_ENABLED && varset($_POST['core-flexpanel-order'], false))
 	{
+		/*
+			$message = date('r') . "\n" . $message . "\n";
+			$message .= "\n_POST\n";
+			$message .= print_r($_POST, true);
+			$message .= "\n_GET\n";
+			$message .= print_r($_GET, true);
+
+			$message .= '---------------';
+
+			file_put_contents(e_LOG . 'uiAjaxFlexDashboard.log', $message . "\n\n", FILE_APPEND);
+		*/
+
 		// If "Apply dashboard preferences to all administrators" is checked.
 		if($adminPref == 1)
 		{
@@ -123,10 +135,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$this->userAdminPanelArray = $user_pref['core-infopanel-mye107'];
 		}
 
-
-
-
-
+ 
 		/**
 		 * Get selected area and position for a menu item.
 		 *
@@ -145,14 +154,14 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			}
 
 			$default = array(
-				'area'   => 'menu-area-02',
-				'weight' => 1000,
-			);
+					'area'   => 'menu-area-02',
+					'weight' => 1000,
+				);
 
 			$positions = $this->getDefaultPositions();
 
 			$layout = varset($user_pref['core-flexpanel-layout'], 'default');
- 
+
 			if (!empty($positions[$layout][$id]))
 			{
 				return $positions[$layout][$id];
@@ -165,7 +174,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 					'weight' => 1000,
 				);
 			}
-*/
+			*/
 			return $default;
 		}
 
@@ -186,11 +195,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 					'core-infopanel-news'           => array(
 						'area'   => 'menu-area-08',
 						'weight' => 0,
-					),
-					'core-infopanel-website_status' => array(
-						'area'   => 'menu-area-08',
-						'weight' => 1,
-					),
+					) 
 				),
 			);
 		}
@@ -211,9 +216,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			jQuery(function($){
 				$('#e-adminfeed').load('" . e_ADMIN . "admin.php?mode=core&type=feed');
 				$('#e-adminfeed-plugin').load('" . e_ADMIN . "admin.php?mode=addons&type=plugin');
-				$('#e-adminfeed-theme').load('" . e_ADMIN . "admin.php?mode=addons&type=theme');
-				
-			
+				$('#e-adminfeed-theme').load('" . e_ADMIN . "admin.php?mode=addons&type=theme');	
 			});
 			";
 			e107::js('inline', $code, 'jquery');
@@ -263,21 +266,95 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			return $coreInfoPanelAdmin;
 		}
 
+		function renderLatestComments($type = "blocked")
+		{
+			$sql = e107::getDb();
+			$tp = e107::getParser();
+
+			//if(!check_class('B')) // XXX problems?
+			//	{
+			//		return;
+			//	}
+			$where = '';
+			switch ($type)
+			{
+				case "blocked":
+					$where = "comment_blocked=2";
+			}
+
+
+			if (!$rows = $sql->retrieve('comments', '*', $where .' ORDER BY comment_id DESC LIMIT 25', true))
+			{
+				return null;
+			}
+
+			switch($type) {
+				case "blocked": 
+					$where = "comment_blocked=2";
+			}
+
+			$sc = e107::getScBatch('comment');
+
+			$text = '
+		  <ul class="media-list unstyled list-unstyled">';
+			// <button class='btn btn-mini'><i class='icon-pencil'></i> Edit</button> 
+
+			//XXX Always keep template hardcoded here - heavy use of ajax and ids. 
+			$count = 1;
+
+			$lanVar = array('x' => '{USERNAME}', 'y' => '{TIMEDATE=relative}');
+
+			foreach ($rows as $row)
+			{
+				$hide = ($count > 3) ? ' hide' : '';
+
+				$TEMPLATE = "{SETIMAGE: w=40&h=40}
+				<li id='comment-" . $row['comment_id'] . "' class='media" . $hide . "'>
+				<span class='media-object pull-left'>{USER_AVATAR=" . $row['comment_author_id'] . "}</span> 
+				<div class='btn-group pull-right'>
+	            	<button data-target='" . e_BASE . "comment.php' data-comment-id='" . $row['comment_id'] . "' data-comment-action='delete' class='btn btn-sm btn-mini btn-danger'><i class='fa fa-remove'></i> " . LAN_DELETE . "</button>
+	            	<button data-target='" . e_BASE . "comment.php' data-comment-id='" . $row['comment_id'] . "' data-comment-action='approve' class='btn btn-sm btn-mini btn-success'><i class='fa fa-check'></i> " . LAN_APPROVE . "</button>
+	            </div>
+				<div class='media-body'>
+					<small class='muted smalltext'>" . $tp->lanVars(LAN_POSTED_BY_X, $lanVar) . "</small><br />
+					<p>{COMMENT}</p> 
+				</div>
+				</li>";
+
+				$sc->setVars($row);
+				$text .= $tp->parseTemplate($TEMPLATE, true, $sc);
+				$count++;
+			}
+
+
+			$text .= '
+     		</ul>
+		    <div class="right">
+		      <a class="btn btn-xs btn-mini btn-primary text-right" href="' . e_ADMIN . 'comment.php?searchquery=&filter_options=comment_blocked__2">' . LAN_VIEW_ALL . '</a>
+		    </div>
+		 ';
+			// $text .= "<small class='text-center text-warning'>Note: Not fully functional at the moment.</small>";
+
+			$ns = e107::getRender();
+			return $text;
+		}
+	
 
 		/* Comments */
 		function core_infopanel_comments($options = array())
  		{
 			$ns = e107::getRender();
 
-			$dashboardUniqueId 	= "plug-infopanel-comments-0";
+			$dashboardUniqueId 	= varset($options['uniqueId'], time());
 			$dashboardStyle		= varset($options['style'], 'flexbox');
-			$dashboardLinks     = varset($options['links'], '');
+			//$dashboardLinks     = varset($options['links'], '');
 			$dashboardCaption     = varset($options['caption'], '');
-
+ 
 			$ns->setStyle($dashboardStyle);
 			$ns->setUniqueId($dashboardUniqueId);
 
-			$coreInfoPanelAdmin = $ns->tablerender($dashboardCaption, $this->renderLatestComments(), $dashboardUniqueId, true);
+			$content = 	$this->renderLatestComments();
+			$coreInfoPanelAdmin = $ns->tablerender($dashboardCaption, $content, $dashboardUniqueId, true);
 
 			//return $this->renderLatestComments(); trying to change core code for now (2x rendered pannel)
 			return $coreInfoPanelAdmin;
@@ -314,7 +391,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$supported_panels = e107::getTemplate(false, 'dashboard', 'panels');
  
 			foreach($supported_panels AS $key => $panel) {
-				$key = str_replace('-', '_', $key); // TODO fix this if they solve #4940 different way
+				//$key = str_replace('-', '_', $key); // TODO fix this if they solve #4940 different way
  
 				$params  = $panel;
 
@@ -417,4 +494,3 @@ class adminstyle_dashboard extends adminstyle_infopanel
 		}
 
 }
-
