@@ -118,7 +118,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 		function getMenuPosition($id)
 		{
 			$user_pref = $this->getUserPref();
- 
+
 			if (!empty($user_pref['core-flexpanel-order'][$id]))
 			{
 				return $user_pref['core-flexpanel-order'][$id];
@@ -159,14 +159,6 @@ class adminstyle_dashboard extends adminstyle_infopanel
 		{
 			return array( 
 				'default'           => array(
-					'e-addon-updates'               => array(
-						'area'   => 'menu-area-01',
-						'weight' => -1,
-					),
-					'core-infopanel-help'           => array(
-						'area'   => 'menu-area-01',
-						'weight' => 0,
-					),
 					'core-infopanel-mye107'         => array(
 						'area'   => 'menu-area-07',
 						'weight' => 0,
@@ -207,17 +199,6 @@ class adminstyle_dashboard extends adminstyle_infopanel
 				echo $frm->close();
 				return;
 			}
- 
-		 
-			// "Help" box.
-			$ns->setStyle('flexpanel');
-			$ns->setUniqueId('core-infopanel-help');
-			$info = $this->getMenuPosition('core-infopanel-help');
-			if (!isset(self::$panels[$info['area']][$info['weight']]))
-			{
-				self::$panels[$info['area']][$info['weight']] = '';
-			}
-			self::$panels[$info['area']][$info['weight']] .= $tp->parseTemplate('{ADMIN_HELP}', false, $admin_sc);
  
 			// --------------------- Personalized Panel -----------------------
 			$myE107 = varset($user_pref['core-infopanel-mye107'], array());
@@ -287,20 +268,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 
 			// --------------------- Latest Comments --------------------------
 			// self::$panels['Area01'] .= $this->renderLatestComments(); // TODO
-
-
-			// --------------------- Add-on updates ---------------------------
-			$ns->setStyle('flexpanel');
-			$ns->setUniqueId('e-addon-updates');
-			$addonUpdates = $admin_sc->sc_admin_addon_updates();
-			$info = $this->getMenuPosition('e-addon-updates');
-			if (!isset(self::$panels[$info['area']][$info['weight']]))
-			{
-				self::$panels[$info['area']][$info['weight']] = '';
-			}
-			self::$panels[$info['area']][$info['weight']] .= $addonUpdates;
-
-
+ 
 			// --------------------- User Selected Menus ----------------------
 			if (varset($user_pref['core-infopanel-menus']))
 			{
