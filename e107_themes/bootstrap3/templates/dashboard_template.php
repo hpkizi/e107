@@ -12,12 +12,8 @@
 
 $DASHBOARD_TEMPLATE['layout'] = '
 <div class="row">
-	<div class="col-md-3 col-lg-2 admin-left-panel">
-		<div class="draggable-panels" id="menu-area-01">
-			{MENU_AREA_01}
-		</div>
-	</div>
-	<div class="col-md-9 col-lg-10 admin-right-panel">
+	 
+	<div class="col-md-12  admin-right-panel">
 		<div class="sidebar-toggle">
 			<a href="#" title="'.ADLAN_185.'" data-toggle-sidebar="true">&nbsp;</a>
 		</div>
