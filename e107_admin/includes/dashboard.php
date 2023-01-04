@@ -28,7 +28,7 @@ if(e_AJAX_REQUEST)
 {
 	if(FLEXPANEL_ENABLED && varset($_POST['core-flexpanel-order'], false))
 	{
-		/*
+		 /*
 			$message = date('r') . "\n" . $message . "\n";
 			$message .= "\n_POST\n";
 			$message .= print_r($_POST, true);
@@ -38,7 +38,7 @@ if(e_AJAX_REQUEST)
 			$message .= '---------------';
 
 			file_put_contents(e_LOG . 'uiAjaxFlexDashboard.log', $message . "\n\n", FILE_APPEND);
-		*/
+		  */
 
 		// If "Apply dashboard preferences to all administrators" is checked.
 		if($adminPref == 1)
@@ -161,7 +161,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$positions = $this->getDefaultPositions();
 
 			$layout = varset($user_pref['core-flexpanel-layout'], 'default');
-
+		 
 			if (!empty($positions[$layout][$id]))
 			{
 				return $positions[$layout][$id];
@@ -359,7 +359,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			//return $this->renderLatestComments(); trying to change core code for now (2x rendered pannel)
 			return $coreInfoPanelAdmin;
 		}
-
+ 
 		/**
 		 * Render contents.
 		 */
@@ -417,9 +417,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			}
   
 			/*  END OF CHANGE **************************************************************/
-
-			// --------------------- Latest Comments --------------------------
-			// $this->positions['Area01'] .= $this->renderLatestComments(); // TODO
+ 
  
 			// --------------------- User Selected Menus ----------------------
 			if (varset($user_pref['core-infopanel-menus']))
@@ -448,9 +446,9 @@ class adminstyle_dashboard extends adminstyle_infopanel
 				}
 			}
 
- 
+			// THIS IS CORRECT APPROACH FOR NOW
 			// --------------------- Plugin Addon Dashboards ---------------------- eg. e107_plugin/user/e_dashboard.php
-			// each plugin renders its own panel - chart function is needed 
+			// each plugin renders its own panel - chart method is needed 
 			$dashboards = $this->getAddonDashboards();
 			 
 			if (!empty($dashboards))
@@ -459,9 +457,11 @@ class adminstyle_dashboard extends adminstyle_infopanel
 				foreach ($dashboards as $val)
 				{
 					$id = $val['mode'];
+					$id = str_replace('_', '-', $id); // TODO fix this if they solve #4940 different way
 					$ns->setUniqueId($id);
-					$inc = $ns->tablerender($val['caption'], $val['text'], $val['mode'], true);
+					$inc = $ns->tablerender($val['caption'], $val['text'], $val['mode'], true);   
 					$info = $this->getMenuPosition($id);
+			 
 					if (!isset($this->positions[$info['area']][$info['weight']]))
 					{
 						$this->positions[$info['area']][$info['weight']] = '';
