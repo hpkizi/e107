@@ -64,6 +64,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 
 		private $iconlist = array();
 		public $positions	= array();
+		static $userAdminPanelArray = array();
 
 		/**
 		 * Constructor.
@@ -75,6 +76,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$this->iconlist = $this->getIconList();
 
 			$this->positions = e107::getTemplate(false, 'dashboard', 'positions');
+			self::$userAdminPanelArray = $this->getUserAdminPanelArray();
 
 			if (FLEXPANEL_ENABLED)
 			{
@@ -105,6 +107,24 @@ class adminstyle_dashboard extends adminstyle_infopanel
 				}
 			}
 		}
+
+
+		/**
+		 * Allow to set your own admin panels.
+		 */
+		function getUserAdminPanelArray()
+		{
+			$user_pref = $this->getUserPref();
+			$myE107 = varset($user_pref['core-infopanel-mye107'], array());
+			if (empty($myE107)) // Set default icons.
+			{
+				$user_pref['core-infopanel-mye107'] = e107::getNav()->getDefaultAdminPanelArray();
+			}
+			$this->userAdminPanelArray = $user_pref['core-infopanel-mye107'];
+		}
+
+
+
 
 
 		/**
@@ -178,7 +198,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 		public function core_infopanel_news($options = array()) 
 		{
 			$ns = e107::getRender();
- 
+		 
 			$dashboardUniqueId 	= varset($options['uniqueId'], time());
 			$dashboardStyle		= varset($options['style'], 'flexbox');
 
@@ -201,9 +221,66 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$ns->setStyle( $dashboardStyle);
 			$ns->setUniqueId($dashboardUniqueId);
 		 
-			$coreInfoPanelNews = $ns->tablerender(LAN_LATEST_e107_NEWS, e107::getForm()->tabs($newsTabs, array('active' => 'coreFeed')), "core-infopanel-news", true);
+			$coreInfoPanelNews = $ns->tablerender(LAN_LATEST_e107_NEWS, e107::getForm()->tabs($newsTabs, array('active' => 'coreFeed')), $dashboardUniqueId, true);
 			
 			return $coreInfoPanelNews;
+		}
+
+		/**
+		 * Display icons
+		 */
+		function core_infopanel_icons($options = array())
+		{
+ 
+			$ns = e107::getRender();
+
+			$dashboardUniqueId 	= varset($options['uniqueId'], time());
+			$dashboardStyle		= varset($options['style'], 'flexbox');
+			$dashboardLinks     = varset($options['links'], '');
+			$dashboardCaption     = varset($options['caption'], '');
+
+			$newarray = e107::getNav()->adminLinks($dashboardLinks);
+	 
+			$adminPanel = "<div id='.$dashboardUniqueId.' >";
+
+			foreach ($newarray as $key => $val)
+			{
+				if (in_array($key, $this->userAdminPanelArray))
+				{
+					if ($tmp = e107::getNav()->renderAdminButton($val['link'], $val['title'], $val['caption'], $val['perms'], $val['icon_32'], "div"))
+					{
+						$adminPanel .= $tmp;
+					}
+				}
+			}
+			$adminPanel .= "</div>";
+
+			$ns->setStyle($dashboardStyle);
+			$ns->setUniqueId($dashboardUniqueId);
+
+			$coreInfoPanelAdmin = $ns->tablerender($dashboardCaption, $adminPanel, $dashboardUniqueId, true);
+
+			return $coreInfoPanelAdmin;
+		}
+
+
+		/* Comments */
+		function core_infopanel_comments($options = array())
+ 		{
+			$ns = e107::getRender();
+
+			$dashboardUniqueId 	= "plug-infopanel-comments-0";
+			$dashboardStyle		= varset($options['style'], 'flexbox');
+			$dashboardLinks     = varset($options['links'], '');
+			$dashboardCaption     = varset($options['caption'], '');
+
+			$ns->setStyle($dashboardStyle);
+			$ns->setUniqueId($dashboardUniqueId);
+
+			$coreInfoPanelAdmin = $ns->tablerender($dashboardCaption, $this->renderLatestComments(), $dashboardUniqueId, true);
+
+			//return $this->renderLatestComments(); trying to change core code for now (2x rendered pannel)
+			return $coreInfoPanelAdmin;
 		}
 
 		/**
@@ -231,56 +308,23 @@ class adminstyle_dashboard extends adminstyle_infopanel
 				return;
 			}
  
-			// --------------------- Personalized Panel -----------------------
-			$myE107 = varset($user_pref['core-infopanel-mye107'], array());
-			if (empty($myE107)) // Set default icons.
-			{
-				$user_pref['core-infopanel-mye107'] = e107::getNav()->getDefaultAdminPanelArray();
-			}
+			/* LOGIC CHANGE SET EVERYTHING IN TEMPLATE *************************************
+			/* TODO FIXME template name - for now trying to avoid to use admin_template   */
 
-			$ns->setStyle('flexpanel');
-			$mainPanel = "<div id='core-infopanel-mye107'>";
-			$mainPanel .= "<div class='left'>";
-			$count = 0;
-			foreach ($this->iconlist as $key => $val)
-			{
-				if (in_array($key, $user_pref['core-infopanel-mye107']))
-				{
-					if ($tmp = e107::getNav()->renderAdminButton($val['link'], $val['title'], $val['caption'], $val['perms'], $val['icon_32'], "div"))
-					{
-						$mainPanel .= $tmp;
-						$count++;
-					}
-				}
-
-				if ($count == 20)
-				{
-					break;
-				}
-			}
-			$mainPanel .= "</div></div>";
-
-			// Rendering the saved configuration.
-			$ns->setStyle('flexpanel');
-			$caption = $tp->lanVars(LAN_CONTROL_PANEL, ucwords(USERNAME));
-			$ns->setUniqueId('core-infopanel-mye107');
-			$coreInfoPanelMyE107 = $ns->tablerender($caption, $mainPanel, "core-infopanel-mye107", true);
-			$info = $this->getMenuPosition('core-infopanel-mye107');
-			if (!isset($this->positions[$info['area']][$info['weight']]))
-			{
-				$this->positions[$info['area']][$info['weight']] = '';
-			}
-			$this->positions[$info['area']][$info['weight']] .= $coreInfoPanelMyE107;
- 
-			/*  CHANGE */
 			$supported_panels = e107::getTemplate(false, 'dashboard', 'panels');
  
 			foreach($supported_panels AS $key => $panel) {
-				$params['uniqueId'] = $key;
-				$params['style'] = 'flexpanel';
-				$flex_key =   str_replace('-', '_', $key);  //TODO fix this if they solve #4940 different way
+				$key = str_replace('-', '_', $key); // TODO fix this if they solve #4940 different way
+ 
+				$params  = $panel;
 
-				$text = e107::callMethod("adminstyle_dashboard", $flex_key, $params);
+				$params['uniqueId'] 	= $key; 
+				$params['style'] 		= varset($params['style'], 'flexpanel');
+			//	$params['options'] 		= $panel ;
+			 
+				$panel_type = varset($panel['type'], $key);
+				
+				$text = e107::callMethod("adminstyle_dashboard", $panel_type, $params);
 		 
 				if($text) {
 				 
@@ -294,15 +338,8 @@ class adminstyle_dashboard extends adminstyle_infopanel
 					
 				}
 			}
-			 
-
-			// --------------------- Website Status ---------------------------
-			/*	$ns->setStyle('flexpanel');
-		$ns->setUniqueId('core-infopanel-website_status');
-		$coreInfoPanelWebsiteStatus = '';// 'hi';/// "<div id='core-infopanel-website_status'>".$this->renderAddonDashboards()."</div>";  $ns->tablerender(LAN_WEBSITE_STATUS, $this->renderAddonDashboards(), "core-infopanel-website_status", true);
-		$info = $this->getMenuPosition('core-infopanel-website_status');
-		$this->positions[$info['area']][$info['weight']] .= $coreInfoPanelWebsiteStatus;*/
-
+  
+			/*  END OF CHANGE **************************************************************/
 
 			// --------------------- Latest Comments --------------------------
 			// $this->positions['Area01'] .= $this->renderLatestComments(); // TODO
@@ -336,7 +373,9 @@ class adminstyle_dashboard extends adminstyle_infopanel
 
  
 			// --------------------- Plugin Addon Dashboards ---------------------- eg. e107_plugin/user/e_dashboard.php
+			// each plugin renders its own panel - chart function is needed 
 			$dashboards = $this->getAddonDashboards();
+			 
 			if (!empty($dashboards))
 			{
 				$ns->setStyle('flexpanel');
@@ -353,6 +392,8 @@ class adminstyle_dashboard extends adminstyle_infopanel
 					$this->positions[$info['area']][$info['weight']] .= $inc;
 				}
 			}
+
+
  
 			// Sorting panels.
 			foreach ($this->positions as $key => $value)

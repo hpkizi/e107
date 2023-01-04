@@ -134,11 +134,26 @@ $DASHBOARD_TEMPLATE['positions']['menu-area-11'] = array();
 $DASHBOARD_TEMPLATE['positions']['menu-area-12'] = array();
 $DASHBOARD_TEMPLATE['positions']['menu-area-13'] = array();
 
+//full admin icons, personalize still possible
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-admin'] = array('type'=> 'core_infopanel_icons', 'links'=>'core', 'style' => 'flexpanel', 'caption' => 'flexpanel',
+'caption' => 'Admin' );
 
-$DASHBOARD_TEMPLATE['panels']['core-infopanel-admin'] = array();
-$DASHBOARD_TEMPLATE['panels']['core-infopanel-mye107'] = array();
+//only plugins icons, personalize still possible
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-plugins'] =  array('type' => 'core_infopanel_icons', 'links'=> 'plugin', 'style' => 'flexpanel',
+	'caption' => 'Plugins'
+);
+
+//all icons like before not not limited numbers
+// --------------------- Personalized Panel -----------------------
+/*
+$caption = e107::getParser()->lanVars(LAN_CONTROL_PANEL, ucwords(USERNAME));
+
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-mye107'] = array('type' => 'core_infopanel_icons', 'links' => '', 'caption' => $caption);
+*/
+
 $DASHBOARD_TEMPLATE['panels']['core-infopanel-news'] = array();
- 
+
+$DASHBOARD_TEMPLATE['panels']['plug-infopanel-comments-0'] = array('type' => 'core_infopanel_comments',  'caption' => LAN_LATEST_COMMENTS);
 
 /* available dashboard panels
 core-infopanel-mye107
