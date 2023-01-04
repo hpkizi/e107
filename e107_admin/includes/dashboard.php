@@ -63,7 +63,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 
 
 		private $iconlist = array();
-		static $positions	= array();
+		public $positions	= array();
 
 		/**
 		 * Constructor.
@@ -74,7 +74,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 
 			$this->iconlist = $this->getIconList();
 
-			self::$positions = e107::getTemplate(false, 'dashboard', 'positions');
+			$this->positions = e107::getTemplate(false, 'dashboard', 'positions');
 
 			if (FLEXPANEL_ENABLED)
 			{
@@ -125,27 +125,27 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			}
 
 			$default = array(
-				'area'   => 'menu-area-01',
+				'area'   => 'menu-area-02',
 				'weight' => 1000,
 			);
 
 			$positions = $this->getDefaultPositions();
 
 			$layout = varset($user_pref['core-flexpanel-layout'], 'default');
-
+ 
 			if (!empty($positions[$layout][$id]))
 			{
 				return $positions[$layout][$id];
 			}
 
-			if (strpos($id, 'plug-infopanel-') === 0) // addon dashboards default to area 2.
+			/*if (strpos($id, 'plug-infopanel-') === 0) // addon dashboards default to area 2.
 			{
 				$default = array(
 					'area'   => 'menu-area-02',
 					'weight' => 1000,
 				);
 			}
-
+*/
 			return $default;
 		}
 
@@ -173,6 +173,37 @@ class adminstyle_dashboard extends adminstyle_infopanel
 					),
 				),
 			);
+		}
+
+		public function core_infopanel_news($options = array()) 
+		{
+			$ns = e107::getRender();
+ 
+			$dashboardUniqueId 	= varset($options['uniqueId'], time());
+			$dashboardStyle		= varset($options['style'], 'flexbox');
+
+			$newsTabs = array();
+			$newsTabs['coreFeed'] = array('caption' => LAN_GENERAL, 'text' => "<div id='e-adminfeed' style='min-height:300px'></div><div class='right'><a rel='external' href='" . ADMINFEEDMORE . "'>" . LAN_MORE . "</a></div>");
+			$newsTabs['pluginFeed'] = array('caption' => LAN_PLUGIN, 'text' => "<div id='e-adminfeed-plugin'></div>");
+			$newsTabs['themeFeed'] = array('caption' => LAN_THEMES, 'text' => "<div id='e-adminfeed-theme'></div>");
+
+			$code = "
+			jQuery(function($){
+				$('#e-adminfeed').load('" . e_ADMIN . "admin.php?mode=core&type=feed');
+				$('#e-adminfeed-plugin').load('" . e_ADMIN . "admin.php?mode=addons&type=plugin');
+				$('#e-adminfeed-theme').load('" . e_ADMIN . "admin.php?mode=addons&type=theme');
+				
+			
+			});
+			";
+			e107::js('inline', $code, 'jquery');
+
+			$ns->setStyle( $dashboardStyle);
+			$ns->setUniqueId($dashboardUniqueId);
+		 
+			$coreInfoPanelNews = $ns->tablerender(LAN_LATEST_e107_NEWS, e107::getForm()->tabs($newsTabs, array('active' => 'coreFeed')), "core-infopanel-news", true);
+			
+			return $coreInfoPanelNews;
 		}
 
 		/**
@@ -235,39 +266,46 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$ns->setUniqueId('core-infopanel-mye107');
 			$coreInfoPanelMyE107 = $ns->tablerender($caption, $mainPanel, "core-infopanel-mye107", true);
 			$info = $this->getMenuPosition('core-infopanel-mye107');
-			if (!isset(self::$positions[$info['area']][$info['weight']]))
+			if (!isset($this->positions[$info['area']][$info['weight']]))
 			{
-				self::$positions[$info['area']][$info['weight']] = '';
+				$this->positions[$info['area']][$info['weight']] = '';
 			}
-			self::$positions[$info['area']][$info['weight']] .= $coreInfoPanelMyE107;
+			$this->positions[$info['area']][$info['weight']] .= $coreInfoPanelMyE107;
+ 
+			/*  CHANGE */
+			$supported_panels = e107::getTemplate(false, 'dashboard', 'panels');
+ 
+			foreach($supported_panels AS $key => $panel) {
+				$params['uniqueId'] = $key;
+				$params['style'] = 'flexpanel';
+				$flex_key =   str_replace('-', '_', $key);  //TODO fix this if they solve #4940 different way
 
-
-			// --------------------- e107 News --------------------------------
-			$newsTabs = array();
-			$newsTabs['coreFeed'] = array('caption' => LAN_GENERAL, 'text' => "<div id='e-adminfeed' style='min-height:300px'></div><div class='right'><a rel='external' href='" . ADMINFEEDMORE . "'>" . LAN_MORE . "</a></div>");
-			$newsTabs['pluginFeed'] = array('caption' => LAN_PLUGIN, 'text' => "<div id='e-adminfeed-plugin'></div>");
-			$newsTabs['themeFeed'] = array('caption' => LAN_THEMES, 'text' => "<div id='e-adminfeed-theme'></div>");
-			$ns->setStyle('flexpanel');
-			$ns->setUniqueId('core-infopanel-news');
-			$coreInfoPanelNews = $ns->tablerender(LAN_LATEST_e107_NEWS, e107::getForm()->tabs($newsTabs, array('active' => 'coreFeed')), "core-infopanel-news", true);
-			$info = $this->getMenuPosition('core-infopanel-news');
-			if (!isset(self::$positions[$info['area']][$info['weight']]))
-			{
-				self::$positions[$info['area']][$info['weight']] = '';
+				$text = e107::callMethod("adminstyle_dashboard", $flex_key, $params);
+		 
+				if($text) {
+				 
+					$info = $this->getMenuPosition($key);
+	 
+					if (!isset($this->positions[$info['area']][$info['weight']]))
+					{
+						$this->positions[$info['area']][$info['weight']] = '';
+					}
+					$this->positions[$info['area']][$info['weight']] .= $text;
+					
+				}
 			}
-			self::$positions[$info['area']][$info['weight']] .= $coreInfoPanelNews;
-
+			 
 
 			// --------------------- Website Status ---------------------------
 			/*	$ns->setStyle('flexpanel');
 		$ns->setUniqueId('core-infopanel-website_status');
 		$coreInfoPanelWebsiteStatus = '';// 'hi';/// "<div id='core-infopanel-website_status'>".$this->renderAddonDashboards()."</div>";  $ns->tablerender(LAN_WEBSITE_STATUS, $this->renderAddonDashboards(), "core-infopanel-website_status", true);
 		$info = $this->getMenuPosition('core-infopanel-website_status');
-		self::$positions[$info['area']][$info['weight']] .= $coreInfoPanelWebsiteStatus;*/
+		$this->positions[$info['area']][$info['weight']] .= $coreInfoPanelWebsiteStatus;*/
 
 
 			// --------------------- Latest Comments --------------------------
-			// self::$positions['Area01'] .= $this->renderLatestComments(); // TODO
+			// $this->positions['Area01'] .= $this->renderLatestComments(); // TODO
  
 			// --------------------- User Selected Menus ----------------------
 			if (varset($user_pref['core-infopanel-menus']))
@@ -288,15 +326,15 @@ class adminstyle_dashboard extends adminstyle_infopanel
 						$inc = $tp->parseTemplate("{PLUGIN=$val|TRUE}");
 					}
 					$info = $this->getMenuPosition($id);
-					if (!isset(self::$positions[$info['area']][$info['weight']]))
+					if (!isset($this->positions[$info['area']][$info['weight']]))
 					{
-						self::$positions[$info['area']][$info['weight']] = '';
+						$this->positions[$info['area']][$info['weight']] = '';
 					}
-					self::$positions[$info['area']][$info['weight']] .= $inc;
+					$this->positions[$info['area']][$info['weight']] .= $inc;
 				}
 			}
 
-
+ 
 			// --------------------- Plugin Addon Dashboards ---------------------- eg. e107_plugin/user/e_dashboard.php
 			$dashboards = $this->getAddonDashboards();
 			if (!empty($dashboards))
@@ -308,29 +346,26 @@ class adminstyle_dashboard extends adminstyle_infopanel
 					$ns->setUniqueId($id);
 					$inc = $ns->tablerender($val['caption'], $val['text'], $val['mode'], true);
 					$info = $this->getMenuPosition($id);
-					if (!isset(self::$positions[$info['area']][$info['weight']]))
+					if (!isset($this->positions[$info['area']][$info['weight']]))
 					{
-						self::$positions[$info['area']][$info['weight']] = '';
+						$this->positions[$info['area']][$info['weight']] = '';
 					}
-					self::$positions[$info['area']][$info['weight']] .= $inc;
+					$this->positions[$info['area']][$info['weight']] .= $inc;
 				}
 			}
-
-
+ 
 			// Sorting panels.
-			foreach (self::$positions as $key => $value)
+			foreach ($this->positions as $key => $value)
 			{
-				ksort(self::$positions[$key]);
+				ksort($this->positions[$key]);
 			}
 
 			$FLEXPANEL_LAYOUT = e107::getCoreTemplate("dashboard", 'layout');
-
-			include_once($layout_file);
-
+ 
 			$template = varset($FLEXPANEL_LAYOUT);
 			$template = str_replace('{MESSAGES}', $mes->render(), $template);
 
-			foreach (self::$positions as $key => $value)
+			foreach ($this->positions as $key => $value)
 			{
 				$token = '{' . strtoupper(str_replace('-', '_', $key)) . '}';
 				$template = str_replace($token, implode("\n", $value), $template);

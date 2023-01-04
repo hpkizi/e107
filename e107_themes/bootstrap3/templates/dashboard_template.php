@@ -11,6 +11,10 @@
 */
 
 $DASHBOARD_TEMPLATE['layout'] = '
+<style> .row-flex .panel {
+    height: auto;
+}
+</style>
 <div class="row">
 	 
 	<div class="col-md-12  admin-right-panel">
@@ -131,6 +135,10 @@ $DASHBOARD_TEMPLATE['positions']['menu-area-12'] = array();
 $DASHBOARD_TEMPLATE['positions']['menu-area-13'] = array();
 
 
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-admin'] = array();
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-mye107'] = array();
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-news'] = array();
+ 
 
 /* available dashboard panels
 core-infopanel-mye107
