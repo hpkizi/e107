@@ -19,7 +19,7 @@ $DASHBOARD_TEMPLATE['layout'] = '
 	 
 	<div class="col-md-12  admin-right-panel">
 		<div class="sidebar-toggle">
-			<a href="#" title="'.ADLAN_185.'" data-toggle-sidebar="true">&nbsp;</a>
+			<a href="#" title="' . ADLAN_185 . '" data-toggle-sidebar="true">&nbsp;</a>
 		</div>
 
 		<div>
@@ -38,71 +38,36 @@ $DASHBOARD_TEMPLATE['layout'] = '
 			</div>
 
 			<div class="row row-flex">
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<div class="draggable-panels" id="menu-area-03">
 						{MENU_AREA_03}
 					</div>
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<div class="draggable-panels" id="menu-area-04">
 						{MENU_AREA_04}
 					</div>
 				</div>
 
-				<div class="col-sm-4">
-					<div class="draggable-panels" id="menu-area-05">
-						{MENU_AREA_05}
-					</div>
-				</div>
 			</div>
-
-			<div class="row">
-				<div class="col-sm-12">
-					<div class="draggable-panels" id="menu-area-06">
-						{MENU_AREA_06}
-					</div>
-				</div>
-			</div>
-
-			<div class="row row-flex">
-				<div class="col-sm-6">
-					<div class="draggable-panels" id="menu-area-07">
-						{MENU_AREA_07}
-					</div>
-				</div>
-
-				<div class="col-sm-6">
-					<div class="draggable-panels" id="menu-area-08">
-						{MENU_AREA_08}
-					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-sm-12">
-					<div class="draggable-panels" id="menu-area-09">
-						{MENU_AREA_09}
-					</div>
-				</div>
-			</div>
-
+ 
 			<div class="row">
 				<div class="col-sm-4">
 					<div class="draggable-panels" id="menu-area-10">
-						{MENU_AREA_10}
+						{MENU_AREA_05}
 					</div>
 				</div>
 
 				<div class="col-sm-4">
 					<div class="draggable-panels" id="menu-area-11">
-						{MENU_AREA_11}
+						{MENU_AREA_06}
 					</div>
 				</div>
 
 				<div class="col-sm-4">
 					<div class="draggable-panels" id="menu-area-12">
-						{MENU_AREA_12}
+						{MENU_AREA_07}
 					</div>
 				</div>
 			</div>
@@ -110,7 +75,7 @@ $DASHBOARD_TEMPLATE['layout'] = '
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="draggable-panels" id="menu-area-13">
-						{MENU_AREA_13}
+						{MENU_AREA_08}
 					</div>
 				</div>
 			</div>
@@ -135,11 +100,14 @@ $DASHBOARD_TEMPLATE['positions']['menu-area-12'] = array();
 $DASHBOARD_TEMPLATE['positions']['menu-area-13'] = array();
 
 //full admin icons, personalize still possible
-$DASHBOARD_TEMPLATE['panels']['core-infopanel-admin'] = array('type'=> 'core_infopanel_icons', 'links'=>'core', 'style' => 'flexpanel', 'caption' => 'flexpanel',
-'caption' => 'Admin' );
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-admin'] = array(
+	'type' => 'core_infopanel_icons', 'links' => 'core', 'style' => 'flexpanel', 'caption' => 'flexpanel',
+	'caption' => 'Admin'
+);
 
 //only plugins icons, personalize still possible
-$DASHBOARD_TEMPLATE['panels']['core-infopanel-plugins'] =  array('type' => 'core_infopanel_icons', 'links'=> 'plugin', 'style' => 'flexpanel',
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-plugins'] =  array(
+	'type' => 'core_infopanel_icons', 'links' => 'plugin', 'style' => 'flexpanel',
 	'caption' => 'Plugins'
 );
 
@@ -154,6 +122,18 @@ $DASHBOARD_TEMPLATE['panels']['core-infopanel-mye107'] = array('type' => 'core_i
 $DASHBOARD_TEMPLATE['panels']['core-infopanel-news'] = array();
 
 $DASHBOARD_TEMPLATE['panels']['plug-infopanel-comments-0'] = array('type' => 'core_infopanel_comments',  'caption' => LAN_LATEST_COMMENTS);
+
+
+//depends on e_dashboard and method with name key
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-module-unnuke'] =  array(
+	'type' => 'core_infopanel_module', 'key' => 'unnuke_panel', 'style' => 'flexpanel',
+	'caption' => 'UNNuke Modules'
+);
+
+$DASHBOARD_TEMPLATE['panels']['core-infopanel-module-efiction'] =  array(
+	'type' => 'core_infopanel_module', 'key' => 'efiction_panel', 'style' => 'flexpanel',
+	'caption' => 'Efiction Modules'
+);
 
 /* available dashboard panels
 core-infopanel-mye107

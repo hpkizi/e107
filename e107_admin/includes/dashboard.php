@@ -243,7 +243,7 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			$dashboardCaption     = varset($options['caption'], '');
 
 			$newarray = e107::getNav()->adminLinks($dashboardLinks);
-	 
+
 			$adminPanel = "<div id='.$dashboardUniqueId.' >";
 
 			foreach ($newarray as $key => $val)
@@ -359,6 +359,51 @@ class adminstyle_dashboard extends adminstyle_infopanel
 			//return $this->renderLatestComments(); trying to change core code for now (2x rendered pannel)
 			return $coreInfoPanelAdmin;
 		}
+		
+
+		/**
+		 * Display Module Icons
+		 */
+		function core_infopanel_module($options = array())
+		{
+
+			$ns = e107::getRender();
+
+			$dashboardUniqueId 	= varset($options['uniqueId'], time());
+			$dashboardStyle		= varset($options['style'], 'flexbox');
+			$dashboardKey     = varset($options['key'], '');
+			$dashboardCaption     = varset($options['caption'], '');
+
+			$fullarray = e107::getNav()->adminLinks('plugin'); //all plugins
+	 
+			if ($plugs = e107::getAddonConfig('e_dashboard', null, $dashboardKey))
+			{
+	 
+				foreach($plugs AS $key => $plug) {
+					//check if is key
+					$newarray["p-".$key] = $fullarray["p-" . $key];
+				 }
+
+			}	
+			$adminPanel = "<div id='.$dashboardUniqueId.' >";
+
+			foreach ($newarray as $key => $val)
+			{
+				 if ($tmp = e107::getNav()->renderAdminButton($val['link'], $val['title'], $val['caption'], $val['perms'], $val['icon_32'], "div"))
+					{
+						$adminPanel .= $tmp;
+					}
+				 
+			}
+			$adminPanel .= "</div>";
+
+			$ns->setStyle($dashboardStyle);
+			$ns->setUniqueId($dashboardUniqueId);
+
+			$coreInfoPanelAdmin = $ns->tablerender($dashboardCaption, $adminPanel, $dashboardUniqueId, true);
+
+			return $coreInfoPanelAdmin;
+		}	
  
 		/**
 		 * Render contents.
