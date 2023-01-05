@@ -40,9 +40,7 @@ $bcList = array(
 );
 
 e107::getLanguage()->bcDefs($bcList);
-
-
-
+ 
 if(e_AJAX_REQUEST)
 {
 	if(vartrue($_POST['q']))
@@ -142,12 +140,13 @@ if (!$full_perms && !$self_page)
 	exit;
 }
 
-if (isset($_POST['records']))
+if (isset($_REQUEST['records']))
 {
-	$records = intval($_POST['records']);
-	$order = ($_POST['order'] == 'ASC' ? 'ASC' : 'DESC');
-	$from = 0;
+	$records = intval($_REQUEST['records']);
+	$order = ($_REQUEST['order'] == 'ASC' ? 'ASC' : 'DESC');
+	$from = intval($_REQUEST['from']);
 }
+ 
 else if(!e_QUERY)
 {
 	$records = 20;
@@ -175,9 +174,15 @@ else
 		}
 	}
 }
+ 
+
 if (vartrue($records) > 50)
 {
 	$records = 50;
+}
+if (vartrue($records) < 5)
+{
+	$records = 5;
 }
 
 if (isset($id))
@@ -267,7 +272,9 @@ if (isset($id))
 
 	$ns->tablerender(LAN_USER_52, $text, 'user-list');
 
-	$parms = $users_total.",".$records.",".$from.",".e_SELF.'?[FROM].'.$records.".".$order;
+	$parms = $users_total.",".$records.",".$from.",".e_SELF.'?from=[FROM]&records='.$records."&order=".$order;
+   	//$parms = $users_total.",".$records.",".$from.",".e_SELF.'?[FROM].'.$records.".".$order;
+    
 	echo "<div class='nextprev form-inline'>&nbsp;".$tp->parseTemplate("{NEXTPREV={$parms}}")."</div>";
 
 
