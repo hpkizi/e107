@@ -1,4 +1,24 @@
 
+:root {
+
+    --panel-background-color: white;
+    --panel-border-color: #0B4EA2;
+    --panel-shadow-color: #0B4EA2;
+
+    --panel-heading-bg: #EE1C25;
+    --panel-heading-color: white;
+
+    --panel-icon-bg: #0B4EA2;
+    --panel-icon-color: white;
+    --panel-icon-border-color: #0B4EA2;
+
+    --panel-icon-hover-bg: white;
+    --panel-icon-hover-color: #222;
+    --panel-icon-hover-border-color: #0B4EA2;
+
+}
+
+
 body						{ padding-top: 75px; font-size: 14px;  }
 body#admin-admin .popover   { position: fixed }
 
