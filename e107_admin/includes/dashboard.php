@@ -638,6 +638,90 @@
 			return $arr;
 		}
 
+		function render_infopanel_icons()
+		{
+
+			$frm = e107::getForm();
+			$user_pref = self::$user_pref;
+
+			$text = "<div style='padding-left:20px'>";
+
+
+			$myE107 = varset($user_pref['core-infopanel-mye107'], array());
+			if (empty($myE107)) // Set default icons.
+			{
+				$defArray = array(
+					0  => 'e-administrator',
+					1  => 'e-cpage',
+					2  => 'e-frontpage',
+					3  => 'e-mailout',
+					4  => 'e-image',
+					5  => 'e-menus',
+					6  => 'e-meta',
+					7  => 'e-newspost',
+					8  => 'e-plugin',
+					9  => 'e-prefs',
+					10 => 'e-links',
+					11 => 'e-theme',
+					12 => 'e-userclass2',
+					13 => 'e-users',
+					14 => 'e-wmessage'
+				);
+				$user_pref['core-infopanel-mye107'] = $defArray;
+			}
+
+
+			foreach (self::$fullAdminIcons as $key => $icon)
+			{
+				if (getperms($icon['perms']))
+				{
+					$checked = (varset($user_pref['core-infopanel-mye107']) && in_array($key, $user_pref['core-infopanel-mye107'])) ? true : false;
+					$text .= "<div class='left f-left list field-spacer form-inline' style='display:block;height:24px;width:200px;'>
+		                        " . $icon['icon'] . ' ' . $frm->checkbox_label($icon['title'], 'e-mye107[]', $key, $checked) . "</div>";
+				}
+			}
+ 
+			 
+			$text .= "</div><div class='clear'>&nbsp;</div>";
+            
+            $text .= "<div style='padding-left:20px'>";
+     	    foreach (self::$fullPluginIcons as $key => $icon)
+			{
+				if (getperms($icon['perms']))
+				{
+					$checked = (in_array('p-' . $key, $user_pref['core-infopanel-mye107'])) ? true : false;
+					$text .= "<div class='left f-left list field-spacer form-inline' style='display:block;height:24px;width:200px;'>
+		                         " . $icon['icon'] . $frm->checkbox_label($icon['title'], 'e-mye107[]', $key, $checked) . "</div>";
+				}
+			}      
+            
+            $text .= "</div><div class='clear'>&nbsp;</div>";
+			return $text;
+		}
+
+		function render_infopanel_options($render = false)
+		{
+			$frm = e107::getForm();
+			$mes = e107::getMessage();
+			$ns = e107::getRender();
+
+			if ($render == false)
+			{
+				return "";
+			}
+
+			$text2 = $ns->tablerender(LAN_PERSONALIZE_ICONS, $this->render_infopanel_icons(), 'personalize', true);
+			$text2 .= "<div class='clear'>&nbsp;</div>";
+		//	$text2 .= $ns->tablerender(LAN_PERSONALIZE_MENUS, $this->render_infopanel_menu_options(), 'personalize', true);
+			$text2 .= "<div class='clear'>&nbsp;</div>";
+			$text2 .= "<div id='button' class='buttons-bar center'>";
+			$text2 .= $frm->admin_button('submit-mye107', LAN_SAVE, 'create');
+			$text2 .= "</div>";
+
+			return $mes->render() . $text2;
+		}
+
+
 		/**
 		 * Render contents.
 		 */
