@@ -6,14 +6,14 @@
 $SIGNIN_TEMPLATE = [];
 
 
-$SIGNIN_WRAPPER['signin']['SIGNIN_SIGNUP_HREF'] = '<li class="nav-item"><a class="nav-link" href="{---}">{LAN=LAN_LOGINMENU_3}</a></li>';
+$SIGNIN_WRAPPER['signin']['SIGNIN_SIGNUP_HREF'] = '<li class="nav-item"><a class="nav-link" href="{---}">{LAN=SIGNIN_3}</a></li>';
 
 $SIGNIN_TEMPLATE['signin'] = '
 			<ul class="navbar-nav nav-right">
 				{SIGNIN_SIGNUP_HREF}
 				<li class="divider-vertical"></li>
 				<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" data-toggle="dropdown">{LAN=LAN_LOGINMENU_51} <strong class="caret"></strong></a>
+				<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" data-toggle="dropdown">{LAN=SIGNIN_51} <strong class="caret"></strong></a>
 					<div class="dropdown-menu col-sm-12" style="min-width:250px; padding: 15px; padding-bottom: 0px;">
 					
 					{SIGNIN_FORM=start}
@@ -26,12 +26,12 @@ $SIGNIN_TEMPLATE['signin'] = '
 					
 					<div class="checkbox">		
 					<label class="string optional" for="bs3-autologin"><input style="margin-right: 10px;" type="checkbox" name="autologin" id="bs3-autologin" value="1">
-					{LAN=LAN_LOGINMENU_6}</label>
+					{LAN=SIGNIN_6}</label>
 					</div>
 					<div class="d-grid gap-2" style="padding-bottom:15px">
-					<input class="btn btn-primary btn-block" type="submit" name="userlogin" id="bs3-userlogin" value="{LAN=LAN_LOGINMENU_51}">			
-					<a href="{SIGNIN_FPW_HREF}" class="btn btn-default btn-secondary btn-sm  btn-block">{LAN=LAN_LOGINMENU_4}</a>
-					<a href="{SIGNIN_RESEND_LINK=href}" class="btn btn-default btn-secondary btn-sm  btn-block">{LAN=LAN_LOGINMENU_40}</a>
+					<input class="btn btn-primary btn-block" type="submit" name="userlogin" id="bs3-userlogin" value="{LAN=SIGNIN_51}">			
+					<a href="{SIGNIN_FPW_HREF}" class="btn btn-default btn-secondary btn-sm  btn-block">{LAN=SIGNIN_4}</a>
+					<a href="{SIGNIN_RESEND_LINK=href}" class="btn btn-default btn-secondary btn-sm  btn-block">{LAN=SIGNIN_40}</a>
 					</div>
 					{SIGNIN_FORM=end}
 					</div>
@@ -42,7 +42,7 @@ $SIGNIN_TEMPLATE['signin'] = '
 
 
 
-$SIGNIN_WRAPPER['signout']['SIGNIN_ADMIN_HREF'] = '<li><a class="dropdown-item signin-sc admin" id="signin-sc-admin" href="{---}"><span class="fa fa-cogs"></span> {LAN=LAN_LOGINMENU_11}</a></li>';
+$SIGNIN_WRAPPER['signout']['SIGNIN_ADMIN_HREF'] = '<li><a class="dropdown-item signin-sc admin" id="signin-sc-admin" href="{---}"><span class="fa fa-cogs"></span> {LAN=SIGNIN_11}</a></li>';
 $SIGNIN_WRAPPER['signout']['SIGNIN_PM_NAV'] = '<li class="dropdown dropdown-pm">{---}</li>';
 
 
@@ -56,7 +56,7 @@ $SIGNIN_TEMPLATE['signout'] = '
 					<a class="dropdown-item" href="{SIGNIN_USERSETTINGS_HREF}"><span class="fa fa-cog"></span> {LAN=LAN_SETTINGS}</a>
 				</li>
 				<li>
-					<a class="dropdown-item" role="button" href="{SIGNIN_PROFILE_HREF}"><span class="fa fa-user"></span> {LAN=LAN_LOGINMENU_13}</a>
+					<a class="dropdown-item" role="button" href="{SIGNIN_PROFILE_HREF}"><span class="fa fa-user"></span> {LAN=SIGNIN_13}</a>
 				</li>
 				<li class="divider"></li>
 				{SIGNIN_ADMIN_HREF}

@@ -19,14 +19,14 @@ if (!defined('e107_INIT'))
 	exit();
 }
 
-e107::plugLan('login_menu', null);
+e107::plugLan('signin', null);
 
 class plugin_signin_signin_shortcodes extends e_shortcode
 {
 
 	private $use_imagecode = 0;
 	private $sec;
-	private $usernamePlaceholder = LAN_LOGINMENU_1;
+	private $usernamePlaceholder = LAN_SIGNIN_1;
 	private $allowEmailLogin;
 	private $authMethod;
 	private $regMode;
@@ -43,12 +43,12 @@ class plugin_signin_signin_shortcodes extends e_shortcode
 
 		if ($pref['allowEmailLogin'] == 1)
 		{
-			$this->usernamePlaceholder = LAN_LOGINMENU_49;
+			$this->usernamePlaceholder = LAN_SIGNIN_49;
 		}
 
 		if ($pref['allowEmailLogin'] == 2)
 		{
-			$this->usernamePlaceholder = LAN_LOGINMENU_50;
+			$this->usernamePlaceholder = LAN_SIGNIN_50;
 		}
 
 		$this->regMode = (int) defset('USER_REGISTRATION');
@@ -126,7 +126,7 @@ class plugin_signin_signin_shortcodes extends e_shortcode
 
 	function sc_signin_password_label($parm = '')
 	{
-		return LAN_LOGINMENU_2;
+		return LAN_SIGNIN_2;
 	}
 
 
@@ -169,7 +169,7 @@ class plugin_signin_signin_shortcodes extends e_shortcode
 		}
 		if (varset($pref['user_tracking']) !== "session")
 		{
-			return "<input type='checkbox' name='autologin' id='autologin' value='1' checked='checked' />" . ($parm ? $parm : "" . LAN_LOGINMENU_6 );
+			return "<input type='checkbox' name='autologin' id='autologin' value='1' checked='checked' />" . ($parm ? $parm : "" . LAN_SIGNIN_6 );
 		}
 
 		return null;
@@ -224,7 +224,7 @@ class plugin_signin_signin_shortcodes extends e_shortcode
 
 		if (ADMIN && !empty($pref['maintainance_flag']))
 		{
-			return LAN_LOGINMENU_10;
+			return LAN_SIGNIN_10;
 		}
 
 		return '';
@@ -247,10 +247,10 @@ class plugin_signin_signin_shortcodes extends e_shortcode
 
 	function sc_signin_admin_href($parm = '')
 	{
-		// '<li><a href="'.e_ADMIN_ABS.'"><span class="fa fa-cogs"></span> '.LAN_LOGINMENU_11.'</a></li>';
+		// '<li><a href="'.e_ADMIN_ABS.'"><span class="fa fa-cogs"></span> '.LAN_SIGNIN_11.'</a></li>';
 		if (ADMIN == true)
 		{
-			return  e_ADMIN_ABS; //  . 'admin.php' : '<a class="signin-sc admin" id="signin-sc-admin" href="' . e_ADMIN_ABS . 'admin.php">' . LAN_LOGINMENU_11 . '</a>';
+			return  e_ADMIN_ABS; //  . 'admin.php' : '<a class="signin-sc admin" id="signin-sc-admin" href="' . e_ADMIN_ABS . 'admin.php">' . LAN_SIGNIN_11 . '</a>';
 		}
 
 		return null;
