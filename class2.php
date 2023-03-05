@@ -301,33 +301,22 @@ e107::getSingleton('e107_traffic'); // We start traffic counting ASAP
 //DEPRECATED, BC, $e107->sql caught by __get()
 /** @var e_db $sql */
 $sql = e107::getDb(); //TODO - find & replace $sql, $e107->sql
-$sql->db_SetErrorReporting(false);
 
 $dbg->logTime('SQL Connect');
-$merror=$sql->db_Connect($sql_info['mySQLserver'], $sql_info['mySQLuser'], $sql_info['mySQLpassword'], $mySQLdefaultdb);
-unset($sql_info);
-// create after the initial connection.
-//DEPRECATED, BC, call the method only when needed
-$sql2 = e107::getDb('sql2'); //TODO find & replace all $sql2 calls
 
-
-
-//DEPRECATED, BC, call the method only when needed, $e107->admin_log caught by __get()
-if(!isset($_E107['no_log']))
+if (!$sql->connect($sql_info['mySQLserver'], $sql_info['mySQLuser'], $sql_info['mySQLpassword']))
 {
-	$admin_log = e107::getLog(); //TODO - find & replace $admin_log, $e107->admin_log
+	message_handler('CRITICAL_ERROR', 6, ': 307. Database server is not responding, ', 'class2.php');
+	exit;
 }
-	if($merror === 'e1')
-	{
-		message_handler('CRITICAL_ERROR', 6, ': generic, ', 'class2.php');
-		exit;
-	}
 
-	if ($merror === 'e2')
-	{
-		message_handler("CRITICAL_ERROR", 7, ': generic, ', 'class2.php');
-		exit;
-	}
+if (!$sql->database($sql_info['mySQLdefaultdb'], $sql_info['mySQLprefix'], false))
+{
+	message_handler('CRITICAL_ERROR', 7, ': 307. Database is not responding, ', 'class2.php');
+	exit;	
+}
+unset($sql_info);
+ 
 
 //
 // K: Load compatability mode.
@@ -1305,7 +1294,7 @@ function getperms($arg, $ap = ADMINPERMS, $path = e_SELF)
 {
 	// $ap = "4"; // Just for testing.
 
-	if(!deftrue('ADMIN') || trim($ap) === '')
+	if(!ADMIN || trim($ap) === '')
 	{
 		return false;
 	}
@@ -1744,7 +1733,13 @@ $dbg->logTime('Go online');
 
 if(!isset($_E107['no_online']))
 {
-	e107::getOnline()->goOnline($pref['track_online'], $pref['antiflood1']);
+	if(e107::isInstalled('online')) {
+		e107::getOnline()->goOnline($pref['track_online'], $pref['antiflood1']);
+	}
+	else {
+		$_E107['no_online'] = true;
+	} 
+ 
 }
 
 $dbg->logTime('(After Go online)');
