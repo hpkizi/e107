@@ -304,30 +304,18 @@ $sql = e107::getDb(); //TODO - find & replace $sql, $e107->sql
 $sql->db_SetErrorReporting(false);
 
 $dbg->logTime('SQL Connect');
-$merror=$sql->db_Connect($sql_info['mySQLserver'], $sql_info['mySQLuser'], $sql_info['mySQLpassword'], $mySQLdefaultdb);
-unset($sql_info);
-// create after the initial connection.
-//DEPRECATED, BC, call the method only when needed
-$sql2 = e107::getDb('sql2'); //TODO find & replace all $sql2 calls
 
-
-
-//DEPRECATED, BC, call the method only when needed, $e107->admin_log caught by __get()
-if(!isset($_E107['no_log']))
+if (!$sql->connect($sql_info['mySQLserver'], $sql_info['mySQLuser'], $sql_info['mySQLpassword']))
 {
-	$admin_log = e107::getLog(); //TODO - find & replace $admin_log, $e107->admin_log
+	message_handler('CRITICAL_ERROR', 6, ': Database server is not responding, ', 'class2.php');
+	exit;
 }
-	if($merror === 'e1')
-	{
-		message_handler('CRITICAL_ERROR', 6, ': generic, ', 'class2.php');
-		exit;
-	}
 
-	if ($merror === 'e2')
-	{
-		message_handler("CRITICAL_ERROR", 7, ': generic, ', 'class2.php');
-		exit;
-	}
+if (!$sql->database($sql_info['mySQLdefaultdb'], $sql_info['mySQLprefix'], false))
+{
+	message_handler('CRITICAL_ERROR', 7, ': Database is not responding, ', 'class2.php');
+	exit;	
+}
 
 //
 // K: Load compatability mode.
