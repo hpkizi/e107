@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 1.9.1 - 2023-04-17
+
+### Fixed
+
+- Fixed header validation issue
+
+## 1.9.0 - 2022-06-20
+
+### Added
+
+- Added `UriComparator::isCrossOrigin` method
+
 ## 1.8.5 - 2022-03-20
 
 ### Fixed
