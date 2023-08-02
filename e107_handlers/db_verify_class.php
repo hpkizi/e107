@@ -1065,9 +1065,7 @@ class db_verify
 	 */
 	function getIndex($data, $print = false)
 	{
-		// $regex = "/(?:(PRIMARY|UNIQUE|FULLTEXT))?[\s]*?KEY (?: ?`?([\w]*)`?)[\s]* ?(?:\([\s]?`?([\w,]*[\s]?)`?\))?,?/i";
-		// $regex = "/(?:(PRIMARY|UNIQUE|FULLTEXT|FOREIGN))?[\s]*?KEY (?: ?`?([\w]*)`?)[\s]* ?(?:\([\s]?([\w\s,`]*[\s]?)`?\))?,?/i";
-		$regex = "/(?:(PRIMARY|UNIQUE|FULLTEXT|FOREIGN))?[\s]*?(INDEX|KEY) (?: ?`?([\w]*)`?)[\s]* ?(?:\([\s]?([\w\s,`]*[\s]?)`?\))?,?/i";
+		$regex = "/(?:(PRIMARY|UNIQUE|FULLTEXT|FOREIGN))?[\s]*?(INDEX|KEY) (?: ?`?([\w]*)`?)[\s]* ?(?:\([\s]?([\w\s,`]*)\(?[\d]*\)?\s*(ASC|DESC)?[\s]?`?\))?,?/i";
 		preg_match_all($regex,$data,$m);
 
 		if (count($m) > 0)
