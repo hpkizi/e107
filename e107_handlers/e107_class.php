@@ -751,7 +751,7 @@ class e107
 			'CORE_DIRECTORY' 		=> 'e107_core/',
 			'WEB_DIRECTORY' 		=> 'e107_web/',
 		), (array) $override_root);
-
+	
 		$ret['MEDIA_BASE_DIRECTORY'] = $ret['MEDIA_DIRECTORY'];
 		$ret['SYSTEM_BASE_DIRECTORY'] = $ret['SYSTEM_DIRECTORY'];
 		$ret['MEDIA_DIRECTORY'] 	.= $this->site_path."/"; // multisite support.

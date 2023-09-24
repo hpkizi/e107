@@ -208,18 +208,7 @@ if (isset($id))
 		require_once(FOOTERF);
 		exit;
 	}
-
-	if(vartrue($pref['profile_comments']))
-	{
-		require_once(e_HANDLER."comment_class.php");
-		$comment_edit_query = 'comment.user.'.$id;
-	}
-
-	if (isset($_POST['commentsubmit']) && $pref['profile_comments'])
-	{
-		$cobj = new comment;
-		$cobj->enter_comment($_POST['author_name'], $_POST['comment'], 'profile', $id, null, $_POST['subject']);
-	}
+ 
 
 	if($text = renderuser($id))
 	{

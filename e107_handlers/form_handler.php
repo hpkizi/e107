@@ -3031,8 +3031,7 @@ class e_form
 
 		if(deftrue('e_ADMIN_AREA'))
 		{
-			// $options['switch'] = 'small'; ISSUE 4803
-            $options['switch'] = ($options['switch']) ? $options['switch'] : 'small';
+			$options['switch'] = 'small';
 			$label_enabled = ($label_enabled) ? strtoupper($label_enabled) : strtoupper(LAN_ON);
 			$label_disabled = ($label_disabled) ?  strtoupper($label_disabled): strtoupper(LAN_OFF);
 		}
@@ -4375,7 +4374,6 @@ var_dump($select_options);*/
 	public function name2id($name)
 	{
 		$name = strtolower($name);
-		$name = e107::getParser()->toASCII($name);
 		return rtrim(str_replace(array('[]', '[', ']', '_', '/', ' ','.', '(', ')', '::', ':', '?','=',"'"), array('-', '-', '', '-', '-', '-', '-','','','-','','-','-',''), $name), '-');
 	}
 
@@ -4530,6 +4528,17 @@ var_dump($select_options);*/
 	public function columnSelector($columnsArray, $columnsDefault = array(), $id = 'column_options')
 	{
 		$columnsArray = array_filter($columnsArray);
+
+		try
+		{
+			$tabs = e107::getAdminUI()->getController()->getTabs();
+		}
+		catch (Exception $e)
+		{
+		   // do something
+		}
+
+
 		
 	// navbar-header nav-header
 	// navbar-header nav-header
@@ -4554,10 +4563,21 @@ var_dump($select_options);*/
 			if (empty($fld['forced']) && empty($fld['nolist']) && $theType !== 'hidden' && $theType !== 'upload')
 			{
 				$checked = (in_array($key,$columnsDefault)) ?  TRUE : FALSE;
+				$title = '';
+				if(isset($fld['tab']))
+				{
+					$tb = $fld['tab'];
+					if(!empty($tabs[$tb]))
+					{
+						$title = $tabs[$tb].": ";
+					}
+				}
+
 				$ttl = isset($fld['title']) ? defset($fld['title'], $fld['title']) : $key;
+				$title .= $ttl;
 
 				$text .= "
-					<li role='menuitem'><a href='#'>
+					<li role='menuitem'><a href='#' title=\"$title\">
 						".$this->checkbox('e-columns[]', $key, $checked,'label='.$ttl). '
 					</a>
 					</li>
@@ -4839,7 +4859,7 @@ var_dump($select_options);*/
 						'RELATED_URL'       => $tp->replaceConstants($val['url'],'full'),
 						'RELATED_TITLE'     => $val['title'],
 						'RELATED_IMAGE'     => $tp->toImage($val['image']),
-						'RELATED_SUMMARY'   => $tp->toHTML($val['summary'],true,'BODY'),
+						'RELATED_SUMMARY'   => $tp->toHTML($val['summary'],true,'SUMMARY'),
 						'RELATED_DATE'		=> $val['date'],	
 					);
 
@@ -5653,7 +5673,10 @@ var_dump($select_options);*/
 						'e_editable' => $field . '_' . $id,
 					);
 
-					$tpl = $this->text($field, $value, 80, $options);
+					$maxlength = vartrue($parms['maxlength'], 80);
+					unset($parms['maxlength']);
+
+					$tpl = $this->text($field, $value, $maxlength, $options);
 
 					$mode = preg_replace('/[\W]/', '', vartrue($_GET['mode']));
 					$value = "<a" . $this->attributes([
@@ -6655,12 +6678,28 @@ var_dump($select_options);*/
 							'data-sef-generate-confirm' => LAN_WILL_OVERWRITE_SEF . ' ' . LAN_JSCONFIRM,
 						]) . '>' . LAN_GENERATE . '</a></span>';
 				}
+				elseif(!empty($parms['counter']) && empty($parms['post']))
+				{
+					$parms['class'] = 'tbox e-count';
+					$parms['data-char-count'] = $parms['counter'];
+
+					if(!isset($parms['pattern']))
+					{
+						$parms['pattern'] = '.{0,'.$parms['counter'].'}';
+					}
+					$charMsg = $tp->lanVars(defset('LAN_X_CHARS_REMAINING', '[x] chars remaining'), "<span>" . $parms['counter'] . "</span>");
+					$parms['post'] = "<small" . $this->attributes([
+							'id'    => $this->name2id($key) . "-char-count",
+							'class' => 'text-muted e-count-display',
+							'style' => 'display:none',
+						]) . ">" . $charMsg . "</small>";
+				}
+
 
 				if(!empty($parms['password'])) // password mechanism without the md5 storage. 
 				{
 					$ret =  vartrue($parms['pre']).$this->password($key, $value, $maxlength, $parms).vartrue($parms['post']);
 				}
-
 				else
 				{
 					$ret =  vartrue($parms['pre']).$this->text($key, $value, $maxlength, $parms).vartrue($parms['post']); // vartrue($parms['__options']) is limited. See 'required'=>true
@@ -6698,12 +6737,26 @@ var_dump($select_options);*/
 					$parms['size'] = 'xxlarge';
 				}
 
-				if(!empty($parms['maxlength']) && empty($parms['post']))
+				if(!empty($parms['counter']) && empty($parms['post']))
 				{
-					$charMsg = $tp->lanVars(defset('LAN_X_CHARS_REMAINING', '[x] chars remaining'), "<span>" . $parms['maxlength'] . "</span>");
+					$parms['class'] = 'tbox e-count';
+
+					if(!empty($value) && (strlen($value) > (int) $parms['counter']))
+					{
+						$parms['class'] .= " has-error";
+					}
+
+					if(!isset($parms['pattern']))
+					{
+						$parms['pattern'] = '.{0,'.$parms['counter'].'}';
+					}
+
+
+					$parms['data-char-count'] = $parms['counter'];
+					$charMsg = $tp->lanVars(defset('LAN_X_CHARS_REMAINING', '[x] chars remaining'), "<span>" . $parms['counter'] . "</span>");
 					$parms['post'] = "<small" . $this->attributes([
 							'id'    => $this->name2id($key) . "-char-count",
-							'class' => 'text-muted',
+							'class' => 'text-muted e-count-display',
 							'style' => 'display:none',
 						]) . ">" . $charMsg . "</small>";
 				}
@@ -7150,7 +7203,7 @@ var_dump($select_options);*/
 					$value = e107::serialize($value, 'json');
 				}
 
-				$ret .=  $this->hidden($key, $value);
+				$ret .=  $this->hidden($key, $value, $parms);
 			break;
 
 			case 'lanlist': // installed languages

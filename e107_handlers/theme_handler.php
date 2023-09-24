@@ -624,7 +624,7 @@ class e_theme
 				{
 					return $lyout;
 				}
-
+ 
 	            foreach($cusPageArray as $kpage)
 				{
 					// e_ROUTE
@@ -911,7 +911,7 @@ class e_theme
 
 		$tp = e107::getParser(); // could be used by a theme file.
 		$sql = e107::getDb(); // could be used by a theme file.
-
+ 
 		$fp = fopen(e_THEME.$path."/theme.php", "r");
 		$themeContents = fread($fp, filesize(e_THEME.$path."/theme.php"));
 		fclose($fp);

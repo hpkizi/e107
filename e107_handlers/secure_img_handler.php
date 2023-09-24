@@ -37,11 +37,14 @@ class secure_image
 
         $this->BASE_DIR             = e_BASE;
 
-        $CORE_DIRECTORY             = e107::getFolder('CORE');
-		$this->HANDLERS_DIRECTORY 	= e107::getFolder('HANDLERS');
+        $CORE_DIRECTORY             =
+		$this->BASE_DIR . e107::getFolder('CORE');
+		$this->HANDLERS_DIRECTORY 	=
+		$this->BASE_DIR. e107::getFolder('HANDLERS');
 		$this->FONTS_DIRECTORY 		= !empty($CORE_DIRECTORY) ? $CORE_DIRECTORY."fonts/" : "e107_core/fonts/";
-	    $this->IMAGES_DIRECTORY     =  e107::getFolder('IMAGES');
-
+	    $this->IMAGES_DIRECTORY     =
+		$this->BASE_DIR . e107::getFolder('IMAGES');
+ 
 	}
 
 	/**
@@ -92,9 +95,9 @@ class secure_image
 				$c++;
 			}
 		}
+  
 
-
-		$secImg->set('secret/'.$this->random_number, $this->secret);
+		 $secImg->set('secret/'.$this->random_number, $this->secret);
 
 		return $this->random_number;
 	}
@@ -185,7 +188,7 @@ class secure_image
 			$color = 'cccccc';		
 		}
 	
-		return "<img src='".e_IMAGE_ABS."secimg.php?id={$this->random_number}&amp;clr={$color}' class='icon secure-image' alt='Missing Code' style='max-width:100%' />";
+		return "<img src='".e_IMAGE ."secimg.php?id={$this->random_number}&amp;clr={$color}' class='icon secure-image' alt='Missing Code' style='max-width:100%' />";
 	}
 
 
@@ -302,6 +305,7 @@ class secure_image
 	//	$code = intval($row['tmp_info']); // new value
 
 		$tmp = e107::getSession('secureImage')->get('secret');
+	 
 		if(isset($tmp[$recnum]))
 		{
 			$code = $tmp[$recnum];
@@ -328,7 +332,7 @@ class secure_image
 		}
 
 		$path 		= e_IMAGE;
-		$fontpath 	= $this->BASE_DIR.$this->IMAGES_DIRECTORY;
+		$fontpath 	=  $this->IMAGES_DIRECTORY;
 		$secureimg 	= array();
 
 		if(is_readable($path."secure_image_custom.php"))
@@ -364,7 +368,7 @@ class secure_image
 		}
 		else
 		{
-			$fontpath 				= $this->BASE_DIR.$this->FONTS_DIRECTORY;
+			$fontpath 				=  $this->FONTS_DIRECTORY;
 			$secureimg['image'] 	= "generic/code_bg";
 			$secureimg['angle']		= "0";
 			$secureimg['color'] 	= $this->FONT_COLOR; // red,green,blue

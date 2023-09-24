@@ -73,7 +73,8 @@ class core_user_url extends eUrlConfig
 				
 				case 'edit':
 					//$url = e_ADMIN_ABS."user.php?mode=main&action=edit&id=".$params['id'];// 'usersettings.php?'.$params['id'];
-					$url = e_ADMIN."users.php?mode=main&action=edit&id=".$params['id'];// 'usersettings.php?'.$params['id'];
+					//$url = e_ADMIN."users.php?mode=main&action=edit&id=".$params['id'];// 'usersettings.php?'.$params['id'];
+					$url = 	'usersettings.php?' . $params['id'];
 				break;
 			}
 		}
@@ -88,6 +89,7 @@ class core_user_url extends eUrlConfig
 				
 				case 'edit':
 					$url = 'usersettings.php';
+				 
 				break;
 			}
 		}

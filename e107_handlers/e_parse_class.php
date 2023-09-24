@@ -3980,7 +3980,7 @@ class e_parse
 				return null;
 			}
 		}
-        $orig_id = $id;
+
 
 		$spin = null;
 		$rotate = null;
@@ -4027,7 +4027,7 @@ class e_parse
 
 			case "fa":
 			default:
-				if ($this->fontawesome === 5)
+				if ($this->fontawesome === 5 || $this->fontawesome === 6)
 				{
 					$fab = e107::getMedia()->getGlyphs('fab');
 					$fas = e107::getMedia()->getGlyphs('fas');
@@ -4123,7 +4123,6 @@ class e_parse
 				{
 					$prefix = $glyphConfig['class'] . ' ';
 					$tag = $glyphConfig['tag'];
-                    $id = $orig_id;
 					continue;
 				}
 			}

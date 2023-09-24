@@ -4846,7 +4846,6 @@ class e_admin_controller_ui extends e_admin_controller
 			$rawData['orderField'] = isset($this->fields[$orderField]) ? $this->fields[$orderField]['__tableField'] : '';
 			$rawData['orderType'] = $request->getQuery('asc') === 'desc' ? 'DESC' : 'ASC';
 			$rawData['limitFrom'] = $forceFrom === false ? (int) $request->getQuery('from', 0) : (int) $forceFrom;
-			$rawData['limitFrom'] = abs($rawData['limitFrom']);
 			$rawData['limitTo'] = $forceTo === false ? (int) $this->getPerPage() : (int) $forceTo;
 			return $rawData;
 		}
@@ -4921,7 +4920,6 @@ class e_admin_controller_ui extends e_admin_controller
 		if($forceTo !== false || $this->getPerPage())
 		{
 			$from = $forceFrom === false ? (int) $request->getQuery('from', 0) : (int) $forceFrom;
-			$from = abs($from);
 			if($forceTo === false)
 			{
 				$forceTo = $this->getPerPage();

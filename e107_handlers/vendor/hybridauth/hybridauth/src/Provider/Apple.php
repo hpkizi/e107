@@ -20,11 +20,11 @@ use Hybridauth\Adapter\OAuth2;
 use Hybridauth\Data;
 use Hybridauth\User;
 
-use phpseclib\Crypt\RSA;
-use phpseclib\Math\BigInteger;
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Math\BigInteger;
 
-use \Firebase\JWT\JWT;
-use \Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 /**
  * Apple OAuth2 provider adapter.
@@ -122,7 +122,7 @@ class Apple extends OAuth2
         $keys = $this->config->get('keys');
         $keys['secret'] = $this->getSecret();
         $this->config->set('keys', $keys);
-        return parent::configure();
+        parent::configure();
     }
 
     /**
@@ -191,38 +191,40 @@ class Apple extends OAuth2
             // validate the token signature and get the payload
             $publicKeys = $this->apiRequest('keys');
 
-            \Firebase\JWT\JWT::$leeway = 120;
+            JWT::$leeway = 120;
 
             $error = false;
             $payload = null;
 
             foreach ($publicKeys->keys as $publicKey) {
                 try {
-                    $rsa = new RSA();
                     $jwk = (array)$publicKey;
 
-                    $rsa->loadKey(
+                    $key = PublicKeyLoader::load(
                         [
                             'e' => new BigInteger(base64_decode($jwk['e']), 256),
                             'n' => new BigInteger(base64_decode(strtr($jwk['n'], '-_', '+/'), true), 256)
                         ]
-                    );
-                    $pem = $rsa->getPublicKey();
+                    )
+                        ->withHash('sha1')
+                        ->withMGFHash('sha1');
+
+                    $pem = (string)$key;
 
                     $payload = (version_compare($this->getJwtVersion(), '6.2') < 0) ?
                         JWT::decode($id_token, $pem, ['RS256']) :
                         JWT::decode($id_token, new Key($pem, 'RS256'));
                     break;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $error = $e->getMessage();
-                    if ($e instanceof \Firebase\JWT\ExpiredException) {
+                    if ($e instanceof ExpiredException) {
                         break;
                     }
                 }
             }
 
             if ($error && !$payload) {
-                throw new \Exception($error);
+                throw new Exception($error);
             }
         }
 
